@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mom Alarm Clock — Demo</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel2: #1c2333;
+    --border: #30363d;
+    --accent: #3b82f6;
+    --accent2: #7c3aed;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --orange: #f97316;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; min-height: 100vh; }
+
+  /* HEADER */
+  #header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+  #header .logo { font-size: 18px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  #header .logo span { font-size: 22px; }
+  #sim-badge { background: #1a3a1a; color: var(--green); border: 1px solid #2d5a2d; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  #sim-badge.alarm { background: #3a1a1a; color: var(--red); border-color: #5a2d2d; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+  .header-spacer { flex: 1; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: opacity .15s, transform .1s; }
+  .btn:hover { opacity: .85; }
+  .btn:active { transform: scale(.97); }
+  .btn-ghost { background: var(--panel2); color: var(--text); border: 1px solid var(--border); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-warning { background: var(--yellow); color: #000; }
+  .btn-purple { background: var(--accent2); color: #fff; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* LAYOUT */
+  #main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; max-width: 1400px; margin: 0 auto; }
+  @media (max-width: 980px) { #main { grid-template-columns: 1fr; } }
+
+  /* PANEL */
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .panel-header { padding: 14px 16px 0; border-bottom: 1px solid var(--border); }
+  .panel-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  .panel-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding: 0 16px; background: var(--panel); }
+  .tab { padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; white-space: nowrap; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; padding: 16px; }
+  .tab-content.active { display: block; }
+
+  /* FORMS */
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .05em; }
+  .form-group select, .form-group input[type="time"], .form-group input[type="text"] {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 10px; border-radius: 7px; font-size: 13px; outline: none;
+  }
+  .form-group select:focus, .form-group input:focus { border-color: var(--accent); }
+  .radio-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .radio-btn { padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); transition: all .15s; }
+  .radio-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .radio-btn:hover:not(.selected) { border-color: var(--accent); color: var(--text); }
+
+  /* CARDS & STATS */
+  .card { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
+  .kv { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .kv:last-child { border-bottom: none; }
+  .kv .key { color: var(--muted); }
+  .kv .val { font-weight: 600; color: var(--text); }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .stat-card { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-green { background: #1a3a1a; color: var(--green); }
+  .badge-red { background: #3a1a1a; color: var(--red); }
+  .badge-yellow { background: #3a2a0a; color: var(--yellow); }
+  .badge-blue { background: #1a2a4a; color: #60a5fa; }
+  .badge-gray { background: #1e2530; color: var(--muted); }
+
+  /* PROGRESS BAR */
+  .progress-wrap { background: var(--bg); border-radius: 20px; height: 8px; overflow: hidden; margin: 8px 0; }
+  .progress-bar { height: 100%; border-radius: 20px; transition: width .5s, background .5s; background: var(--green); }
+
+  /* ACTION BUTTONS */
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* CHEAT SECTION */
+  .cheat-section { background: #1e1210; border: 1px solid #4a2020; border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+  .cheat-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+
+  /* VERIFY SECTIONS */
+  .verify-section { display: none; }
+  .verify-section.active { display: block; }
+  .verify-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 8px; font-size: 15px; margin-bottom: 10px; text-align: center; outline: none; }
+  .verify-input:focus { border-color: var(--accent); }
+  .qr-display { background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 12px; }
+  .qr-code { font-size: 28px; font-weight: 900; letter-spacing: .2em; color: var(--accent); font-family: monospace; }
+  .qr-hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .timer-display { font-size: 40px; font-weight: 900; text-align: center; color: var(--yellow); margin: 16px 0; font-family: monospace; }
+  .verify-error { background: #3a1a1a; border: 1px solid #5a2d2d; color: var(--red); padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 10px; display: none; }
+  .verify-error.show { display: block; }
+
+  /* HISTORY TABLE */
+  .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto; }
+  .history-row { background: var(--panel2); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tamper-list { display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto; margin-top: 8px; }
+  .tamper-row { background: #1e1210; border: 1px solid #4a2020; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: var(--red); }
+
+  /* MESSAGES */
+  .msg-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .msg-row { background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; }
+  .msg-sender { font-weight: 700; color: var(--accent); }
+  .msg-send-row { display: flex; gap: 8px; margin-top: 8px; }
+  .msg-send-row input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 7px; font-size: 13px; outline: none; }
+  .msg-send-row input:focus { border-color: var(--accent); }
+
+  /* TOAST */
+  #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
+  .toast { background: var(--panel); border: 1px solid var(--border); border-radius: 9px; padding: 12px 16px; font-size: 13px; box-shadow: 0 4px 20px rgba(0,0,0,.5); animation: slideIn .3s ease; display: flex; align-items: flex-start; gap: 10px; }
+  .toast.removing { animation: slideOut .3s ease forwards; }
+  @keyframes slideIn { from { transform: translateX(120%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+  @keyframes slideOut { from { transform: translateX(0); opacity:1; } to { transform: translateX(120%); opacity:0; } }
+  .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .toast-body .toast-title { font-weight: 700; margin-bottom: 2px; }
+  .toast-body .toast-msg { color: var(--muted); font-size: 12px; }
+  .toast.t-info { border-left: 3px solid var(--accent); }
+  .toast.t-warn { border-left: 3px solid var(--yellow); }
+  .toast.t-danger { border-left: 3px solid var(--red); }
+  .toast.t-success { border-left: 3px solid var(--green); }
+
+  /* ALARM COUNTDOWN */
+  .alarm-countdown { text-align: center; padding: 16px; }
+  .alarm-time-big { font-size: 52px; font-weight: 900; color: var(--red); font-family: monospace; animation: pulse 1.4s infinite; }
+  .alarm-elapsed { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .esc-step-label { font-size: 12px; color: var(--yellow); margin-top: 8px; font-weight: 600; }
+
+  /* INFO CARD */
+  #bottom-section { padding: 16px; max-width: 1400px; margin: 0 auto; }
+  .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+  .info-card h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .info-grid { grid-template-columns: 1fr; } }
+  .info-col h3 { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+  .info-col.native h3 { color: var(--yellow); }
+  .info-col ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .info-col ul li { font-size: 13px; color: var(--muted); padding-left: 16px; position: relative; }
+  .info-col ul li::before { content: "•"; position: absolute; left: 0; color: var(--accent); }
+  .info-col.native ul li::before { color: var(--yellow); }
+
+  .lock-overlay { background: #1e1210; border: 1px solid #4a2020; border-radius: 8px; padding: 14px; text-align: center; }
+  .lock-overlay .lock-icon { font-size: 36px; margin-bottom: 8px; }
+  .lock-overlay p { color: var(--red); font-weight: 600; }
+  .lock-overlay small { color: var(--muted); font-size: 12px; }
+
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+  .inline-badge { display: inline-flex; align-items: center; gap: 4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
+
+  select option { background: #1c2333; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div class="logo"><span>⏰</span> Mom Alarm Clock</div>
+  <div id="sim-badge">SIM READY</div>
+  <div class="header-spacer"></div>
+  <button class="btn btn-ghost btn-sm" onclick="resetDemo()">Reset</button>
+  <button class="btn btn-ghost btn-sm" onclick="fastForward(12)">Fast-Forward 12min</button>
+  <button class="btn btn-danger" onclick="startAlarm()">Start Alarm</button>
+</div>
+
+<!-- MAIN GRID -->
+<div id="main">
+
+  <!-- PARENT PANEL -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-label">Parent View</div>
+      <div class="panel-title">Master Control Panel</div>
+    </div>
+    <div class="tabs" id="parent-tabs">
+      <div class="tab active" onclick="switchTab('parent','dashboard')">Dashboard</div>
+      <div class="tab" onclick="switchTab('parent','controls')">Alarm &amp; Controls</div>
+      <div class="tab" onclick="switchTab('parent','history')">History</div>
+    </div>
+
+    <!-- PARENT TAB: DASHBOARD -->
+    <div class="tab-content active" id="parent-tab-dashboard">
+      <div class="form-group">
+        <label>Child</label>
+        <select onchange="selectChild(this.value)" id="dash-child-select">
+          <option value="ethan">Ethan (13)</option>
+          <option value="holly">Holly (11)</option>
+          <option value="tristyn">Tristyn (9)</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Current Config</div>
+        <div class="kv"><span class="key">Preset</span><span class="val" id="d-preset">—</span></div>
+        <div class="kv"><span class="key">Verification Method</span><span class="val" id="d-verify-method">—</span></div>
+        <div class="kv"><span class="key">Alarm Time</span><span class="val" id="d-alarm-time">—</span></div>
+        <div class="kv"><span class="key">Volume Floor</span><span class="val" id="d-volume">—</span></div>
+        <div class="kv"><span class="key">Snooze</span><span class="val" id="d-snooze">—</span></div>
+        <div class="kv"><span class="key">Turn-Off Rule</span><span class="val" id="d-turnoff">—</span></div>
+        <div class="kv"><span class="key">Escalation Profile</span><span class="val" id="d-esc-profile">—</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Live Status</div>
+        <div class="kv"><span class="key">Alarm State</span><span class="val" id="d-alarm-state"><span class="badge badge-gray">Idle</span></span></div>
+        <div class="kv"><span class="key">Wake Verification</span><span class="val" id="d-verified">—</span></div>
+        <div class="kv"><span class="key">Escalation Step</span><span class="val" id="d-esc-step">—</span></div>
+        <div class="kv"><span class="key">Morning Lock</span><span class="val" id="d-lock-state">—</span></div>
+        <div class="kv"><span class="key">Last Ping</span><span class="val" id="d-last-ping">—</span></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-ontime">0%</div>
+          <div class="stat-label">On-Time (14d)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-tamper" style="color:var(--red)">0</div>
+          <div class="stat-label">Tamper Alerts</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-ghost btn-sm" onclick="parentNudge()">Send Nudge</button>
+        <button class="btn btn-ghost btn-sm" onclick="togglePreset()">Toggle Preset</button>
+        <button class="btn btn-danger btn-sm" onclick="parentForceLock()">Force Morning Lock</button>
+        <button class="btn btn-green btn-sm" onclick="parentGrantAccess()">Grant Full Access</button>
+      </div>
+    </div>
+
+    <!-- PARENT TAB: CONTROLS -->
+    <div class="tab-content" id="parent-tab-controls">
+      <div class="form-group">
+        <label>Child</label>
+        <select onchange="selectChild(this.value)" id="ctrl-child-select">
+          <option value="ethan">Ethan (13)</option>
+          <option value="holly">Holly (11)</option>
+          <option value="tristyn">Tristyn (9)</option>
+        </select>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Preset</label>
+          <div class="radio-group" id="preset-group">
+            <div class="radio-btn selected" onclick="setRadio('preset','school')">School Morning</div>
+            <div class="radio-btn" onclick="setRadio('preset','weekend')">Weekend</div>
+            <div class="radio-btn" onclick="setRadio('preset','strict')">Strict Mode</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Alarm Time</label>
+          <input type="time" id="alarm-time-input" value="06:30" onchange="updateConfig('alarmTime', this.value)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Verification Method</label>
+        <div class="radio-group" id="verifyMethod-group">
+          <div class="radio-btn selected" onclick="setRadio('verifyMethod','qr')">QR Scan</div>
+          <div class="radio-btn" onclick="setRadio('verifyMethod','photo')">Photo Proof</div>
+          <div class="radio-btn" onclick="setRadio('verifyMethod','motion')">Motion+Steps</div>
+          <div class="radio-btn" onclick="setRadio('verifyMethod','quiz')">Quick Quiz</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Volume Floor</label>
+          <div class="radio-group" id="volumeFloor-group">
+            <div class="radio-btn" onclick="setRadio('volumeFloor','60')">60%</div>
+            <div class="radio-btn selected" onclick="setRadio('volumeFloor','70')">70%</div>
+            <div class="radio-btn" onclick="setRadio('volumeFloor','80')">80%</div>
+            <div class="radio-btn" onclick="setRadio('volumeFloor','90')">90%</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Snooze</label>
+          <div class="radio-group" id="snooze-group">
+            <div class="radio-btn" onclick="setRadio('snooze','disabled')">Disabled</div>
+            <div class="radio-btn selected" onclick="setRadio('snooze','once')">Once (3min)</div>
+            <div class="radio-btn" onclick="setRadio('snooze','limited')">Limited (2x, 2min)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Turn Off Rule</label>
+          <div class="radio-group" id="turnOff-group">
+            <div class="radio-btn selected" onclick="setRadio('turnOff','blocked')">Blocked until verified</div>
+            <div class="radio-btn" onclick="setRadio('turnOff','allowed')">Allowed</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Auto "I'm Awake ✅" Message</label>
+          <div class="radio-group" id="autoMsg-group">
+            <div class="radio-btn selected" onclick="setRadio('autoMsg','on')">On</div>
+            <div class="radio-btn" onclick="setRadio('autoMsg','off')">Off</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Escalation Ladder Profile</label>
+        <div class="radio-group" id="escProfile-group">
+          <div class="radio-btn selected" onclick="setRadio('escProfile','standard')">Standard (1/3/5/8 min)</div>
+          <div class="radio-btn" onclick="setRadio('escProfile','gentle')">Gentle (2/5/8/12 min)</div>
+          <div class="radio-btn" onclick="setRadio('escProfile','aggressive')">Aggressive (1/2/3/5 min)</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Allowed Apps During Lock (comma-separated)</label>
+        <input type="text" id="allowed-apps-input" value="Messages, Phone" onchange="updateConfig('allowedApps', this.value)">
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        <button class="btn btn-ghost" onclick="reloadDefaults()">Reload Demo Defaults</button>
+      </div>
+    </div>
+
+    <!-- PARENT TAB: HISTORY -->
+    <div class="tab-content" id="parent-tab-history">
+      <div class="card-title" style="margin-bottom:8px;">Recent Mornings</div>
+      <div class="history-list" id="history-list">
+        <div style="color:var(--muted);font-size:13px;padding:8px 0;">No history yet. Run a simulation to generate records.</div>
+      </div>
+      <hr class="section-divider">
+      <div class="card-title" style="margin-bottom:8px; color: var(--red);">Tamper Log</div>
+      <div class="tamper-list" id="tamper-list">
+        <div style="color:var(--muted);font-size:13px;padding:4px 0;">No tamper events recorded.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHILD PANEL -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-label">Child View</div>
+      <div class="panel-title" id="child-panel-title">Ethan's Phone</div>
+    </div>
+    <div class="tabs" id="child-tabs">
+      <div class="tab active" onclick="switchTab('child','alarm')">Alarm</div>
+      <div class="tab" onclick="switchTab('child','verify')">Verify</div>
+      <div class="tab" onclick="switchTab('child','phonehome')">Phone Home</div>
+    </div>
+
+    <!-- CHILD TAB: ALARM -->
+    <div class="tab-content active" id="child-tab-alarm">
+
+      <!-- IDLE STATE -->
+      <div id="alarm-idle">
+        <div class="card">
+          <div class="card-title">Alarm Settings</div>
+          <div class="kv"><span class="key">Next Alarm</span><span class="val" id="c-alarm-time">6:30 AM</span></div>
+          <div class="kv"><span class="key">Volume Floor</span><span class="val" id="c-volume">70%</span></div>
+          <div class="kv"><span class="key">Snooze</span><span class="val" id="c-snooze">Once (3min)</span></div>
+          <div class="kv"><span class="key">Turn Off</span><span class="val" id="c-turnoff">Blocked until verified</span></div>
+        </div>
+        <div style="text-align:center; padding: 20px; color: var(--muted);">
+          <div style="font-size:36px; margin-bottom:8px;">😴</div>
+          <div>Alarm is not active. Press <strong>Start Alarm</strong> in the header to begin simulation.</div>
+        </div>
+      </div>
+
+      <!-- ACTIVE ALARM STATE -->
+      <div id="alarm-active" style="display:none;">
+        <div class="alarm-countdown">
+          <div style="font-size:12px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em;">ALARM RINGING</div>
+          <div class="alarm-time-big" id="alarm-active-time">6:30 AM</div>
+          <div class="alarm-elapsed" id="alarm-elapsed">Active for 0:00</div>
+          <div class="esc-step-label" id="esc-step-label">Escalation: Step 0</div>
+          <div style="margin-top: 10px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;">
+              <span>Progress to next escalation</span>
+              <span id="esc-progress-label">—</span>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-bar" id="esc-progress-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Alarm Config (Active)</div>
+          <div class="kv"><span class="key">Volume Floor</span><span class="val" id="ca-volume">70%</span></div>
+          <div class="kv"><span class="key">Snooze</span><span class="val" id="ca-snooze">Once (3min)</span></div>
+          <div class="kv"><span class="key">Snoozes Used</span><span class="val" id="ca-snoozes-used">0</span></div>
+          <div class="kv"><span class="key">Turn Off Rule</span><span class="val" id="ca-turnoff">Blocked</span></div>
+        </div>
+
+        <div class="action-row" style="margin-bottom:12px;">
+          <button class="btn btn-primary" onclick="switchTab('child','verify')">Go to Verification</button>
+          <button class="btn btn-warning" onclick="snoozeAlarm()">Snooze</button>
+          <button class="btn btn-ghost" onclick="stopAlarmAttempt()">Stop Alarm</button>
+        </div>
+
+        <div class="cheat-section">
+          <div class="cheat-title">⚠ Try Cheating (Demo)</div>
+          <div class="action-row">
+            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Lowered device volume below floor')">Lower Volume</button>
+            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Force-closed app')">Force Close App</button>
+            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Disabled notifications for Mom Alarm Clock')">Disable Notifications</button>
+            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Attempted app uninstall')">Uninstall App</button>
+            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Attempted device power-off')">Power Off Phone</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHILD TAB: VERIFY -->
+    <div class="tab-content" id="child-tab-verify">
+      <div id="verify-already-done" style="display:none;">
+        <div style="text-align:center;padding:30px;">
+          <div style="font-size:48px;margin-bottom:10px;">✅</div>
+          <div style="font-size:18px;font-weight:700;color:var(--green);">Verified!</div>
+          <div style="color:var(--muted);margin-top:6px;">Wake verification complete.</div>
+        </div>
+      </div>
+      <div id="verify-no-alarm" style="display:none;">
+        <div style="text-align:center;padding:30px;color:var(--muted);">No active alarm. Start the alarm first.</div>
+      </div>
+      <div id="verify-main">
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Wake Verification</div>
+          <div class="kv"><span class="key">Method</span><span class="val" id="v-method-label">QR Scan</span></div>
+          <div class="kv"><span class="key">Status</span><span class="val" id="v-status"><span class="badge badge-red">Pending</span></span></div>
+        </div>
+
+        <!-- QR SCAN -->
+        <div class="verify-section" id="verify-qr">
+          <div class="qr-display">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Code posted on the fridge:</div>
+            <div class="qr-code" id="qr-code-display">RG-7412</div>
+            <div class="qr-hint">Walk to the fridge and type the code above</div>
+          </div>
+          <div class="verify-error" id="qr-error">Wrong code. Try again — walk to the fridge and check!</div>
+          <input class="verify-input" id="qr-input" type="text" placeholder="Type the code exactly" maxlength="8" autocomplete="off">
+          <button class="btn btn-primary" style="width:100%" onclick="submitQR()">Submit Code</button>
+        </div>
+
+        <!-- PHOTO PROOF -->
+        <div class="verify-section" id="verify-photo">
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-title">Photo Proof Required</div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Select the item you have proof of, then submit.</p>
+            <div class="form-group">
+              <label>Evidence</label>
+              <select id="photo-select">
+                <option value="">— choose one —</option>
+                <option value="sink">Sink running (video)</option>
+                <option value="toothbrush">Toothbrush + toothpaste (photo)</option>
+                <option value="breakfast">Breakfast item (photo)</option>
+              </select>
+            </div>
+          </div>
+          <div class="verify-error" id="photo-error">Please select an item before submitting.</div>
+          <button class="btn btn-primary" style="width:100%" onclick="submitPhoto()">Submit Proof</button>
+        </div>
+
+        <!-- MOTION/STEPS -->
+        <div class="verify-section" id="verify-motion">
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-title">Motion + Steps Verification</div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Keep your phone moving for 10 seconds to verify you are out of bed.</p>
+          </div>
+          <div class="timer-display" id="motion-timer">10</div>
+          <div style="text-align:center; margin-bottom:12px;">
+            <div class="progress-wrap" style="max-width:200px;margin:0 auto;">
+              <div class="progress-bar" id="motion-progress" style="width:0%;background:var(--yellow)"></div>
+            </div>
+          </div>
+          <button class="btn btn-warning" style="width:100%;margin-bottom:8px" onclick="startMotionTimer()" id="motion-start-btn">Start Moving</button>
+          <button class="btn btn-primary" style="width:100%;opacity:.4" onclick="submitMotion()" id="motion-complete-btn" disabled>Complete Verification</button>
+        </div>
+
+        <!-- QUICK QUIZ -->
+        <div class="verify-section" id="verify-quiz">
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-title">Quick Quiz — Prove You're Awake</div>
+          </div>
+          <div class="verify-error" id="quiz-error">Check your answers and try again.</div>
+          <div class="form-group">
+            <label>What day comes after Monday?</label>
+            <input class="verify-input" id="quiz-q1" type="text" placeholder="Type your answer" autocomplete="off" style="text-align:left;">
+          </div>
+          <div class="form-group">
+            <label>Type this exactly: awake now</label>
+            <input class="verify-input" id="quiz-q2" type="text" placeholder="awake now" autocomplete="off" style="text-align:left;">
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="submitQuiz()">Submit Answers</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHILD TAB: PHONE HOME -->
+    <div class="tab-content" id="child-tab-phonehome">
+      <div class="card">
+        <div class="card-title">Phone Status</div>
+        <div class="kv"><span class="key">Morning Lock</span><span class="val" id="ph-lock-state"><span class="badge badge-gray">Off</span></span></div>
+        <div class="kv"><span class="key">Allowed Apps</span><span class="val" id="ph-allowed-apps">Messages, Phone</span></div>
+      </div>
+
+      <div id="ph-lock-warning" style="display:none;">
+        <div class="lock-overlay" style="margin-bottom:12px;">
+          <div class="lock-icon">🔒</div>
+          <p>Morning Lock Active</p>
+          <small>App access is restricted until you verify you're awake</small>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:8px;">Messages with Parent</div>
+      <div class="msg-list" id="msg-list">
+        <div style="color:var(--muted);font-size:12px;padding:4px 0;">No messages yet.</div>
+      </div>
+      <div class="msg-send-row">
+        <input type="text" id="msg-input" placeholder="Type a message to Mom/Dad..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="btn btn-primary btn-sm" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM SECTION -->
+<div id="bottom-section">
+  <div class="info-card">
+    <h2>What This Demo Proves vs. What Needs Native Work</h2>
+    <div class="info-grid">
+      <div class="info-col">
+        <h3>Demonstrated in This Web Prototype</h3>
+        <ul>
+          <li>Full alarm state machine (idle, active, verified, locked)</li>
+          <li>Escalation ladder with timed threshold crossings</li>
+          <li>Four distinct wake verification methods with validation logic</li>
+          <li>Morning Lock state with per-child config</li>
+          <li>Tamper attempt detection and logging across all cheat scenarios</li>
+          <li>Parent controls: nudge, force lock, grant access, preset toggle</li>
+          <li>Per-child configuration, streaks, on-time statistics, and history log</li>
+          <li>Bidirectional parent-child messaging</li>
+          <li>Fast-forward simulation for escalation testing</li>
+          <li>Persistent demo state via localStorage</li>
+        </ul>
+      </div>
+      <div class="info-col native">
+        <h3>Requires Native iOS / MDM Work</h3>
+        <ul>
+          <li>Screen Time API + FamilyControls framework to enforce app blocking</li>
+          <li>Device Management Profile (MDM) to resist uninstall without parent PIN</li>
+          <li>DeviceActivityMonitor to track app usage and enforce "allowed apps" list</li>
+          <li>Real-device motion sensors (CMMotionManager) for motion/steps verification</li>
+          <li>Camera access for actual photo-proof capture and upload</li>
+          <li>AVFoundation audio to enforce volume floor below system level</li>
+          <li>APNs push notifications for parent alerts at each escalation step</li>
+          <li>Background audio session to keep alarm ringing when app is closed</li>
+          <li>QR code generation + camera-based scanning (Vision framework)</li>
+          <li>iCloud / server sync for multi-device parent/child communication</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ============================================================
+//  STATE
+// ============================================================
+const STORAGE_KEY = 'mom_alarm_demo_v2';
+
+const ESC_PROFILES = {
+  standard:   [1, 3, 5, 8],
+  gentle:     [2, 5, 8, 12],
+  aggressive: [1, 2, 3, 5]
+};
+
+const ESC_LABELS = [
+  'Reminder sent to child',
+  'Parent Notified — no confirmation yet',
+  'Morning Lock activated',
+  'Auto-call / announce mode triggered'
+];
+
+const PRESET_DEFAULTS = {
+  school:  { alarmTime: '06:30', verifyMethod: 'qr',     volumeFloor: '70', snooze: 'once',     turnOff: 'blocked', escProfile: 'standard' },
+  weekend: { alarmTime: '08:00', verifyMethod: 'photo',   volumeFloor: '60', snooze: 'limited',  turnOff: 'allowed', escProfile: 'gentle'   },
+  strict:  { alarmTime: '06:15', verifyMethod: 'quiz',    volumeFloor: '90', snooze: 'disabled', turnOff: 'blocked', escProfile: 'aggressive' }
+};
+
+const CHILD_NAMES = { ethan: 'Ethan', holly: 'Holly', tristyn: 'Tristyn' };
+
+function defaultState() {
+  return {
+    config: {
+      childId: 'ethan',
+      children: {
+        ethan:   { ...PRESET_DEFAULTS.school,  preset: 'school',  autoMsg: 'on', allowedApps: 'Messages, Phone' },
+        holly:   { ...PRESET_DEFAULTS.weekend, preset: 'weekend', autoMsg: 'on', allowedApps: 'Messages, Phone, YouTube Music' },
+        tristyn: { ...PRESET_DEFAULTS.gentle,  preset: 'school',  autoMsg: 'off', allowedApps: 'Messages' }
+      }
+    },
+    runtime: {
+      alarmActive: false,
+      alarmStartTs: null,
+      verified: false,
+      snoozesUsed: 0,
+      lockState: 'off',
+      escStepIndex: -1,
+      lastPing: null,
+      lastPingTs: null,
+      qrCode: '',
+      motionTimerEnd: null
+    },
+    logs: {
+      history: [
+        { childId:'ethan', result:'verified', onTime:true,  minsToVerify:3,  method:'qr',     ts: Date.now() - 86400000 * 1, note:'' },
+        { childId:'ethan', result:'verified', onTime:true,  minsToVerify:4,  method:'qr',     ts: Date.now() - 86400000 * 2, note:'' },
+        { childId:'ethan', result:'verified', onTime:false, minsToVerify:9,  method:'qr',     ts: Date.now() - 86400000 * 3, note:'Escalation step 2 reached' },
+        { childId:'ethan', result:'verified', onTime:true,  minsToVerify:2,  method:'photo',  ts: Date.now() - 86400000 * 4, note:'' },
+        { childId:'holly', result:'verified', onTime:true,  minsToVerify:6,  method:'photo',  ts: Date.now() - 86400000 * 1, note:'' }
+      ],
+      tamper: [],
+      messages: []
+    },
+    stats: {
+      ethan:   { streak: 4, onTime14: [1,1,0,1,1,1,0,1,1,1,1,0,1,1] },
+      holly:   { streak: 2, onTime14: [1,1,0,0,1,0,1,1,0,1,1,1,0,0] },
+      tristyn: { streak: 1, onTime14: [0,1,0,0,1,1,0,0,0,1,0,1,0,0] }
+    }
+  };
+}
+
+let S = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return defaultState();
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); } catch(e) {}
+}
+
+function getChildConfig() {
+  return S.config.children[S.config.childId];
+}
+
+// ============================================================
+//  HELPERS
+// ============================================================
+function genQR() {
+  const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const digits = '0123456789';
+  let code = '';
+  for (let i = 0; i < 2; i++) code += letters[Math.floor(Math.random()*letters.length)];
+  code += '-';
+  for (let i = 0; i < 4; i++) code += digits[Math.floor(Math.random()*digits.length)];
+  return code;
+}
+
+function fmtTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  const opts = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return d.toLocaleString([], opts);
+}
+
+function elapsedMs() {
+  if (!S.runtime.alarmStartTs) return 0;
+  return Date.now() - S.runtime.alarmStartTs;
+}
+
+function elapsedMin() {
+  return elapsedMs() / 60000;
+}
+
+function fmtElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+function alarmTimeLabel() {
+  const t = getChildConfig().alarmTime || '06:30';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+
+// ============================================================
+//  TAB SWITCHING
+// ============================================================
+function switchTab(panel, tabId) {
+  const tabsEl = document.getElementById(panel + '-tabs');
+  const tabs = tabsEl.querySelectorAll('.tab');
+  const panelEl = document.getElementById('main').querySelector(panel === 'parent' ? '.panel:first-child' : '.panel:last-child');
+  const contents = panelEl.querySelectorAll('.tab-content');
+
+  tabs.forEach((t, i) => {
+    const isTarget = t.getAttribute('onclick').includes("'" + tabId + "'");
+    t.classList.toggle('active', isTarget);
+  });
+  contents.forEach(c => {
+    c.classList.toggle('active', c.id === panel + '-tab-' + tabId);
+  });
+
+  if (panel === 'child' && tabId === 'verify') renderVerify();
+}
+
+// ============================================================
+//  CONFIG / SETTINGS
+// ============================================================
+function selectChild(id) {
+  S.config.childId = id;
+  document.getElementById('dash-child-select').value = id;
+  document.getElementById('ctrl-child-select').value = id;
+  document.getElementById('child-panel-title').textContent = CHILD_NAMES[id] + "'s Phone";
+  renderControls();
+  renderAll();
+  saveState();
+}
+
+function setRadio(field, value) {
+  const group = document.getElementById(field + '-group');
+  if (!group) return;
+  group.querySelectorAll('.radio-btn').forEach(btn => {
+    const onclick = btn.getAttribute('onclick');
+    btn.classList.toggle('selected', onclick && onclick.includes("'" + value + "'"));
+  });
+  updateConfig(field, value);
+}
+
+function updateConfig(field, value) {
+  getChildConfig()[field] = value;
+  saveState();
+  renderAll();
+}
+
+function saveSettings() {
+  toast('Settings Saved', 'Config saved for ' + CHILD_NAMES[S.config.childId], 'success');
+  saveState();
+  renderAll();
+}
+
+function reloadDefaults() {
+  const d = defaultState();
+  S.config = d.config;
+  renderControls();
+  renderAll();
+  saveState();
+  toast('Defaults Restored', 'Demo defaults reloaded.', 'info');
+}
+
+function renderControls() {
+  const cfg = getChildConfig();
+  const timeInput = document.getElementById('alarm-time-input');
+  if (timeInput) timeInput.value = cfg.alarmTime || '06:30';
+  const appsInput = document.getElementById('allowed-apps-input');
+  if (appsInput) appsInput.value = cfg.allowedApps || '';
+
+  const fields = ['preset','verifyMethod','volumeFloor','snooze','turnOff','autoMsg','escProfile'];
+  fields.forEach(f => setRadio(f, cfg[f] || ''));
+}
+
+// ============================================================
+//  ALARM ACTIONS
+// ============================================================
+function startAlarm() {
+  if (S.runtime.alarmActive) {
+    toast('Already Ringing', 'Alarm is already active.', 'warn');
+    return;
+  }
+  S.runtime.alarmActive = true;
+  S.runtime.alarmStartTs = Date.now();
+  S.runtime.verified = false;
+  S.runtime.snoozesUsed = 0;
+  S.runtime.lockState = 'on';
+  S.runtime.escStepIndex = -1;
+  S.runtime.qrCode = genQR();
+  S.runtime.motionTimerEnd = null;
+  saveState();
+  resetMotionUI();
+  renderAll();
+  toast('Alarm Started', CHILD_NAMES[S.config.childId] + "'s alarm is now ringing!", 'danger');
+}
+
+function stopAlarmAttempt() {
+  const cfg = getChildConfig();
+  if (cfg.turnOff === 'blocked' && !S.runtime.verified) {
+    tamperAttempt('Attempted to stop alarm before verification');
+    toast('Blocked', 'Cannot turn off alarm until wake verification is complete.', 'danger');
+    return;
+  }
+  endMorning('verified', 'Stopped alarm');
+}
+
+function snoozeAlarm() {
+  const cfg = getChildConfig();
+  if (!S.runtime.alarmActive) return;
+
+  if (cfg.snooze === 'disabled') {
+    tamperAttempt('Attempted to snooze (snooze disabled)');
+    toast('Snooze Blocked', 'Snooze is disabled for this alarm.', 'danger');
+    return;
+  }
+
+  let maxSnoozes = 1;
+  let snoozeMinutes = 3;
+  if (cfg.snooze === 'limited') { maxSnoozes = 2; snoozeMinutes = 2; }
+
+  if (S.runtime.snoozesUsed >= maxSnoozes) {
+    tamperAttempt('Attempted extra snooze beyond allowed limit');
+    toast('Snooze Limit Reached', 'No more snoozes allowed.', 'danger');
+    return;
+  }
+
+  S.runtime.snoozesUsed++;
+  S.runtime.alarmStartTs += snoozeMinutes * 60000;
+  saveState();
+  renderAll();
+  toast('Snoozed', 'Alarm snoozed for ' + snoozeMinutes + ' minutes. (' + S.runtime.snoozesUsed + '/' + maxSnoozes + ' used)', 'warn');
+}
+
+function tamperAttempt(reason) {
+  const entry = { childId: S.config.childId, reason: reason, ts: Date.now() };
+  S.logs.tamper.unshift(entry);
+  S.runtime.lastPing = 'TAMPER: ' + reason;
+  S.runtime.lastPingTs = Date.now();
+  saveState();
+  renderAll();
+  toast('Tamper Alert', reason, 'danger');
+}
+
+function verifySuccess() {
+  S.runtime.verified = true;
+  endMorning('verified', 'Verification completed');
+}
+
+function endMorning(result, note) {
+  const elapsed = elapsedMin();
+  const onTime = elapsed < 5;
+  const cfg = getChildConfig();
+  const child = S.config.childId;
+
+  S.logs.history.unshift({
+    childId: child,
+    result: result,
+    onTime: onTime,
+    minsToVerify: Math.round(elapsed * 10) / 10,
+    method: cfg.verifyMethod,
+    ts: Date.now(),
+    note: note || ''
+  });
+
+  if (!S.stats[child]) S.stats[child] = { streak: 0, onTime14: [] };
+  const st = S.stats[child];
+  if (onTime && result === 'verified') {
+    st.streak = (st.streak || 0) + 1;
+  } else {
+    st.streak = 0;
+  }
+  st.onTime14 = [onTime ? 1 : 0, ...(st.onTime14 || [])].slice(0, 14);
+
+  if (cfg.autoMsg === 'on') {
+    S.logs.messages.unshift({ sender: CHILD_NAMES[child], text: "I'm awake ✅", ts: Date.now() });
+    S.runtime.lastPing = "I'm awake ✅";
+    S.runtime.lastPingTs = Date.now();
+  }
+
+  S.runtime.alarmActive = false;
+  S.runtime.alarmStartTs = null;
+  S.runtime.verified = false;
+  S.runtime.snoozesUsed = 0;
+  S.runtime.lockState = 'off';
+  S.runtime.escStepIndex = -1;
+
+  saveState();
+  renderAll();
+  toast('Morning Complete', CHILD_NAMES[child] + ': ' + (result === 'verified' ? 'Verified on time ✅' : 'Ended — ' + note), result === 'verified' ? 'success' : 'info');
+}
+
+function fastForward(minutes) {
+  if (!S.runtime.alarmActive) {
+    toast('No Active Alarm', 'Start the alarm first.', 'warn');
+    return;
+  }
+  S.runtime.alarmStartTs -= minutes * 60000;
+  saveState();
+  renderAll();
+  toast('Fast-Forwarded', 'Simulated +' + minutes + ' minutes of elapsed alarm time.', 'info');
+}
+
+function parentNudge() {
+  S.logs.messages.unshift({ sender: 'Parent', text: 'Nudge: Please verify now 📣', ts: Date.now() });
+  S.runtime.lastPing = 'Nudge sent by parent';
+  S.runtime.lastPingTs = Date.now();
+  saveState();
+  renderAll();
+  toast('Nudge Sent', 'Message sent to ' + CHILD_NAMES[S.config.childId], 'info');
+}
+
+function togglePreset() {
+  const cfg = getChildConfig();
+  const order = ['school', 'weekend', 'strict'];
+  const idx = order.indexOf(cfg.preset || 'school');
+  const next = order[(idx + 1) % order.length];
+  const defaults = PRESET_DEFAULTS[next];
+  Object.assign(cfg, defaults, { preset: next, autoMsg: cfg.autoMsg, allowedApps: cfg.allowedApps });
+  renderControls();
+  renderAll();
+  saveState();
+  toast('Preset Changed', 'Switched to: ' + next.charAt(0).toUpperCase() + next.slice(1), 'info');
+}
+
+function parentForceLock() {
+  S.runtime.lockState = 'forced';
+  saveState();
+  renderAll();
+  toast('Morning Lock Forced', CHILD_NAMES[S.config.childId] + "'s phone is now locked.", 'danger');
+}
+
+function parentGrantAccess() {
+  S.runtime.lockState = 'granted';
+  if (S.runtime.alarmActive) endMorning('parentGranted', 'Parent granted access');
+  else { saveState(); renderAll(); }
+  toast('Full Access Granted', CHILD_NAMES[S.config.childId] + "'s phone restrictions cleared.", 'success');
+}
+
+function resetDemo() {
+  S = defaultState();
+  localStorage.removeItem(STORAGE_KEY);
+  saveState();
+  resetMotionUI();
+  renderControls();
+  renderAll();
+  toast('Demo Reset', 'All state has been reset to defaults.', 'info');
+}
+
+// ============================================================
+//  ESCALATION TICK
+// ============================================================
+let escFiredSteps = {};
+
+function updateEscalation() {
+  if (!S.runtime.alarmActive) return;
+  const cfg = getChildConfig();
+  const profile = ESC_PROFILES[cfg.escProfile || 'standard'];
+  const elapsed = elapsedMin();
+
+  profile.forEach((threshold, idx) => {
+    const key = S.runtime.alarmStartTs + '-' + idx;
+    if (elapsed >= threshold && !escFiredSteps[key]) {
+      escFiredSteps[key] = true;
+      S.runtime.escStepIndex = idx;
+
+      const label = ESC_LABELS[idx];
+      toast('Escalation Step ' + (idx + 1), label, idx >= 2 ? 'danger' : 'warn');
+
+      if (idx === 2) {
+        S.runtime.lockState = 'on';
+        S.logs.messages.unshift({ sender: 'System', text: 'Morning Lock activated — verify now!', ts: Date.now() });
+      }
+
+      if (idx === 1) {
+        S.logs.messages.unshift({ sender: 'System', text: 'No confirmation yet — parent notified.', ts: Date.now() });
+        S.runtime.lastPing = 'No confirmation yet (auto-escalation)';
+        S.runtime.lastPingTs = Date.now();
+      }
+
+      saveState();
+      renderAll();
+    }
+  });
+}
+
+// ============================================================
+//  VERIFICATION METHODS
+// ============================================================
+function renderVerify() {
+  const cfg = getChildConfig();
+  const method = cfg.verifyMethod || 'qr';
+  const methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz' };
+
+  const noAlarm = document.getElementById('verify-no-alarm');
+  const main = document.getElementById('verify-main');
+  const done = document.getElementById('verify-already-done');
+
+  if (!S.runtime.alarmActive && !S.runtime.verified) {
+    noAlarm.style.display = 'block';
+    main.style.display = 'none';
+    done.style.display = 'none';
+    return;
+  }
+  if (S.runtime.verified) {
+    noAlarm.style.display = 'none';
+    main.style.display = 'none';
+    done.style.display = 'block';
+    return;
+  }
+
+  noAlarm.style.display = 'none';
+  done.style.display = 'none';
+  main.style.display = 'block';
+
+  const vMethodLabel = document.getElementById('v-method-label');
+  if (vMethodLabel) vMethodLabel.textContent = methodLabels[method] || method;
+
+  const sections = ['qr','photo','motion','quiz'];
+  sections.forEach(s => {
+    const el = document.getElementById('verify-' + s);
+    if (el) el.classList.toggle('active', s === method);
+  });
+
+  if (method === 'qr' && S.runtime.qrCode) {
+    const display = document.getElementById('qr-code-display');
+    if (display) display.textContent = S.runtime.qrCode;
+  }
+}
+
+function submitQR() {
+  const input = document.getElementById('qr-input');
+  const err = document.getElementById('qr-error');
+  const val = (input.value || '').trim().toUpperCase();
+  if (val === S.runtime.qrCode) {
+    err.classList.remove('show');
+    input.value = '';
+    verifySuccess();
+  } else {
+    err.classList.add('show');
+    tamperAttempt('Entered wrong QR code: "' + val + '"');
+  }
+}
+
+function submitPhoto() {
+  const sel = document.getElementById('photo-select');
+  const err = document.getElementById('photo-error');
+  if (!sel.value) {
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  verifySuccess();
+}
+
+let motionInterval = null;
+let motionComplete = false;
+
+function resetMotionUI() {
+  motionComplete = false;
+  if (motionInterval) { clearInterval(motionInterval); motionInterval = null; }
+  const timerEl = document.getElementById('motion-timer');
+  const progEl = document.getElementById('motion-progress');
+  const startBtn = document.getElementById('motion-start-btn');
+  const completeBtn = document.getElementById('motion-complete-btn');
+  if (timerEl) timerEl.textContent = '10';
+  if (progEl) progEl.style.width = '0%';
+  if (startBtn) { startBtn.disabled = false; startBtn.style.opacity = '1'; startBtn.textContent = 'Start Moving'; }
+  if (completeBtn) { completeBtn.disabled = true; completeBtn.style.opacity = '.4'; }
+}
+
+function startMotionTimer() {
+  if (motionInterval) return;
+  const startBtn = document.getElementById('motion-start-btn');
+  if (startBtn) { startBtn.disabled = true; startBtn.style.opacity = '.5'; startBtn.textContent = 'Moving...'; }
+
+  let remaining = 10;
+  const timerEl = document.getElementById('motion-timer');
+  const progEl = document.getElementById('motion-progress');
+
+  motionInterval = setInterval(() => {
+    remaining--;
+    if (timerEl) timerEl.textContent = remaining;
+    if (progEl) progEl.style.width = ((10 - remaining) / 10 * 100) + '%';
+    if (remaining <= 0) {
+      clearInterval(motionInterval);
+      motionInterval = null;
+      motionComplete = true;
+      if (timerEl) { timerEl.textContent = '✓'; timerEl.style.color = 'var(--green)'; }
+      const completeBtn = document.getElementById('motion-complete-btn');
+      if (completeBtn) { completeBtn.disabled = false; completeBtn.style.opacity = '1'; }
+    }
+  }, 1000);
+}
+
+function submitMotion() {
+  if (!motionComplete) {
+    toast('Not Complete', 'Wait for the timer to finish first.', 'warn');
+    return;
+  }
+  resetMotionUI();
+  verifySuccess();
+}
+
+function submitQuiz() {
+  const q1 = (document.getElementById('quiz-q1').value || '').trim().toLowerCase();
+  const q2 = (document.getElementById('quiz-q2').value || '').trim().toLowerCase();
+  const err = document.getElementById('quiz-error');
+  const ok1 = q1 === 'tuesday';
+  const ok2 = q2 === 'awake now';
+  if (ok1 && ok2) {
+    err.classList.remove('show');
+    document.getElementById('quiz-q1').value = '';
+    document.getElementById('quiz-q2').value = '';
+    verifySuccess();
+  } else {
+    err.classList.add('show');
+    tamperAttempt('Failed quiz: q1="' + q1 + '" q2="' + q2 + '"');
+  }
+}
+
+// ============================================================
+//  MESSAGING
+// ============================================================
+function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = (input.value || '').trim();
+  if (!text) return;
+  S.logs.messages.unshift({ sender: CHILD_NAMES[S.config.childId], text: text, ts: Date.now() });
+  S.runtime.lastPing = text;
+  S.runtime.lastPingTs = Date.now();
+  input.value = '';
+  saveState();
+  renderAll();
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderAll() {
+  renderParentDash();
+  renderChildAlarm();
+  renderVerify();
+  renderHistory();
+  renderMessages();
+  renderTamper();
+  renderPhoneHome();
+  updateSimBadge();
+}
+
+function updateSimBadge() {
+  const badge = document.getElementById('sim-badge');
+  if (S.runtime.alarmActive) {
+    badge.textContent = 'ALARM ACTIVE';
+    badge.className = 'sim-badge alarm';
+    badge.id = 'sim-badge';
+    badge.setAttribute('id','sim-badge');
+    badge.style.background = '#3a1a1a';
+    badge.style.color = 'var(--red)';
+    badge.style.borderColor = '#5a2d2d';
+  } else {
+    badge.textContent = 'SIM READY';
+    badge.style.background = '#1a3a1a';
+    badge.style.color = 'var(--green)';
+    badge.style.borderColor = '#2d5a2d';
+  }
+}
+
+function lockStateBadge(state) {
+  const map = {
+    'off':     '<span class="badge badge-gray">Off</span>',
+    'on':      '<span class="badge badge-red">Locked</span>',
+    'forced':  '<span class="badge badge-red">Force Locked</span>',
+    'granted': '<span class="badge badge-green">Access Granted</span>'
+  };
+  return map[state] || '<span class="badge badge-gray">' + state + '</span>';
+}
+
+function renderParentDash() {
+  const cfg = getChildConfig();
+  const rt = S.runtime;
+  const child = S.config.childId;
+  const st = S.stats[child] || { streak: 0, onTime14: [] };
+
+  const presetLabels = { school: 'School Morning', weekend: 'Weekend', strict: 'Strict Mode' };
+  const methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz' };
+  const snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
+  const turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
+  const profileLabels = { standard: 'Standard (1/3/5/8 min)', gentle: 'Gentle (2/5/8/12 min)', aggressive: 'Aggressive (1/2/3/5 min)' };
+
+  setText('d-preset', presetLabels[cfg.preset] || cfg.preset || '—');
+  setText('d-verify-method', methodLabels[cfg.verifyMethod] || '—');
+  setText('d-alarm-time', alarmTimeLabel());
+  setText('d-volume', (cfg.volumeFloor || '—') + '%');
+  setText('d-snooze', snoozeLabels[cfg.snooze] || '—');
+  setText('d-turnoff', turnoffLabels[cfg.turnOff] || '—');
+  setText('d-esc-profile', profileLabels[cfg.escProfile] || '—');
+
+  const alarmStateEl = document.getElementById('d-alarm-state');
+  if (alarmStateEl) {
+    if (rt.alarmActive) alarmStateEl.innerHTML = '<span class="badge badge-red">RINGING</span>';
+    else alarmStateEl.innerHTML = '<span class="badge badge-gray">Idle</span>';
+  }
+
+  const verifiedEl = document.getElementById('d-verified');
+  if (verifiedEl) verifiedEl.innerHTML = rt.verified ? '<span class="badge badge-green">Verified</span>' : '<span class="badge badge-gray">Pending</span>';
+
+  const escStepEl = document.getElementById('d-esc-step');
+  if (escStepEl) {
+    if (rt.escStepIndex < 0) escStepEl.innerHTML = '<span class="badge badge-gray">None</span>';
+    else escStepEl.innerHTML = '<span class="badge badge-yellow">Step ' + (rt.escStepIndex + 1) + '</span>';
+  }
+
+  const lockEl = document.getElementById('d-lock-state');
+  if (lockEl) lockEl.innerHTML = lockStateBadge(rt.lockState || 'off');
+
+  const pingEl = document.getElementById('d-last-ping');
+  if (pingEl) {
+    if (rt.lastPing) pingEl.textContent = '"' + rt.lastPing + '" (' + fmtTime(rt.lastPingTs) + ')';
+    else pingEl.textContent = '—';
+  }
+
+  setText('stat-streak', st.streak || 0);
+  const ontime = st.onTime14 && st.onTime14.length ? Math.round(st.onTime14.filter(x=>x).length / st.onTime14.length * 100) : 0;
+  setText('stat-ontime', ontime + '%');
+  setText('stat-tamper', S.logs.tamper.filter(t => t.childId === child).length);
+}
+
+function renderChildAlarm() {
+  const rt = S.runtime;
+  const cfg = getChildConfig();
+  const snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
+  const turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
+
+  document.getElementById('alarm-idle').style.display = rt.alarmActive ? 'none' : 'block';
+  document.getElementById('alarm-active').style.display = rt.alarmActive ? 'block' : 'none';
+
+  // Idle
+  setText('c-alarm-time', alarmTimeLabel());
+  setText('c-volume', (cfg.volumeFloor || '70') + '%');
+  setText('c-snooze', snoozeLabels[cfg.snooze] || '—');
+  setText('c-turnoff', turnoffLabels[cfg.turnOff] || '—');
+
+  if (!rt.alarmActive) return;
+
+  // Active alarm
+  setText('alarm-active-time', alarmTimeLabel());
+  const elapsed = elapsedMs();
+  setText('alarm-elapsed', 'Active for ' + fmtElapsed(elapsed));
+  setText('ca-volume', (cfg.volumeFloor || '70') + '%');
+  setText('ca-snooze', snoozeLabels[cfg.snooze] || '—');
+  setText('ca-snoozes-used', rt.snoozesUsed || 0);
+  setText('ca-turnoff', cfg.turnOff === 'blocked' ? 'Blocked' : 'Allowed');
+
+  const stepIdx = rt.escStepIndex;
+  setText('esc-step-label', stepIdx < 0 ? 'Escalation: Watching...' : 'Escalation: Step ' + (stepIdx + 1) + ' — ' + (ESC_LABELS[stepIdx] || ''));
+
+  const profile = ESC_PROFILES[cfg.escProfile || 'standard'];
+  const elapsedMins = elapsedMin();
+  const nextIdx = profile.findIndex(t => t > elapsedMins);
+  const progEl = document.getElementById('esc-progress-bar');
+  const progLabel = document.getElementById('esc-progress-label');
+  if (nextIdx === -1) {
+    if (progEl) progEl.style.width = '100%';
+    if (progLabel) progLabel.textContent = 'Max escalation';
+    if (progEl) progEl.style.background = 'var(--red)';
+  } else {
+    const prevThresh = nextIdx === 0 ? 0 : profile[nextIdx - 1];
+    const nextThresh = profile[nextIdx];
+    const pct = Math.min(100, (elapsedMins - prevThresh) / (nextThresh - prevThresh) * 100);
+    if (progEl) { progEl.style.width = pct + '%'; progEl.style.background = pct > 70 ? 'var(--orange)' : 'var(--green)'; }
+    const secsToNext = Math.max(0, (nextThresh - elapsedMins) * 60);
+    if (progLabel) progLabel.textContent = Math.ceil(secsToNext) + 's to step ' + (nextIdx + 1);
+  }
+}
+
+function renderHistory() {
+  const child = S.config.childId;
+  const history = S.logs.history.filter(h => h.childId === child);
+  const el = document.getElementById('history-list');
+  if (!el) return;
+  if (!history.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">No history for ' + CHILD_NAMES[child] + ' yet.</div>';
+    return;
+  }
+  const resultLabel = r => r === 'verified' ? '<span class="badge badge-green">Verified</span>' : r === 'parentGranted' ? '<span class="badge badge-blue">Parent Override</span>' : '<span class="badge badge-gray">' + r + '</span>';
+  const methodLabels = { qr: 'QR', photo: 'Photo', motion: 'Motion', quiz: 'Quiz' };
+  el.innerHTML = history.slice(0,15).map(h =>
+    '<div class="history-row">' +
+    resultLabel(h.result) +
+    (h.onTime ? '<span class="badge badge-green">On Time</span>' : '<span class="badge badge-red">Late</span>') +
+    '<span style="color:var(--muted);">' + (h.minsToVerify || 0) + ' min to verify</span>' +
+    '<span class="badge badge-blue">' + (methodLabels[h.method] || h.method) + '</span>' +
+    '<span style="color:var(--muted);font-size:11px;margin-left:auto;">' + fmtDate(h.ts) + '</span>' +
+    (h.note ? '<span style="color:var(--muted);width:100%;font-size:11px;">' + h.note + '</span>' : '') +
+    '</div>'
+  ).join('');
+}
+
+function renderTamper() {
+  const child = S.config.childId;
+  const tamper = S.logs.tamper.filter(t => t.childId === child);
+  const el = document.getElementById('tamper-list');
+  if (!el) return;
+  if (!tamper.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:4px 0;">No tamper events recorded.</div>';
+    return;
+  }
+  el.innerHTML = tamper.slice(0,20).map(t =>
+    '<div class="tamper-row"><strong>' + fmtDate(t.ts) + '</strong> — ' + t.reason + '</div>'
+  ).join('');
+}
+
+function renderMessages() {
+  const el = document.getElementById('msg-list');
+  if (!el) return;
+  const msgs = S.logs.messages;
+  if (!msgs.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:4px 0;">No messages yet.</div>';
+    return;
+  }
+  el.innerHTML = msgs.slice(0,30).map(m =>
+    '<div class="msg-row"><span class="msg-sender">' + escHtml(m.sender) + '</span> · <span style="color:var(--muted);font-size:11px;">' + fmtTime(m.ts) + '</span><br>' + escHtml(m.text) + '</div>'
+  ).join('');
+}
+
+function renderPhoneHome() {
+  const rt = S.runtime;
+  const cfg = getChildConfig();
+
+  const lockEl = document.getElementById('ph-lock-state');
+  if (lockEl) lockEl.innerHTML = lockStateBadge(rt.lockState || 'off');
+
+  setText('ph-allowed-apps', cfg.allowedApps || '—');
+
+  const warn = document.getElementById('ph-lock-warning');
+  if (warn) warn.style.display = (rt.lockState === 'on' || rt.lockState === 'forced') ? 'block' : 'none';
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ============================================================
+//  TOAST
+// ============================================================
+const toastTypes = { info: 'ℹ️', warn: '⚠️', danger: '🚨', success: '✅' };
+
+function toast(title, msg, type) {
+  type = type || 'info';
+  const container = document.getElementById('toast-container');
+  const div = document.createElement('div');
+  div.className = 'toast t-' + type;
+  div.innerHTML =
+    '<div class="toast-icon">' + (toastTypes[type] || 'ℹ️') + '</div>' +
+    '<div class="toast-body"><div class="toast-title">' + escHtml(title) + '</div>' +
+    '<div class="toast-msg">' + escHtml(msg) + '</div></div>';
+  container.appendChild(div);
+
+  setTimeout(() => {
+    div.classList.add('removing');
+    setTimeout(() => { if (div.parentNode) div.parentNode.removeChild(div); }, 300);
+  }, 6000);
+}
+
+// ============================================================
+//  TICK
+// ============================================================
+function tick() {
+  updateEscalation();
+  if (S.runtime.alarmActive) {
+    renderChildAlarm();
+    updateSimBadge();
+    const st = document.getElementById('d-alarm-state');
+    if (st) st.innerHTML = '<span class="badge badge-red">RINGING</span>';
+    const el = document.getElementById('alarm-elapsed');
+    if (el) el.textContent = 'Active for ' + fmtElapsed(elapsedMs());
+  }
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function init() {
+  // Sync child selectors
+  document.getElementById('dash-child-select').value = S.config.childId;
+  document.getElementById('ctrl-child-select').value = S.config.childId;
+  document.getElementById('child-panel-title').textContent = CHILD_NAMES[S.config.childId] + "'s Phone";
+  renderControls();
+  renderAll();
+  setInterval(tick, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
