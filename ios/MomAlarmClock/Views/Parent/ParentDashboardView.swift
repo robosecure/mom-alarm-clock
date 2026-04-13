@@ -11,6 +11,13 @@ struct ParentDashboardView: View {
         @Bindable var vm = vm
 
         NavigationStack {
+            if vm.isLoading && vm.children.isEmpty {
+                VStack {
+                    Spacer()
+                    ProgressView("Loading...")
+                    Spacer()
+                }
+            }
             ScrollView {
                 VStack(spacing: 20) {
                     if !BetaDiagnostics.shared.pushPermissionGranted {
