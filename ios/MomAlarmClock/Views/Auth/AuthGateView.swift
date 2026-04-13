@@ -30,10 +30,13 @@ struct AuthGateView: View {
 
     private var loadingView: some View {
         VStack(spacing: 16) {
+            Image(systemName: "alarm.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+            Text("Mom Alarm Clock")
+                .font(.title2.bold())
             ProgressView()
-                .controlSize(.large)
-            Text("Loading...")
-                .foregroundStyle(.secondary)
+                .controlSize(.regular)
         }
     }
 }
