@@ -140,7 +140,22 @@ Alarms fire even without internet. All actions queue locally and sync when conne
 - Offline actions replay idempotently (no duplicates)
 - UI converges cleanly with conflict banners
 
-### 9. Diagnostics & Support
+### 9. Skip Tomorrow (One-Swipe Sick Day)
+Swipe left on any alarm to skip it for tomorrow. No need to disable and remember to re-enable. Perfect for sick days, holidays, and snow days. Auto-expires after one day.
+
+### 10. Family Settings & Account Management
+Full family management screen: view family ID, paired children with status, re-generate join codes, sign out, and delete account (Apple App Store requirement). Copy join code with one tap.
+
+### 11. Actionable Push Notifications
+When a child completes verification, the guardian gets a push with "Approve" and "Deny" action buttons directly on the lock screen — no need to open the app. 80% higher engagement than passive notifications.
+
+### 12. Guided Onboarding
+New guardians see a warm welcome screen with clear "Add Child" CTA instead of a blank dashboard. Empty states guide users through every first-time experience. Join codes have a "Copy" button with expiry notice.
+
+### 13. Accessibility
+All child-facing screens have VoiceOver labels, 48pt+ touch targets, and header traits. Designed for bleary-eyed kids and children with sensory needs.
+
+### 14. Diagnostics & Support
 Built-in tools for troubleshooting:
 - **Beta Proof Script** — one-tap validation of all system components
 - **Push health panel** — token status, delivery timestamps
