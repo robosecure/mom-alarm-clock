@@ -95,3 +95,10 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (wrap existing code, no logic change)
 - **Risk:** Low — only adds error handling, no behavior change
 - **Files affected:** functions/index.js
+
+## [P-014] Add TipKit contextual tips for discoverability
+- **What:** Use iOS 17 TipKit to show contextual tips: 'Swipe left to skip tomorrow', 'Tap to edit alarm', 'Approve from lock screen notification'
+- **Why:** TipKit is Apple's built-in framework for progressive feature discovery. Eliminates need for custom tutorials. Tips auto-dismiss after the user discovers the feature.
+- **Effort:** Small-Medium (define 5-6 tips, attach to relevant views)
+- **Risk:** Low — standard Apple framework, non-intrusive, auto-manages tip lifecycle
+- **Files affected:** New: Tips/AlarmTips.swift, modified: ParentDashboardView, ChildAlarmView, VerificationReviewView
