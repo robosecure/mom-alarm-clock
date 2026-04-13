@@ -11,7 +11,7 @@ struct ChildProfile: Codable, Identifiable, Sendable, Equatable {
     /// Age — used to adjust quiz difficulty and reward thresholds.
     var age: Int
 
-    /// URL to the child's avatar image (stored in CloudKit assets).
+    /// URL to the child's avatar image.
     var avatarURL: URL?
 
     /// Pairing code used during initial device linking. Expires after first use.
@@ -19,9 +19,6 @@ struct ChildProfile: Codable, Identifiable, Sendable, Equatable {
 
     /// Whether this child's device has been successfully paired.
     var isPaired: Bool = false
-
-    /// The CKRecord.ID name for the child's CloudKit record.
-    var cloudKitRecordName: String?
 
     /// Current alarm schedules for this child.
     var alarmScheduleIDs: [UUID] = []

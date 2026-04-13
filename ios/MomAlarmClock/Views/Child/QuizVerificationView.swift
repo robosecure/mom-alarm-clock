@@ -168,7 +168,7 @@ struct QuizVerificationView: View {
                 let result = VerificationResult(
                     method: .quiz,
                     completedAt: Date(),
-                    tier: vm.effectiveVerificationTier,
+                    tier: vm.effectiveConfig?.tier ?? vm.effectiveVerificationTier,
                     passed: true,
                     quizCorrect: vm.quizCorrectCount,
                     quizTotal: vm.quizQuestions.count,
