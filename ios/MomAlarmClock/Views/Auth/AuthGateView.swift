@@ -70,7 +70,7 @@ struct AuthLandingView: View {
                             .foregroundStyle(.blue)
                             .frame(width: 48)
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("I'm the Parent / Guardian")
+                            Text("I'm the Guardian")
                                 .font(.headline)
                                 .foregroundStyle(.primary)
                             Text("Create account, set alarms, monitor wake-ups")
