@@ -36,3 +36,18 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (add bedtimeReminder time to AlarmSchedule, schedule one more notification)
 - **Risk:** Low — just another local notification
 - **Files affected:** AlarmSchedule.swift, AlarmService.swift, AlarmControlsView.swift
+
+## [P-006] Morning checklist after verification (reduces nagging)
+- **What:** After alarm is verified/approved, show a simple checklist: "Brush teeth, Get dressed, Pack backpack, Eat breakfast." Guardian configures the list.
+- **Why:** Research shows the #1 parent pain point is nagging kids through morning tasks AFTER they wake up. This extends the app's value from "wake up" to "get ready." Parents of ADHD kids especially need this.
+- **Effort:** Medium (new model for checklist items, new view, per-child configuration)
+- **Risk:** Medium — adds a new data model and screen. But it's the natural next step after wake-up.
+- **Files affected:** New: MorningChecklist model, ChecklistView, AlarmSchedule gets checklist items
+- **Mockup:** After "Approved!" screen, transition to a simple vertical checklist with checkboxes. Guardian sees completion status. No enforcement — just visibility.
+
+## [P-007] Share family code via iOS share sheet (Messages, AirDrop)
+- **What:** Add a share button next to the copy button on the join code screen. Opens the iOS share sheet so guardian can text/AirDrop the code directly.
+- **Why:** Copy-paste requires switching apps. Share sheet is one tap to send via Messages.
+- **Effort:** Small (UIActivityViewController / ShareLink in SwiftUI)
+- **Risk:** Low — standard iOS API
+- **Files affected:** ParentAuthView.swift, FamilySettingsView.swift
