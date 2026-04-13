@@ -45,9 +45,17 @@ struct ParentAuthView: View {
                         Text("Family Code")
                             .font(.headline)
                         Text(familyCode)
-                            .font(.system(size: 36, weight: .bold, design: .monospaced))
-                            .tracking(6)
-                        Text("Give this code to your child to pair their device.")
+                            .font(.system(size: 32, weight: .bold, design: .monospaced))
+                            .tracking(4)
+                        Button {
+                            UIPasteboard.general.string = familyCode
+                        } label: {
+                            Label("Copy Code", systemImage: "doc.on.doc")
+                                .font(.subheadline)
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.top, 4)
+                        Text("Share this code with your child to pair their device. It expires in 24 hours.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
