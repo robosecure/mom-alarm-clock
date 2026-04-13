@@ -86,7 +86,7 @@ struct ChildAlarmView: View {
     private func bannerView(_ text: String, color: Color) -> some View {
         Text(text)
             .font(.caption.bold())
-            .foregroundStyle(.black)
+            .foregroundStyle(.primary)
             .padding(8)
             .frame(maxWidth: .infinity)
             .background(color.opacity(0.9), in: RoundedRectangle(cornerRadius: 8))
