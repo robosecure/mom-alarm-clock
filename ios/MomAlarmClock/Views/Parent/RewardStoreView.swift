@@ -78,10 +78,12 @@ struct RewardStoreView: View {
                 }
 
                 Section("How Points Work") {
-                    Label("On-time wake-up: +10 points", systemImage: "plus.circle")
-                    Label("3-day streak bonus: +25 points", systemImage: "plus.circle")
-                    Label("7-day streak bonus: +75 points", systemImage: "plus.circle")
-                    Label("No snooze bonus: +5 points", systemImage: "plus.circle")
+                    Label("On-time, first try: +15", systemImage: "star.fill")
+                    Label("On-time, after retries: +10", systemImage: "star")
+                    Label("No snooze bonus: +5", systemImage: "zzz")
+                    Label("3-day streak: +25 bonus", systemImage: "flame.fill")
+                    Label("7-day streak: +75 bonus", systemImage: "flame.fill")
+                    Label("14-day streak: +150 bonus", systemImage: "trophy.fill")
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
