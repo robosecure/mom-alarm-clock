@@ -162,6 +162,24 @@ extension AlarmService {
             intentIdentifiers: [],
             options: [.customDismissAction]
         )
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        // Guardian: pending review notification with approve/deny actions
+        let approveAction = UNNotificationAction(
+            identifier: "APPROVE",
+            title: "Approve",
+            options: [.authenticationRequired]
+        )
+        let denyAction = UNNotificationAction(
+            identifier: "DENY",
+            title: "Deny — Re-verify",
+            options: [.authenticationRequired, .destructive]
+        )
+        let reviewCategory = UNNotificationCategory(
+            identifier: "PENDING_REVIEW",
+            actions: [approveAction, denyAction],
+            intentIdentifiers: [],
+            options: []
+        )
+
+        UNUserNotificationCenter.current().setNotificationCategories([category, reviewCategory])
     }
 }

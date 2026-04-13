@@ -120,6 +120,18 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             BetaDiagnostics.log(.pushReceived(type: pushType))
         }
 
+        // Handle guardian approve/deny from notification action buttons
+        let actionID = response.actionIdentifier
+        if actionID == "APPROVE" || actionID == "DENY" {
+            if let sessionID = userInfo["sessionID"] as? String {
+                NotificationCenter.default.post(
+                    name: .guardianNotificationAction,
+                    object: nil,
+                    userInfo: ["sessionID": sessionID, "action": actionID]
+                )
+            }
+        }
+
         if let alarmID = userInfo["alarmID"] as? String {
             NotificationCenter.default.post(
                 name: .alarmNotificationTapped,
@@ -159,4 +171,5 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 
 extension Notification.Name {
     static let alarmNotificationTapped = Notification.Name("alarmNotificationTapped")
+    static let guardianNotificationAction = Notification.Name("guardianNotificationAction")
 }

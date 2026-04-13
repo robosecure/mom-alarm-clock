@@ -173,7 +173,13 @@ exports.notifyParentOnPendingReview = onDocumentUpdated(
         sessionID: event.params.sessionID,
       },
       apns: {
-        payload: { aps: { sound: "default", badge: 1 } },
+        payload: {
+          aps: {
+            sound: "default",
+            badge: 1,
+            "category": "PENDING_REVIEW",
+          },
+        },
       },
     };
 
