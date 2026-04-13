@@ -36,6 +36,17 @@ struct EscalationProfile: Codable, Sendable, Equatable {
             case .parentCallTriggered: "Call Parent"
             }
         }
+
+        var systemImage: String {
+            switch self {
+            case .gentleReminder:      "bell"
+            case .increasedVolume:     "speaker.wave.3"
+            case .parentNotified:      "bell.badge"
+            case .appLockPartial:      "lock.app.dashed"
+            case .appLockFull:         "lock.shield"
+            case .parentCallTriggered: "phone.arrow.up.right"
+            }
+        }
     }
 
     /// Default escalation profile: gentle -> loud -> notify parent -> lock apps -> full lock.

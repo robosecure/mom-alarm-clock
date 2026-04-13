@@ -116,6 +116,8 @@ actor VerificationService {
         let text: String
         let answer: Int
 
+        var correctAnswer: Int { answer }
+
         func isCorrect(_ userAnswer: Int) -> Bool {
             userAnswer == answer
         }

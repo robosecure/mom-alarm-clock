@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 /// Interactive onboarding checklist that guides the parent through
 /// creating a child profile, configuring the first alarm, and pairing a device.
@@ -22,7 +23,9 @@ struct SetupWizardView: View {
                 createChildStep.tag(SetupWizardViewModel.ParentStep.createChild)
                 configureAlarmStep.tag(SetupWizardViewModel.ParentStep.configureAlarm)
                 verificationStep.tag(SetupWizardViewModel.ParentStep.chooseVerification)
+                escalationStep.tag(SetupWizardViewModel.ParentStep.setEscalation)
                 pairDeviceStep.tag(SetupWizardViewModel.ParentStep.pairDevice)
+                testAlarmStep.tag(SetupWizardViewModel.ParentStep.testAlarm)
                 completeStep.tag(SetupWizardViewModel.ParentStep.complete)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -141,6 +144,45 @@ struct SetupWizardView: View {
         .padding()
     }
 
+    private var escalationStep: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Text("Escalation Rules")
+                .font(.title2.bold())
+
+            Text("If your child doesn't get up, the app will gradually increase consequences:")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(EscalationProfile.default.levels) { level in
+                    HStack(spacing: 12) {
+                        Text("+\(level.minutesAfterAlarm) min")
+                            .font(.caption.monospacedDigit())
+                            .frame(width: 60, alignment: .leading)
+                            .foregroundStyle(.orange)
+                        Image(systemName: level.action.systemImage)
+                            .frame(width: 24)
+                            .foregroundStyle(.red)
+                        Text(level.action.displayName)
+                            .font(.subheadline)
+                    }
+                }
+            }
+            .padding()
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+
+            Text("You can customize these later in alarm settings.")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+
+            Spacer()
+            nextButton { vm.completeParentStep(.setEscalation) }
+        }
+        .padding()
+    }
+
     private var pairDeviceStep: some View {
         VStack(spacing: 24) {
             Spacer()
@@ -160,6 +202,45 @@ struct SetupWizardView: View {
 
             Spacer()
             nextButton(label: "Done Pairing") { vm.completeParentStep(.pairDevice) }
+        }
+        .padding()
+    }
+
+    private var testAlarmStep: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
+            Image(systemName: "bell.and.waves.left.and.right")
+                .font(.system(size: 64))
+                .foregroundStyle(.blue)
+                .symbolEffect(.bounce, options: .repeating)
+
+            Text("Test the Alarm")
+                .font(.title2.bold())
+
+            Text("Send a test notification to your child's device to make sure everything is working.")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Button {
+                // Fire a local test notification
+                let content = UNMutableNotificationContent()
+                content.title = "Test Alarm"
+                content.body = "This is a test! Your alarm is configured and ready."
+                content.sound = .defaultCritical
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+                let request = UNNotificationRequest(identifier: "test-alarm", content: content, trigger: trigger)
+                UNUserNotificationCenter.current().add(request)
+            } label: {
+                Label("Send Test Notification", systemImage: "bell.badge")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+
+            Spacer()
+            nextButton(label: "Continue") { vm.completeParentStep(.testAlarm) }
         }
         .padding()
     }

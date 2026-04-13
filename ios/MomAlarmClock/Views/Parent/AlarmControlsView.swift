@@ -16,6 +16,8 @@ struct AlarmControlsView: View {
     @State private var maxSnoozes = 2
     @State private var snoozeDuration = 5
     @State private var useDefaultEscalation = true
+    @State private var verificationTier: VerificationTier = .medium
+    @State private var confirmationPolicy: ConfirmationPolicy = .default
 
     private let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -63,6 +65,42 @@ struct AlarmControlsView: View {
                             .tag(method as VerificationMethod?)
                     }
                 }
+            }
+
+            Section("Verification Difficulty") {
+                Picker("Tier", selection: $verificationTier) {
+                    ForEach(VerificationTier.allCases) { tier in
+                        Text(tier.displayName).tag(tier)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(verificationTier.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Confirmation Policy") {
+                Button {
+                    confirmationPolicy = .autoAcknowledge
+                } label: {
+                    policyRow(.autoAcknowledge)
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    confirmationPolicy = .requireParentApproval
+                } label: {
+                    policyRow(.requireParentApproval)
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    confirmationPolicy = .hybrid(windowMinutes: 30)
+                } label: {
+                    policyRow(.hybrid(windowMinutes: 30))
+                }
+                .buttonStyle(.plain)
             }
 
             Section("Snooze Rules") {
@@ -123,7 +161,9 @@ struct AlarmControlsView: View {
             activeDays: selectedDays,
             primaryVerification: primaryVerification,
             fallbackVerification: fallbackVerification,
-            escalation: useDefaultEscalation ? .default : .default,
+            escalation: .default, // Custom escalation editing deferred to future wave
+            verificationTier: verificationTier,
+            confirmationPolicy: confirmationPolicy,
             snoozeRules: AlarmSchedule.SnoozeRules(
                 allowed: snoozeAllowed,
                 maxCount: maxSnoozes,
@@ -135,5 +175,33 @@ struct AlarmControlsView: View {
 
         await vm.saveAlarmSchedule(schedule)
         dismiss()
+    }
+
+    private func policyRow(_ policy: ConfirmationPolicy) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(policy.displayName)
+                    .font(.subheadline)
+                    .foregroundStyle(.primary)
+                Text(policy.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if policyMatches(confirmationPolicy, policy) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func policyMatches(_ a: ConfirmationPolicy, _ b: ConfirmationPolicy) -> Bool {
+        switch (a, b) {
+        case (.autoAcknowledge, .autoAcknowledge): true
+        case (.requireParentApproval, .requireParentApproval): true
+        case (.hybrid, .hybrid): true
+        default: false
+        }
     }
 }

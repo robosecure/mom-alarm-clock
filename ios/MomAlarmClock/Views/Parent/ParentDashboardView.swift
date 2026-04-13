@@ -4,6 +4,8 @@ import SwiftUI
 /// streaks/stats, and quick actions.
 struct ParentDashboardView: View {
     @Environment(ParentViewModel.self) private var vm
+    @State private var showMessageSheet = false
+    @State private var messageText = ""
 
     var body: some View {
         @Bindable var vm = vm
@@ -11,6 +13,18 @@ struct ParentDashboardView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
+                    if !BetaDiagnostics.shared.pushPermissionGranted {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bell.slash.fill")
+                                .foregroundStyle(.white)
+                            Text("Push notifications disabled. You'll only see pending reviews when the app is open.")
+                                .font(.caption)
+                                .foregroundStyle(.white)
+                        }
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.orange, in: RoundedRectangle(cornerRadius: 10))
+                    }
                     childSelector
                     liveStatusCard
                     alarmSummarySection
@@ -29,10 +43,19 @@ struct ParentDashboardView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink {
-                        HistoryView()
-                    } label: {
-                        Image(systemName: "clock.arrow.circlepath")
+                    HStack(spacing: 12) {
+                        NavigationLink {
+                            HistoryView()
+                        } label: {
+                            Image(systemName: "clock.arrow.circlepath")
+                        }
+                        #if DEBUG
+                        NavigationLink {
+                            DiagnosticsView()
+                        } label: {
+                            Image(systemName: "wrench.and.screwdriver")
+                        }
+                        #endif
                     }
                 }
             }
@@ -41,8 +64,55 @@ struct ParentDashboardView: View {
             }
             .task {
                 await vm.loadAllData()
+                await BetaDiagnostics.shared.refreshPushState()
+            }
+            .task {
+                await vm.observeActiveSessions()
+            }
+            .alert("Error", isPresented: Binding(
+                get: { vm.errorMessage != nil },
+                set: { if !$0 { vm.errorMessage = nil } }
+            )) {
+                Button("OK") { vm.errorMessage = nil }
+            } message: {
+                Text(vm.errorMessage ?? "")
+            }
+            .sheet(isPresented: $showMessageSheet) {
+                messageComposerSheet
             }
         }
+    }
+
+    // MARK: - Message Composer
+
+    private var messageComposerSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Send a message to your child") {
+                    TextField("Type a message...", text: $messageText)
+                }
+                Section {
+                    Button("Send") {
+                        guard let session = vm.selectedChildActiveSessions.first else { return }
+                        Task {
+                            await vm.sendMessage(messageText, toSession: session.id)
+                            messageText = ""
+                            showMessageSheet = false
+                        }
+                    }
+                    .disabled(messageText.isEmpty)
+                    .bold()
+                }
+            }
+            .navigationTitle("Message Child")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showMessageSheet = false }
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 
     // MARK: - Child Selector
@@ -86,9 +156,15 @@ struct ParentDashboardView: View {
     private var liveStatusCard: some View {
         if let session = vm.selectedChildActiveSessions.first {
             VStack(alignment: .leading, spacing: 8) {
-                Label("Active Alarm", systemImage: "bell.and.waves.left.and.right.fill")
-                    .font(.headline)
-                    .foregroundStyle(.red)
+                if session.isAwaitingParent {
+                    Label("Awaiting Your Review", systemImage: "hourglass.circle.fill")
+                        .font(.headline)
+                        .foregroundStyle(.orange)
+                } else {
+                    Label("Active Alarm", systemImage: "bell.and.waves.left.and.right.fill")
+                        .font(.headline)
+                        .foregroundStyle(.red)
+                }
 
                 Text("State: \(session.state.rawValue.capitalized)")
                     .font(.subheadline)
@@ -102,9 +178,34 @@ struct ParentDashboardView: View {
                         .foregroundStyle(.orange)
                 }
 
+                if let result = session.verificationResult {
+                    Label(result.proofSummary, systemImage: result.method.systemImage)
+                        .font(.caption)
+                        .foregroundStyle(.blue)
+                }
+
+                if let childMessage = session.childMessage {
+                    HStack {
+                        Image(systemName: "message.fill")
+                            .foregroundStyle(.blue)
+                        Text(childMessage)
+                    }
+                    .font(.caption)
+                }
+
                 HStack {
+                    if session.isAwaitingParent {
+                        NavigationLink {
+                            VerificationReviewView(session: session)
+                        } label: {
+                            Label("Review", systemImage: "checkmark.shield")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.orange)
+                    }
+
                     Button("Send Message") {
-                        // TODO: Present message composer sheet
+                        showMessageSheet = true
                     }
                     .buttonStyle(.borderedProminent)
 
@@ -116,7 +217,7 @@ struct ParentDashboardView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+            .background(session.isAwaitingParent ? .orange.opacity(0.08) : .red.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
         } else if let child = vm.selectedChild {
             HStack {
                 Image(systemName: HeartbeatService.isDeviceOffline(lastHeartbeat: child.lastHeartbeat)
@@ -190,7 +291,7 @@ struct ParentDashboardView: View {
             Text("This Week")
                 .font(.headline)
 
-            if let stats = vm.selectedChild?.stats {
+            if let stats = vm.selectedChildStats {
                 HStack(spacing: 16) {
                     statBadge(value: "\(stats.currentStreak)", label: "Streak", icon: "flame.fill", color: .orange)
                     statBadge(value: "\(stats.onTimeCount)", label: "On Time", icon: "checkmark.circle", color: .green)
@@ -224,6 +325,18 @@ struct ParentDashboardView: View {
                 .font(.headline)
 
             HStack(spacing: 12) {
+                NavigationLink {
+                    NextMorningSettingsView()
+                } label: {
+                    quickActionButton(title: "Tomorrow", icon: "sunrise.fill", color: .orange)
+                }
+
+                NavigationLink {
+                    VoiceAlarmRecorderView()
+                } label: {
+                    quickActionButton(title: "Voice", icon: "mic.fill", color: .pink)
+                }
+
                 NavigationLink {
                     RewardStoreView()
                 } label: {

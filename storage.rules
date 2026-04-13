@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Voice alarm clips: guardian uploads, child reads for their family
+    match /families/{familyID}/children/{childID}/voiceAlarm/{fileName} {
+      // Anyone authenticated in the family can read (child downloads for playback)
+      allow read: if request.auth != null
+                  && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.familyID == familyID;
+
+      // Only parent/guardian can upload or delete
+      allow write: if request.auth != null
+                   && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'parent'
+                   && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.familyID == familyID
+                   && request.resource.size < 5 * 1024 * 1024  // 5MB max
+                   && request.resource.contentType.matches('audio/.*');
+    }
+
+    // Block everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

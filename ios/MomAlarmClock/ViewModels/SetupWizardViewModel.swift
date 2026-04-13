@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 
 /// Tracks onboarding progress for both parent and child setup flows.
 /// Each step must be completed (or explicitly skipped) before the user can proceed.
@@ -140,5 +141,22 @@ final class SetupWizardViewModel {
 
     var isChildComplete: Bool {
         completedChildSteps.contains(.complete)
+    }
+
+    // MARK: - Child Pairing Actions
+
+    /// Pair the child device with the parent's family using the entered code.
+    func pairChild(auth: AuthService) async throws {
+        guard !pairingCode.isEmpty else { return }
+        try await auth.pairAsChild(familyCode: pairingCode, displayName: childName)
+    }
+
+    /// Request notification permission (critical for alarms).
+    func requestNotificationPermission() async -> Bool {
+        let center = UNUserNotificationCenter.current()
+        let granted = try? await center.requestAuthorization(
+            options: [.alert, .sound, .badge, .criticalAlert]
+        )
+        return granted ?? false
     }
 }

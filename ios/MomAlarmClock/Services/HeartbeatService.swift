@@ -1,6 +1,5 @@
 import Foundation
 import BackgroundTasks
-import Network
 
 /// Periodically pings CloudKit (or a future backend) so the parent device can detect
 /// if the child's device goes offline. If heartbeats stop, the parent receives a
@@ -19,13 +18,12 @@ actor HeartbeatService {
     /// The threshold after which the parent considers the child's device offline.
     static let offlineThreshold: TimeInterval = 30 * 60 // 30 minutes without heartbeat
 
-    private let cloudSync = CloudSyncService.shared
-    private let monitor = NWPathMonitor()
-    private var isNetworkAvailable = true
+    /// Sync service and family ID must be set before sending heartbeats.
+    var syncService: (any SyncService)?
+    var familyID: String?
+    var childID: UUID?
 
-    init() {
-        startNetworkMonitoring()
-    }
+    init() {}
 
     // MARK: - Background Refresh
 
@@ -63,28 +61,24 @@ actor HeartbeatService {
 
     // MARK: - Heartbeat
 
-    /// Sends a heartbeat ping to CloudKit, updating the child profile's lastHeartbeat timestamp.
+    /// Sends a heartbeat ping, updating the child's lastHeartbeat timestamp.
+    /// Uses the sync service directly instead of fetching all profiles.
     func sendHeartbeat() async throws {
-        guard isNetworkAvailable else {
+        guard await NetworkMonitor.shared.isConnected else {
             print("[Heartbeat] Skipping — no network.")
             return
         }
 
-        guard let childIDString = UserDefaults.standard.string(forKey: "childProfileID"),
-              let childID = UUID(uuidString: childIDString) else {
-            print("[Heartbeat] No child profile ID stored.")
+        guard let syncService, let familyID, let childID else {
+            // Try to load from local store
+            if let authState = await LocalStore.shared.authState() {
+                self.familyID = authState.familyID
+            }
+            print("[Heartbeat] Missing sync config.")
             return
         }
 
-        // Fetch the current profile, update heartbeat, and save back
-        let profiles = try await cloudSync.fetchChildProfiles()
-        guard var profile = profiles.first(where: { $0.id == childID }) else {
-            print("[Heartbeat] Child profile not found in CloudKit.")
-            return
-        }
-
-        profile.lastHeartbeat = Date()
-        _ = try await cloudSync.save(childProfile: profile)
+        try await syncService.updateHeartbeat(familyID: familyID, childID: childID)
         print("[Heartbeat] Sent at \(Date().formatted(date: .omitted, time: .standard))")
     }
 
@@ -105,18 +99,5 @@ actor HeartbeatService {
         return lastHeartbeat.formatted(date: .omitted, time: .shortened)
     }
 
-    // MARK: - Network Monitoring
 
-    private func startNetworkMonitoring() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            Task { [weak self] in
-                await self?.updateNetworkStatus(path.status == .satisfied)
-            }
-        }
-        monitor.start(queue: DispatchQueue(label: "com.momclock.heartbeat.network"))
-    }
-
-    private func updateNetworkStatus(_ available: Bool) {
-        isNetworkAvailable = available
-    }
 }

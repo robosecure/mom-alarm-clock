@@ -1,0 +1,131 @@
+import SwiftUI
+
+/// Root view that gates the app behind authentication.
+/// Replaces the old RoleSelectionView. Role is determined by server-validated auth state,
+/// not a local @AppStorage toggle.
+struct AuthGateView: View {
+    @Environment(AuthService.self) private var auth
+    @Environment(ParentViewModel.self) private var parentVM
+    @Environment(ChildViewModel.self) private var childVM
+
+    var body: some View {
+        Group {
+            if auth.isLoading {
+                loadingView
+            } else if !auth.isAuthenticated {
+                AuthLandingView()
+            } else if let user = auth.currentUser {
+                switch user.role {
+                case .parent:
+                    ParentDashboardView()
+                case .child:
+                    ChildAlarmView()
+                }
+            }
+        }
+        .task {
+            await auth.restoreSession()
+        }
+    }
+
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .controlSize(.large)
+            Text("Loading...")
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// Landing page for unauthenticated users. Choose parent or child flow.
+struct AuthLandingView: View {
+    @State private var showParentAuth = false
+    @State private var showChildPairing = false
+
+    var body: some View {
+        VStack(spacing: 40) {
+            Spacer()
+
+            VStack(spacing: 12) {
+                Image(systemName: "alarm.fill")
+                    .font(.system(size: 64))
+                    .foregroundStyle(.blue)
+
+                Text("Mom Alarm Clock")
+                    .font(.largeTitle.bold())
+
+                Text("Who is using this device?")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 16) {
+                Button {
+                    showParentAuth = true
+                } label: {
+                    HStack(spacing: 16) {
+                        Image(systemName: "person.badge.shield.checkmark.fill")
+                            .font(.title)
+                            .foregroundStyle(.blue)
+                            .frame(width: 48)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("I'm the Parent / Guardian")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text("Create account, set alarms, monitor wake-ups")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.leading)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    showChildPairing = true
+                } label: {
+                    HStack(spacing: 16) {
+                        Image(systemName: "person.fill")
+                            .font(.title)
+                            .foregroundStyle(.green)
+                            .frame(width: 48)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("I'm the Child")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text("Enter family code to pair with guardian")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.leading)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 24)
+
+            Spacer()
+        }
+        .sheet(isPresented: $showParentAuth) {
+            NavigationStack {
+                ParentAuthView()
+            }
+        }
+        .sheet(isPresented: $showChildPairing) {
+            NavigationStack {
+                ChildPairingView()
+            }
+        }
+    }
+}

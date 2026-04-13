@@ -1,0 +1,180 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isParentInFamily(familyID) {
+      let user = getUserData();
+      return user.role == 'parent' && user.familyID == familyID;
+    }
+
+    function isChildInFamily(familyID) {
+      let user = getUserData();
+      return user.role == 'child' && user.familyID == familyID;
+    }
+
+    function isMemberOfFamily(familyID) {
+      let user = getUserData();
+      return user.familyID == familyID;
+    }
+
+    function changedFields() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // /users/{userID}
+    match /users/{userID} {
+      allow read: if isAuthenticated() && request.auth.uid == userID;
+      allow create: if isAuthenticated()
+                    && request.auth.uid == userID
+                    && request.resource.data.role in ['parent', 'child'];
+      allow update: if isAuthenticated() && request.auth.uid == userID
+                    && request.resource.data.role == resource.data.role
+                    && request.resource.data.familyID == resource.data.familyID;
+    }
+
+    // /familyCodes/{code}
+    match /familyCodes/{code} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+                    && getUserData().role == 'parent'
+                    && request.resource.data.keys().hasAll(['familyID', 'createdAt', 'createdBy', 'expiresAt'])
+                    && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated()
+                    && changedFields().hasOnly(['usedAt', 'usedBy'])
+                    && !('usedAt' in resource.data && resource.data.usedAt != null);
+    }
+
+    // /families/{familyID}
+    match /families/{familyID} {
+      allow read: if isAuthenticated() && isMemberOfFamily(familyID);
+      allow create: if isAuthenticated()
+                    && request.resource.data.ownerUserID == request.auth.uid;
+      allow update: if isAuthenticated() && isParentInFamily(familyID);
+
+      match /children/{childID} {
+        allow read: if isAuthenticated() && isMemberOfFamily(familyID);
+        allow create, delete: if isAuthenticated() && isParentInFamily(familyID);
+        allow update: if isAuthenticated() && isParentInFamily(familyID);
+        allow update: if isAuthenticated() && isChildInFamily(familyID)
+                      && changedFields().hasOnly(['lastHeartbeat']);
+      }
+
+      match /alarms/{alarmID} {
+        allow read: if isAuthenticated() && isMemberOfFamily(familyID);
+        allow create, update, delete: if isAuthenticated() && isParentInFamily(familyID);
+      }
+
+      match /sessions/{sessionID} {
+        allow read: if isAuthenticated() && isMemberOfFamily(familyID);
+
+        allow create: if isAuthenticated() && isChildInFamily(familyID)
+                      && request.resource.data.state == 'ringing'
+                      && !('parentAction' in request.resource.data && request.resource.data.parentAction != null)
+                      && !('parentActionAt' in request.resource.data && request.resource.data.parentActionAt != null)
+                      && !('parentMessage' in request.resource.data && request.resource.data.parentMessage != null);
+
+        allow update: if isAuthenticated() && isChildInFamily(familyID)
+                      && isChildSessionUpdate();
+
+        allow update: if isAuthenticated() && isParentInFamily(familyID)
+                      && isParentSessionUpdate();
+      }
+
+      match /tamperEvents/{eventID} {
+        allow read: if isAuthenticated() && isMemberOfFamily(familyID);
+        allow create: if isAuthenticated() && isChildInFamily(familyID);
+      }
+    }
+
+    // Session update helpers
+
+    function isChildSessionUpdate() {
+      let allowed = [
+        'state', 'verifiedAt', 'verifiedWith', 'verificationResult',
+        'snoozeCount', 'currentEscalationStep', 'isDeviceLocked',
+        'tamperCount', 'lastTamperType', 'childMessage',
+        'effectiveConfigSnapshot', 'verificationAttempts', 'verificationStartedAt',
+        'verificationDurationSeconds', 'rewardOptimistic', 'rewardRubricVersion',
+        'lastUpdated', 'version', 'serverVerifiedAt'
+      ];
+      // reviewWindowEndsAt is NOT child-writable -- set by Cloud Function only
+      let changed = changedFields();
+      let serverManagedFields = ['reviewWindowEndsAt', 'serverReviewWindowEndsAt', 'serverReviewWindowSetBy',
+        'rewardServerApplied', 'rewardPointsDelta', 'rewardReasonCodes', 'rewardAppliedAt'];
+      let parentOnlyFields = ['parentAction', 'parentActionAt', 'parentMessage', 'confirmationPolicy', 'serverParentActionAt'];
+
+      let versionOk = !('version' in resource.data)
+                      || request.resource.data.version >= resource.data.version;
+
+      // Tamper count can only increase (monotonic)
+      let tamperOk = !('tamperCount' in resource.data)
+                     || request.resource.data.tamperCount >= resource.data.tamperCount;
+
+      let oldState = resource.data.state;
+      let newState = request.resource.data.state;
+      let validChildTransition =
+        (oldState == 'ringing'    && newState in ['snoozed', 'escalating', 'verifying']) ||
+        (oldState == 'snoozed'   && newState in ['ringing', 'escalating', 'verifying']) ||
+        (oldState == 'escalating' && newState in ['verifying']) ||
+        (oldState == 'verifying'  && newState in ['pendingParentReview', 'verified']) ||
+        (oldState == newState);
+
+      return changed.hasOnly(allowed)
+             && !changed.hasAny(parentOnlyFields)
+             && !changed.hasAny(serverManagedFields)
+             && versionOk
+             && tamperOk
+             && validChildTransition;
+    }
+
+    function isParentSessionUpdate() {
+      let allowed = [
+        'state', 'parentAction', 'parentActionAt', 'parentMessage',
+        'isDeviceLocked', 'denialCount', 'lastUpdated', 'version',
+        'serverParentActionAt'
+      ];
+      let changed = changedFields();
+      let childOnlyFields = ['verifiedAt', 'verifiedWith', 'verificationResult',
+                             'snoozeCount', 'childMessage', 'tamperCount', 'lastTamperType',
+                             'alarmFiredAt', 'childProfileID', 'alarmScheduleID',
+                             'serverVerifiedAt'];
+      let serverManagedFields = ['reviewWindowEndsAt', 'serverReviewWindowEndsAt', 'serverReviewWindowSetBy',
+        'rewardServerApplied', 'rewardPointsDelta', 'rewardReasonCodes', 'rewardAppliedAt'];
+
+      let versionOk = !('version' in resource.data)
+                      || request.resource.data.version >= resource.data.version;
+
+      let oldState = resource.data.state;
+      let newState = request.resource.data.state;
+
+      // Hybrid window enforcement: deny/escalate from verified state
+      // only allowed while request.time <= reviewWindowEndsAt (set by Cloud Function)
+      let isHybridRetroaction = (oldState == 'verified' && newState in ['failed', 'verifying']);
+      let windowOk = !isHybridRetroaction
+                     || !('reviewWindowEndsAt' in resource.data)
+                     || request.time <= resource.data.reviewWindowEndsAt;
+
+      let validParentTransition =
+        (oldState == 'pendingParentReview' && newState in ['verified', 'verifying', 'failed']) ||
+        (oldState == 'verified' && newState in ['failed', 'verifying']) ||
+        (oldState in ['ringing', 'snoozed', 'escalating', 'verifying'] && newState == 'cancelled') ||
+        (oldState == newState);
+
+      return changed.hasOnly(allowed)
+             && !changed.hasAny(childOnlyFields)
+             && !changed.hasAny(serverManagedFields)
+             && versionOk
+             && validParentTransition
+             && windowOk;
+    }
+  }
+}

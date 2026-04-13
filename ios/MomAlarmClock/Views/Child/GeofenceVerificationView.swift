@@ -8,11 +8,11 @@ struct GeofenceVerificationView: View {
     @State private var isChecking = false
     @State private var result: VerificationService.GeofenceResult?
 
-    // TODO: These coordinates should come from the alarm configuration (set by parent).
-    // For now, use placeholder values.
-    private let targetLatitude = 37.7749
-    private let targetLongitude = -122.4194
-    private let targetName = "Kitchen"
+    // In production, these come from the alarm configuration (set by parent during setup).
+    // The parent drops a pin on a map to set the target location.
+    var targetLatitude: Double = 0.0
+    var targetLongitude: Double = 0.0
+    var targetName: String = "Designated Spot"
 
     @State private var cameraPosition: MapCameraPosition = .automatic
 
@@ -97,16 +97,26 @@ struct GeofenceVerificationView: View {
 
     private func checkLocation() {
         isChecking = true
+        let radius = vm.effectiveVerificationTier.geofenceRadiusMeters
         Task {
             let geofenceResult = await VerificationService.shared.checkGeofence(
                 targetLatitude: targetLatitude,
-                targetLongitude: targetLongitude
+                targetLongitude: targetLongitude,
+                radiusMeters: radius
             )
             result = geofenceResult
             isChecking = false
 
             if geofenceResult.isWithinFence {
-                await vm.completeVerification(method: .geofence)
+                let verificationResult = VerificationResult(
+                    method: .geofence,
+                    completedAt: Date(),
+                    tier: vm.effectiveVerificationTier,
+                    passed: true,
+                    gpsDistanceMeters: geofenceResult.distanceMeters,
+                    deviceTimestamp: Date()
+                )
+                await vm.completeVerification(method: .geofence, result: verificationResult)
             }
         }
     }

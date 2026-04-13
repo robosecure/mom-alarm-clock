@@ -40,4 +40,22 @@ enum VerificationMethod: String, Codable, CaseIterable, Identifiable, Sendable {
         case .geofence: "Arrive at a designated location (e.g., kitchen) to dismiss the alarm."
         }
     }
+
+    /// Whether this method always requires parent review regardless of confirmation policy.
+    /// Photo verification is never auto-approved — the parent must confirm.
+    var alwaysRequiresParentReview: Bool {
+        switch self {
+        case .photo: true
+        default: false
+        }
+    }
+
+    /// Methods available at each tier. Higher tiers unlock all lower-tier methods.
+    static func available(at tier: VerificationTier) -> [VerificationMethod] {
+        switch tier {
+        case .easy:   [.motion, .quiz]
+        case .medium: [.motion, .quiz, .qr, .photo]
+        case .hard:   [.motion, .quiz, .qr, .photo, .geofence]
+        }
+    }
 }

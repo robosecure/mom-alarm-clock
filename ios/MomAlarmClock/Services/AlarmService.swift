@@ -5,55 +5,82 @@ import AVFoundation
 /// Manages scheduling and cancelling local notifications for alarms.
 /// Uses Critical Alerts (when entitled) so the alarm sounds even in Do Not Disturb / Silent mode.
 ///
-/// Strategy: for each alarm, we schedule a primary notification plus several staggered
-/// backup notifications at 1, 2, and 3 minutes after. This guards against iOS silently
-/// dropping a single notification. Each backup checks whether the alarm has already been
-/// dismissed before playing sound.
+/// FIX: Uses repeating triggers with weekday+hour+minute components so alarms fire
+/// every week automatically, not just once. This was the root cause of the "alarms fire
+/// once and then stop" bug — the old code used full date components with repeats: false.
 actor AlarmService {
     static let shared = AlarmService()
 
     private let notificationCenter = UNUserNotificationCenter.current()
+    private let localStore = LocalStore.shared
 
     /// Prefix for all alarm notification identifiers.
     private let idPrefix = "com.momclock.alarm."
 
     // MARK: - Schedule
 
-    /// Schedules all notifications for the given alarm schedule, starting from the next applicable day.
+    /// Schedules repeating notifications for each active day in the alarm schedule.
+    /// Uses weekday+hour+minute components with `repeats: true` so alarms recur weekly.
     func scheduleAlarm(_ schedule: AlarmSchedule) async throws {
-        // Cancel any existing notifications for this alarm first.
         await cancelAlarm(schedule.id)
 
         guard schedule.isEnabled else { return }
 
         for weekday in schedule.activeDays.sorted() {
-            guard let fireDate = schedule.alarmTime.nextOccurrence(on: weekday) else { continue }
-
-            // Primary notification
             let primaryID = notificationID(alarmID: schedule.id, weekday: weekday, offset: 0)
-            try await scheduleNotification(
+            try await scheduleRepeatingNotification(
                 id: primaryID,
                 title: "Wake Up!",
                 body: schedule.label,
-                fireDate: fireDate,
+                weekday: weekday,
+                hour: schedule.alarmTime.hour,
+                minute: schedule.alarmTime.minute,
                 isCritical: true,
                 alarmID: schedule.id.uuidString
             )
 
-            // Staggered backup notifications at +60s, +120s, +180s
-            for offsetSeconds in [60, 120, 180] {
-                let backupDate = fireDate.addingTimeInterval(TimeInterval(offsetSeconds))
-                let backupID = notificationID(alarmID: schedule.id, weekday: weekday, offset: offsetSeconds)
-                try await scheduleNotification(
-                    id: backupID,
-                    title: "Wake Up! (Reminder)",
-                    body: "Your alarm is still going — time to get up!",
-                    fireDate: backupDate,
-                    isCritical: true,
-                    alarmID: schedule.id.uuidString
-                )
-            }
+            // One backup notification 2 minutes later (also repeating)
+            let backupMinute = (schedule.alarmTime.minute + 2) % 60
+            let backupHour = schedule.alarmTime.minute + 2 >= 60
+                ? (schedule.alarmTime.hour + 1) % 24
+                : schedule.alarmTime.hour
+            let backupID = notificationID(alarmID: schedule.id, weekday: weekday, offset: 120)
+            try await scheduleRepeatingNotification(
+                id: backupID,
+                title: "Wake Up! (Reminder)",
+                body: "Your alarm is still going — time to get up!",
+                weekday: weekday,
+                hour: backupHour,
+                minute: backupMinute,
+                isCritical: true,
+                alarmID: schedule.id.uuidString
+            )
         }
+    }
+
+    /// Reschedules all alarms from local persistence. Called on app launch and background refresh.
+    /// Also detects drift: if scheduled notification count doesn't match expected, self-heals.
+    func rescheduleAllAlarms() async {
+        let schedules = await localStore.alarmSchedules()
+        let enabledSchedules = schedules.filter(\.isEnabled)
+
+        // Drift detection: count expected vs actual notifications
+        let pending = await notificationCenter.pendingNotificationRequests()
+        let alarmNotifs = pending.filter { $0.identifier.hasPrefix(idPrefix) }
+        let expectedCount = enabledSchedules.reduce(0) { $0 + $1.activeDays.count * 2 } // primary + backup per day
+
+        if alarmNotifs.count != expectedCount {
+            print("[Alarm] Drift detected: \(alarmNotifs.count) scheduled vs \(expectedCount) expected. Self-healing.")
+            // Cancel all stale alarm notifications and reschedule from scratch
+            notificationCenter.removePendingNotificationRequests(
+                withIdentifiers: alarmNotifs.map(\.identifier)
+            )
+        }
+
+        for schedule in enabledSchedules {
+            try? await scheduleAlarm(schedule)
+        }
+        print("[Alarm] Rescheduled \(enabledSchedules.count) alarms (\(expectedCount) notifications) from local store.")
     }
 
     /// Cancels all notifications associated with a specific alarm schedule.
@@ -72,11 +99,13 @@ actor AlarmService {
 
     // MARK: - Private
 
-    private func scheduleNotification(
+    private func scheduleRepeatingNotification(
         id: String,
         title: String,
         body: String,
-        fireDate: Date,
+        weekday: Int,
+        hour: Int,
+        minute: Int,
         isCritical: Bool,
         alarmID: String
     ) async throws {
@@ -88,18 +117,20 @@ actor AlarmService {
         content.interruptionLevel = .critical
 
         if isCritical {
-            // TODO: Replace with actual .caf alarm sound file bundled in Resources
-            // Critical alert sound must be < 30 seconds
             content.sound = UNNotificationSound.defaultCritical
         } else {
             content.sound = .default
         }
 
-        let components = Calendar.current.dateComponents(
-            [.year, .month, .day, .hour, .minute, .second],
-            from: fireDate
-        )
-        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        // KEY FIX: Use only weekday + hour + minute with repeats: true.
+        // This makes the alarm fire every week on this day at this time,
+        // instead of once on a specific calendar date.
+        var components = DateComponents()
+        components.weekday = weekday
+        components.hour = hour
+        components.minute = minute
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
 
         try await notificationCenter.add(request)

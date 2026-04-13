@@ -51,15 +51,11 @@ final class FamilyControlsService {
 
         // Shield specific app categories. ManagedSettings uses opaque Application tokens
         // from the FamilyActivityPicker, but for programmatic use we shield by category.
-        store.shield.applicationCategories = .specific(
-            ShieldSettings.ActivityCategoryPolicy<Application>.specific([], except: Set())
-        )
+        store.shield.applicationCategories = .specific(Set<ActivityCategoryToken>())
 
         // The shield configuration (icon, title, message) is defined in a ShieldConfigurationExtension.
         // For now we use the system defaults.
-        store.shield.webDomainCategories = .specific(
-            ShieldSettings.ActivityCategoryPolicy<WebDomain>.specific([], except: Set())
-        )
+        store.shield.webDomainCategories = .specific(Set<ActivityCategoryToken>())
 
         print("[FamilyControls] Partial shield applied — entertainment apps blocked.")
     }

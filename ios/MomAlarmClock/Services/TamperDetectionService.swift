@@ -1,18 +1,21 @@
 import Foundation
 import AVFoundation
 import UserNotifications
-import Combine
+import Network
 
 /// Monitors the child's device for tamper attempts during an active alarm session.
 ///
-/// Detected tampering is reported to CloudKit immediately so the parent device
-/// receives a near-real-time alert. Tamper events also trigger automatic escalation.
+/// Detected tampering is reported to Firestore so the parent device receives a
+/// near-real-time alert. Tamper events also trigger automatic escalation.
 ///
-/// Detection strategies:
-/// - Volume KVO: observes AVAudioSession outputVolume for decreases
+/// Device-side detections (implemented here):
+/// - Volume KVO: observes AVAudioSession.outputVolume for decreases
 /// - Notification permission polling: checks if the user revoked notification auth
-/// - Network reachability: detects airplane mode activation
-/// - Heartbeat gaps: detected on the parent side via HeartbeatService
+/// - Network loss: NWPathMonitor detects airplane mode or WiFi/cellular off
+/// - Timezone change: NSSystemTimeZoneDidChange notification
+///
+/// Parent-side detections (inferred by HeartbeatService):
+/// - Device powered off / app force quit: detected via missing heartbeats
 @Observable
 final class TamperDetectionService {
     static let shared = TamperDetectionService()
@@ -22,6 +25,8 @@ final class TamperDetectionService {
 
     private var volumeObservation: NSKeyValueObservation?
     private var permissionCheckTimer: Timer?
+    private var networkMonitor: NWPathMonitor?
+    private var timezoneObserver: NSObjectProtocol?
     private var lastKnownVolume: Float = 1.0
     private var childProfileID: UUID?
 
@@ -36,6 +41,8 @@ final class TamperDetectionService {
 
         startVolumeObserver()
         startPermissionChecker()
+        startNetworkLossDetector()
+        startTimezoneChangeDetector()
 
         print("[TamperDetection] Monitoring started.")
     }
@@ -47,6 +54,12 @@ final class TamperDetectionService {
         volumeObservation = nil
         permissionCheckTimer?.invalidate()
         permissionCheckTimer = nil
+        networkMonitor?.cancel()
+        networkMonitor = nil
+        if let timezoneObserver {
+            NotificationCenter.default.removeObserver(timezoneObserver)
+            self.timezoneObserver = nil
+        }
 
         print("[TamperDetection] Monitoring stopped. Events detected: \(detectedEvents.count)")
     }
@@ -102,9 +115,54 @@ final class TamperDetectionService {
         }
     }
 
+    // MARK: - Network Loss Detector
+
+    /// Detects when the child's device loses network connectivity during an active session.
+    /// Uses NWPathMonitor — detects airplane mode, WiFi off, cellular off.
+    private func startNetworkLossDetector() {
+        let monitor = NWPathMonitor()
+        self.networkMonitor = monitor
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard let self, self.isMonitoring else { return }
+            if path.status == .unsatisfied {
+                Task { @MainActor in
+                    self.reportEvent(
+                        type: .networkLost,
+                        detail: "Network connectivity lost during active alarm session.",
+                        severity: .medium
+                    )
+                }
+            }
+        }
+        monitor.start(queue: DispatchQueue(label: "com.momclock.tamper.network"))
+    }
+
+    // MARK: - Timezone Change Detector
+
+    /// Detects when the system timezone is changed during an active session.
+    /// A child might change the timezone to make the alarm fire at a different time.
+    private func startTimezoneChangeDetector() {
+        timezoneObserver = NotificationCenter.default.addObserver(
+            forName: .NSSystemTimeZoneDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self, self.isMonitoring else { return }
+            self.reportEvent(
+                type: .timeZoneChanged,
+                detail: "System timezone was changed to \(TimeZone.current.identifier) during active alarm session.",
+                severity: .high
+            )
+        }
+    }
+
     // MARK: - Reporting
 
-    /// Records a tamper event locally and pushes it to CloudKit.
+    /// The sync service for reporting events. Set externally before starting monitoring.
+    var syncService: (any SyncService)?
+    var familyID: String?
+
+    /// Records a tamper event locally and pushes it to the backend.
     @MainActor
     private func reportEvent(type: TamperEvent.TamperType, detail: String, severity: TamperEvent.Severity) {
         guard let childProfileID else { return }
@@ -115,22 +173,43 @@ final class TamperDetectionService {
             return
         }
 
-        let event = TamperEvent(
+        var event = TamperEvent(
             type: type,
             detail: detail,
             severity: severity,
             childProfileID: childProfileID
         )
+        // Attach consequence so parent sees the impact
+        event.consequence = TamperConsequence.defaultConsequence(for: type)
         detectedEvents.append(event)
+        BetaDiagnostics.log(.tamperDetected(type: type.rawValue))
 
-        // Push to CloudKit asynchronously
-        Task {
-            do {
-                _ = try await CloudSyncService.shared.report(tamperEvent: event)
-                print("[TamperDetection] Event reported to cloud: \(type.displayName)")
-            } catch {
-                print("[TamperDetection] Failed to report event: \(error.localizedDescription)")
+        // Push to backend asynchronously
+        if let syncService, let familyID {
+            Task {
+                do {
+                    try await syncService.saveTamperEvent(event, familyID: familyID)
+                    print("[TamperDetection] Event reported: \(type.displayName)")
+                } catch {
+                    // Queue for offline retry
+                    try? await LocalStore.shared.appendToQueue(QueuedAction(
+                        actionType: .saveTamperEvent,
+                        payload: (try? JSONEncoder().encode(event)) ?? Data()
+                    ))
+                    print("[TamperDetection] Queued event for later: \(type.displayName)")
+                }
             }
         }
+    }
+
+    /// Apply tamper consequences to a child profile for the next morning.
+    /// Call after a session ends with tamper events.
+    func applyConsequences(to profile: inout ChildProfile) {
+        let shouldEscalate = detectedEvents.contains { $0.effectiveConsequence.escalateVerificationTier }
+        if shouldEscalate {
+            profile.pendingTierEscalation = true
+        }
+
+        // Streak and points impacts are computed by StatsService from the events themselves
     }
 }

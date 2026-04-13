@@ -305,4 +305,35 @@ final class CoreLogicTests: XCTestCase {
             XCTAssertTrue(session.isActive, "\(state) should be active")
         }
     }
+
+    // MARK: - R2 Regression: Session Duplicate Guard
+
+    func testDuplicateGuard_sameAlarmSameDay_sameID() {
+        let childID = UUID(uuidString: "11111111-1111-1111-1111-111111111111")!
+        let alarmID = UUID(uuidString: "22222222-2222-2222-2222-222222222222")!
+        // Two calls on the same day produce the same session ID
+        let id1 = MorningSession.deterministicID(childID: childID, alarmID: alarmID, date: Date())
+        let id2 = MorningSession.deterministicID(childID: childID, alarmID: alarmID, date: Date())
+        XCTAssertEqual(id1, id2, "Same alarm + same day must produce same session ID")
+    }
+
+    func testDuplicateGuard_backupReminderSameDay_sameID() {
+        let childID = UUID(uuidString: "11111111-1111-1111-1111-111111111111")!
+        let alarmID = UUID(uuidString: "22222222-2222-2222-2222-222222222222")!
+        // Backup reminder fires 2 min later but same day
+        let now = Date()
+        let twoMinLater = now.addingTimeInterval(120)
+        let id1 = MorningSession.deterministicID(childID: childID, alarmID: alarmID, date: now)
+        let id2 = MorningSession.deterministicID(childID: childID, alarmID: alarmID, date: twoMinLater)
+        XCTAssertEqual(id1, id2, "Backup reminder on same day must produce same session ID")
+    }
+
+    func testVerifiedSession_isNotActive() {
+        var session = MorningSession(childProfileID: UUID(), alarmScheduleID: UUID(), alarmFiredAt: .now)
+        session.state = .verified
+        // If session is verified and backup reminder fires, duplicate guard should see isActive=false
+        // deterministicID is same → Firestore setData is idempotent → safe even if guard doesn't catch it
+        XCTAssertFalse(session.isActive, "Verified session should not be active")
+    }
+
 }

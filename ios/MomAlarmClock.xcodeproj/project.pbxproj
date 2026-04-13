@@ -1,0 +1,869 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		005834AACB74DE2E9916A90D /* EscalationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFC4262A33119CB0F9D16F7 /* EscalationProfile.swift */; };
+		00E0D81E674724546788D013 /* VerificationTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B99864E2CF3BA3D3429E57 /* VerificationTier.swift */; };
+		04E6C6E0F832DAEC4E381AE3 /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 988FB981F34061A134416044 /* BackgroundTasks.framework */; };
+		0573A1B690903BEDB3F8E1CB /* VoiceAlarmCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */; };
+		08EA28F99203248E7144660B /* PhoneHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6985563FCB5F3FDD3F26715C /* PhoneHomeView.swift */; };
+		09CC5801789BBB5B00E27C88 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51BD1C2297F666355D8B906D /* DeviceActivity.framework */; };
+		09E9A6B6468D1F0DFF19D688 /* SyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D8DB23042826040F530D8E /* SyncServiceFactory.swift */; };
+		0BB13D6AB10D120DD8E65FD0 /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */; };
+		0EDFBF19520DF8B05D083096 /* SyncProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57098A1C920B00DDF94219D4 /* SyncProtocol.swift */; };
+		1AF54AFAF5D30D429BFA9029 /* VerificationReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21ACA8FCBB64184BC3D14C5 /* VerificationReviewView.swift */; };
+		1FAE1205A051C777EC4C8975 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9A6C9BA7C02244AD42B44B3 /* CoreLocation.framework */; };
+		20056B868D04C4C1219188AD /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 4699B296ED229F477152517D /* FirebaseAuth */; };
+		2054CD539FA1CC4EAF3D1AF6 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */; };
+		217F6A618C66D271547E7BB8 /* VerificationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3FF27537778A2C88E7A647E /* VerificationResult.swift */; };
+		2D1DF8043F316AD0D9707DB3 /* TamperDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */; };
+		33B77E1EF7058A6F4E7E2426 /* BetaDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */; };
+		353462FD33B484664BF1C161 /* ChildAlarmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822D8409305F93D925C1A459 /* ChildAlarmView.swift */; };
+		3622AFF95D6C5B724114F4C6 /* MorningSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA34D6E0A573788189B65ED9 /* MorningSession.swift */; };
+		3A4F94302440613D3166B581 /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */; };
+		3C651D5BD7D3CC730FD10838 /* StatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3123B7C12AA44FF454600C78 /* StatsService.swift */; };
+		3E2529B9CF4C29F4AB672CA6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C02E8F1F24A32535AE84F2F6 /* FirebaseMessaging */; };
+		3FFD75685823F00F32A19D30 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B54E87387ABD79F6CBCD1D /* ParentDashboardView.swift */; };
+		4340788D197531A38DEF3FA1 /* LocalSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3EE9FC3BD0A643370641A8 /* LocalSyncService.swift */; };
+		45AA55E8CF85C6B1AA3A6894 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7798F230AE6051270E51D954 /* UserNotifications.framework */; };
+		485D8CC27760AF3358B9AF5A /* AlarmSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */; };
+		49715FB278A294317027419E /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A0F4D01A8B5B78AE8FFDA2 /* Network.framework */; };
+		4C4583CE3606C1BE55BDDE04 /* SetupWizardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10486BE4F328CAF09410DDE /* SetupWizardViewModel.swift */; };
+		509FEFFF8821D0270B1F1AFC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */; };
+		5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C45DDE80F671326534BCC /* Collection+Safe.swift */; };
+		56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283C66F9E534B3F72E5DA53F /* RewardEngine.swift */; };
+		666D4AC48E805C0AE1BB1284 /* VerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */; };
+		68251C68239EE7473E0901DC /* AlarmControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B73713F415F46F619F209D1 /* AlarmControlsView.swift */; };
+		688B7C659682E131EDAC2BF5 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */; };
+		6C9B27C55E423AD94DFE6A55 /* ParentAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A283A20EF0124AE0C1670204 /* ParentAction.swift */; };
+		7089597405F3FC3510E3C50A /* ChildPairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBADB93F6AE67DE8DAA79F38 /* ChildPairingView.swift */; };
+		756284152526055FB54D7486 /* PendingReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 997935950BBB44F468A9D27B /* PendingReviewView.swift */; };
+		7A289F8A0A1EC59B4B05AC7A /* SetupWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5664C54971EF278CE524B3 /* SetupWizardView.swift */; };
+		7C383A09AC8330D0C4F014B1 /* TamperConsequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A200791DB3362B730CDCE0A /* TamperConsequence.swift */; };
+		7DA728DF167E7B887AF0C8FA /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F1F640AEF22627E0E7DF9C20 /* FirebaseAnalytics */; };
+		7E9DA03DA96EB7E1306428BD /* VerificationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9890DE2F176ED462AC9CCE01 /* VerificationMethod.swift */; };
+		82D47081376EF60AFCF9926B /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 619FADDEB23C1A0F1DC5368B /* FirebaseAppCheck */; };
+		83A5CA24BE19F50A509D721C /* PhotoVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3846045D5EA11C155BBB230D /* PhotoVerificationView.swift */; };
+		87FFCA09869BE5C8744BF942 /* VerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABE40595E33E07A70F7C547A /* VerificationView.swift */; };
+		8F420D606C9FEFD88B5DCF67 /* MomAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A92FAAD3B5B69D131F49D1 /* MomAppCheckProviderFactory.swift */; };
+		910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */; };
+		92B81A6125139F5BFDBB1B9D /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */; };
+		997C740D2EF7215D1E8B4455 /* ParentAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */; };
+		9BA6BA7EDB11E4A9B9962F25 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D707FA3D4A92CC98067094E /* FirebaseFirestore */; };
+		9BEE43696645DCC0D4B3B1EC /* VoiceAlarmRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */; };
+		9BFB57CA2B9761B24F3997D8 /* TamperEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 074B38ED078386ADBBDB9463 /* TamperEvent.swift */; };
+		9C0E69F60AC1CED4B25993B7 /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */; };
+		9E5B2A2FBEC22213DD79D520 /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */; };
+		A101CD8867514052308545DE /* ChildProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD456047F173EDDE237DC340 /* ChildProfile.swift */; };
+		A481714D6163D32DC71F39E2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */; };
+		A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD96A1EC695BB2CA1667C389 /* ChildViewModel.swift */; };
+		B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */; };
+		BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */; };
+		BC65828D9AE42F8B61EB1BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69601E335B515C3776FAA4E8 /* AppDelegate.swift */; };
+		BD3BDAAF98973E2DB76B788C /* FirestoreSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777481E761E13914002CF51 /* FirestoreSyncService.swift */; };
+		BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225932C9D4339E76EBD77491 /* EffectiveVerificationConfig.swift */; };
+		BF4E494943889A94C5E93D42 /* VoiceAlarmPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7B9F921738B6CC10F4340F /* VoiceAlarmPlayerService.swift */; };
+		BF9B4DFACFDEBD596FEC0A71 /* RewardStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D6B23C699351F08E7CEAB3 /* RewardStoreView.swift */; };
+		BFD701B0043B849B6AB73325 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99D362789207D516DB298DB5 /* AVFoundation.framework */; };
+		CBDFDBC698B4B120442D8200 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12F8D7F38C3C362486B61D68 /* CoreMotion.framework */; };
+		D1175425961DC9E48F166232 /* LocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3AF430232D1C8587828DA5 /* LocalStore.swift */; };
+		D1262D302A1B145903F83355 /* Date+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB209D879DD6A00D2D42FF4 /* Date+Helpers.swift */; };
+		D22C0E7172635C5E952D439E /* ConfirmationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */; };
+		D3AC8848C34BFD31F59DEFDB /* NextMorningSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */; };
+		D64FFAAF842ECE1A97DA0E1F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 848AEEA6650D9C47C114F7FF /* FirebaseCrashlytics */; };
+		D959C772E675F0065F9A8ABF /* MotionVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE956002175E90D0E5403053 /* MotionVerificationView.swift */; };
+		DA9C5BE00AA5DB4BB9DFAA27 /* MorningLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C68E3E4641B95EC0B56141D /* MorningLockView.swift */; };
+		DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B5E70198F06E7B317331FD /* HeartbeatService.swift */; };
+		DF69C5FE9A7320F428114370 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE8423EC363729A4AD404DC /* AuthService.swift */; };
+		E5CC0A906EB28BB905B65719 /* ParentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */; };
+		E75B09EE16EB548C82DA9A6B /* CoreLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */; };
+		ED46BBB6137BA6BFFB47093E /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB00E64A83442836B7E6A8 /* HistoryView.swift */; };
+		F135CB157017090E22025765 /* AlarmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778FE821AAE852253167003 /* AlarmService.swift */; };
+		F9E1BEEEBC12D3C948445A18 /* QuizVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D091A4D425AA28860D37220 /* QuizVerificationView.swift */; };
+		FB03BF3EA28C26DD9B6B64D3 /* FamilyControlsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D862F763DFB793C90A2353E /* FamilyControlsService.swift */; };
+		FDC9A771D1902A5E38C4CD0E /* QRVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE7AFCB5DE60870DD40C7F /* QRVerificationView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E8906CAED4D0AE8C3BB88FEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D518178C4DB485CB2871667C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 498134E544759DAC2614BA97;
+			remoteInfo = MomAlarmClock;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		074B38ED078386ADBBDB9463 /* TamperEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TamperEvent.swift; sourceTree = "<group>"; };
+		0B73713F415F46F619F209D1 /* AlarmControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmControlsView.swift; sourceTree = "<group>"; };
+		0FFC4262A33119CB0F9D16F7 /* EscalationProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EscalationProfile.swift; sourceTree = "<group>"; };
+		12F8D7F38C3C362486B61D68 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		225932C9D4339E76EBD77491 /* EffectiveVerificationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectiveVerificationConfig.swift; sourceTree = "<group>"; };
+		2777481E761E13914002CF51 /* FirestoreSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSyncService.swift; sourceTree = "<group>"; };
+		283C66F9E534B3F72E5DA53F /* RewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardEngine.swift; sourceTree = "<group>"; };
+		28B54E87387ABD79F6CBCD1D /* ParentDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentDashboardView.swift; sourceTree = "<group>"; };
+		2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentAuthView.swift; sourceTree = "<group>"; };
+		2D862F763DFB793C90A2353E /* FamilyControlsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyControlsService.swift; sourceTree = "<group>"; };
+		30A0F4D01A8B5B78AE8FFDA2 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = System/Library/Frameworks/Network.framework; sourceTree = SDKROOT; };
+		30A92FAAD3B5B69D131F49D1 /* MomAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomAppCheckProviderFactory.swift; sourceTree = "<group>"; };
+		3123B7C12AA44FF454600C78 /* StatsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsService.swift; sourceTree = "<group>"; };
+		36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomAlarmClockApp.swift; sourceTree = "<group>"; };
+		3846045D5EA11C155BBB230D /* PhotoVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoVerificationView.swift; sourceTree = "<group>"; };
+		3D091A4D425AA28860D37220 /* QuizVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizVerificationView.swift; sourceTree = "<group>"; };
+		51BD1C2297F666355D8B906D /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TamperDetectionService.swift; sourceTree = "<group>"; };
+		57098A1C920B00DDF94219D4 /* SyncProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProtocol.swift; sourceTree = "<group>"; };
+		59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
+		5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
+		63B99864E2CF3BA3D3429E57 /* VerificationTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationTier.swift; sourceTree = "<group>"; };
+		64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		69601E335B515C3776FAA4E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6985563FCB5F3FDD3F26715C /* PhoneHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneHomeView.swift; sourceTree = "<group>"; };
+		6A200791DB3362B730CDCE0A /* TamperConsequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TamperConsequence.swift; sourceTree = "<group>"; };
+		6CB209D879DD6A00D2D42FF4 /* Date+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Helpers.swift"; sourceTree = "<group>"; };
+		6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationService.swift; sourceTree = "<group>"; };
+		6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSchedule.swift; sourceTree = "<group>"; };
+		7798F230AE6051270E51D954 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextMorningSettingsView.swift; sourceTree = "<group>"; };
+		7C68E3E4641B95EC0B56141D /* MorningLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningLockView.swift; sourceTree = "<group>"; };
+		7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = System/Library/Frameworks/Combine.framework; sourceTree = SDKROOT; };
+		822D8409305F93D925C1A459 /* ChildAlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildAlarmView.swift; sourceTree = "<group>"; };
+		8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MomAlarmClockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		988FB981F34061A134416044 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
+		9890DE2F176ED462AC9CCE01 /* VerificationMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationMethod.swift; sourceTree = "<group>"; };
+		997935950BBB44F468A9D27B /* PendingReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReviewView.swift; sourceTree = "<group>"; };
+		99D362789207D516DB298DB5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9A3EE9FC3BD0A643370641A8 /* LocalSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncService.swift; sourceTree = "<group>"; };
+		9AE8423EC363729A4AD404DC /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentViewModel.swift; sourceTree = "<group>"; };
+		A0D6B23C699351F08E7CEAB3 /* RewardStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardStoreView.swift; sourceTree = "<group>"; };
+		A283A20EF0124AE0C1670204 /* ParentAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentAction.swift; sourceTree = "<group>"; };
+		ABE40595E33E07A70F7C547A /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
+		AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmRecorderView.swift; sourceTree = "<group>"; };
+		B58C45DDE80F671326534BCC /* Collection+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Safe.swift"; sourceTree = "<group>"; };
+		BA34D6E0A573788189B65ED9 /* MorningSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningSession.swift; sourceTree = "<group>"; };
+		BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MomAlarmClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1B5E70198F06E7B317331FD /* HeartbeatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartbeatService.swift; sourceTree = "<group>"; };
+		C2D8DB23042826040F530D8E /* SyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncServiceFactory.swift; sourceTree = "<group>"; };
+		C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmCacheService.swift; sourceTree = "<group>"; };
+		C3FF27537778A2C88E7A647E /* VerificationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationResult.swift; sourceTree = "<group>"; };
+		C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaDiagnostics.swift; sourceTree = "<group>"; };
+		C778FE821AAE852253167003 /* AlarmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmService.swift; sourceTree = "<group>"; };
+		CA7B9F921738B6CC10F4340F /* VoiceAlarmPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmPlayerService.swift; sourceTree = "<group>"; };
+		CBADB93F6AE67DE8DAA79F38 /* ChildPairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildPairingView.swift; sourceTree = "<group>"; };
+		CC5664C54971EF278CE524B3 /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
+		CD456047F173EDDE237DC340 /* ChildProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildProfile.swift; sourceTree = "<group>"; };
+		CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceVerificationView.swift; sourceTree = "<group>"; };
+		CE956002175E90D0E5403053 /* MotionVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionVerificationView.swift; sourceTree = "<group>"; };
+		D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
+		D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLogicTests.swift; sourceTree = "<group>"; };
+		DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
+		DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		E21ACA8FCBB64184BC3D14C5 /* VerificationReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationReviewView.swift; sourceTree = "<group>"; };
+		E2BE7AFCB5DE60870DD40C7F /* QRVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRVerificationView.swift; sourceTree = "<group>"; };
+		E9A6C9BA7C02244AD42B44B3 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		EA3AF430232D1C8587828DA5 /* LocalStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStore.swift; sourceTree = "<group>"; };
+		EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationPolicy.swift; sourceTree = "<group>"; };
+		EFFB00E64A83442836B7E6A8 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		F10486BE4F328CAF09410DDE /* SetupWizardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardViewModel.swift; sourceTree = "<group>"; };
+		FD96A1EC695BB2CA1667C389 /* ChildViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13013E4245227BF3C44B6338 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				688B7C659682E131EDAC2BF5 /* SwiftUI.framework in Frameworks */,
+				A481714D6163D32DC71F39E2 /* CloudKit.framework in Frameworks */,
+				45AA55E8CF85C6B1AA3A6894 /* UserNotifications.framework in Frameworks */,
+				04E6C6E0F832DAEC4E381AE3 /* BackgroundTasks.framework in Frameworks */,
+				BFD701B0043B849B6AB73325 /* AVFoundation.framework in Frameworks */,
+				CBDFDBC698B4B120442D8200 /* CoreMotion.framework in Frameworks */,
+				1FAE1205A051C777EC4C8975 /* CoreLocation.framework in Frameworks */,
+				3A4F94302440613D3166B581 /* ManagedSettings.framework in Frameworks */,
+				0BB13D6AB10D120DD8E65FD0 /* FamilyControls.framework in Frameworks */,
+				09CC5801789BBB5B00E27C88 /* DeviceActivity.framework in Frameworks */,
+				49715FB278A294317027419E /* Network.framework in Frameworks */,
+				92B81A6125139F5BFDBB1B9D /* CryptoKit.framework in Frameworks */,
+				BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */,
+				20056B868D04C4C1219188AD /* FirebaseAuth in Frameworks */,
+				9BA6BA7EDB11E4A9B9962F25 /* FirebaseFirestore in Frameworks */,
+				3E2529B9CF4C29F4AB672CA6 /* FirebaseMessaging in Frameworks */,
+				D64FFAAF842ECE1A97DA0E1F /* FirebaseCrashlytics in Frameworks */,
+				7DA728DF167E7B887AF0C8FA /* FirebaseAnalytics in Frameworks */,
+				82D47081376EF60AFCF9926B /* FirebaseAppCheck in Frameworks */,
+				509FEFFF8821D0270B1F1AFC /* FirebaseStorage in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0455FAFC2D3F7025187619DB /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				217CA89CED42C1F2073DB715 /* Auth */,
+				9CA7F8CBBF03D13E8EADE3D7 /* Sync */,
+				C778FE821AAE852253167003 /* AlarmService.swift */,
+				C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */,
+				2D862F763DFB793C90A2353E /* FamilyControlsService.swift */,
+				C1B5E70198F06E7B317331FD /* HeartbeatService.swift */,
+				30A92FAAD3B5B69D131F49D1 /* MomAppCheckProviderFactory.swift */,
+				64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */,
+				283C66F9E534B3F72E5DA53F /* RewardEngine.swift */,
+				3123B7C12AA44FF454600C78 /* StatsService.swift */,
+				54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */,
+				6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */,
+				C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */,
+				CA7B9F921738B6CC10F4340F /* VoiceAlarmPlayerService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0987BFF24D5569BD8C48AE08 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FD96A1EC695BB2CA1667C389 /* ChildViewModel.swift */,
+				9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */,
+				F10486BE4F328CAF09410DDE /* SetupWizardViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0C6E234956DDC81F4802066E /* MomAlarmClock */ = {
+			isa = PBXGroup;
+			children = (
+				BBCD1E342859CBAE5853625E /* App */,
+				6CC2788657DDF0A1B4E2725C /* Extensions */,
+				7097AD190EA52ECECFA832B7 /* Models */,
+				B3BE46D7A86B08B10DC6CA9C /* Persistence */,
+				0455FAFC2D3F7025187619DB /* Services */,
+				0987BFF24D5569BD8C48AE08 /* ViewModels */,
+				E644F2D9DF5AFA52C492EF21 /* Views */,
+			);
+			path = MomAlarmClock;
+			sourceTree = "<group>";
+		};
+		217CA89CED42C1F2073DB715 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				9AE8423EC363729A4AD404DC /* AuthService.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		34B69E56965A6EE2A32C04A7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				99D362789207D516DB298DB5 /* AVFoundation.framework */,
+				988FB981F34061A134416044 /* BackgroundTasks.framework */,
+				DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */,
+				7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */,
+				E9A6C9BA7C02244AD42B44B3 /* CoreLocation.framework */,
+				12F8D7F38C3C362486B61D68 /* CoreMotion.framework */,
+				5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */,
+				51BD1C2297F666355D8B906D /* DeviceActivity.framework */,
+				DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */,
+				D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */,
+				30A0F4D01A8B5B78AE8FFDA2 /* Network.framework */,
+				AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */,
+				7798F230AE6051270E51D954 /* UserNotifications.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6B15A4921CE8433E3CDC4D5D /* MomAlarmClockTests */ = {
+			isa = PBXGroup;
+			children = (
+				D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */,
+			);
+			path = MomAlarmClockTests;
+			sourceTree = "<group>";
+		};
+		6CC2788657DDF0A1B4E2725C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B58C45DDE80F671326534BCC /* Collection+Safe.swift */,
+				6CB209D879DD6A00D2D42FF4 /* Date+Helpers.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		7097AD190EA52ECECFA832B7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */,
+				CD456047F173EDDE237DC340 /* ChildProfile.swift */,
+				EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */,
+				225932C9D4339E76EBD77491 /* EffectiveVerificationConfig.swift */,
+				0FFC4262A33119CB0F9D16F7 /* EscalationProfile.swift */,
+				BA34D6E0A573788189B65ED9 /* MorningSession.swift */,
+				A283A20EF0124AE0C1670204 /* ParentAction.swift */,
+				6A200791DB3362B730CDCE0A /* TamperConsequence.swift */,
+				074B38ED078386ADBBDB9463 /* TamperEvent.swift */,
+				9890DE2F176ED462AC9CCE01 /* VerificationMethod.swift */,
+				C3FF27537778A2C88E7A647E /* VerificationResult.swift */,
+				63B99864E2CF3BA3D3429E57 /* VerificationTier.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7AFB1F03F62368040E51CB3D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */,
+				8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CA7F8CBBF03D13E8EADE3D7 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				2777481E761E13914002CF51 /* FirestoreSyncService.swift */,
+				9A3EE9FC3BD0A643370641A8 /* LocalSyncService.swift */,
+				57098A1C920B00DDF94219D4 /* SyncProtocol.swift */,
+				C2D8DB23042826040F530D8E /* SyncServiceFactory.swift */,
+			);
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		AB16361BA0455536CD75CC01 = {
+			isa = PBXGroup;
+			children = (
+				0C6E234956DDC81F4802066E /* MomAlarmClock */,
+				6B15A4921CE8433E3CDC4D5D /* MomAlarmClockTests */,
+				34B69E56965A6EE2A32C04A7 /* Frameworks */,
+				7AFB1F03F62368040E51CB3D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B020DE2B2983203843509097 /* Parent */ = {
+			isa = PBXGroup;
+			children = (
+				0B73713F415F46F619F209D1 /* AlarmControlsView.swift */,
+				EFFB00E64A83442836B7E6A8 /* HistoryView.swift */,
+				78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */,
+				28B54E87387ABD79F6CBCD1D /* ParentDashboardView.swift */,
+				A0D6B23C699351F08E7CEAB3 /* RewardStoreView.swift */,
+				CC5664C54971EF278CE524B3 /* SetupWizardView.swift */,
+				E21ACA8FCBB64184BC3D14C5 /* VerificationReviewView.swift */,
+				B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */,
+			);
+			path = Parent;
+			sourceTree = "<group>";
+		};
+		B3BE46D7A86B08B10DC6CA9C /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				EA3AF430232D1C8587828DA5 /* LocalStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		BBCD1E342859CBAE5853625E /* App */ = {
+			isa = PBXGroup;
+			children = (
+				69601E335B515C3776FAA4E8 /* AppDelegate.swift */,
+				36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E644F2D9DF5AFA52C492EF21 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F9B5E72AE3B5A182226DE66B /* Auth */,
+				F2AD1D3C887823EDDC3C5CF3 /* Child */,
+				B020DE2B2983203843509097 /* Parent */,
+				DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F2AD1D3C887823EDDC3C5CF3 /* Child */ = {
+			isa = PBXGroup;
+			children = (
+				822D8409305F93D925C1A459 /* ChildAlarmView.swift */,
+				CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */,
+				7C68E3E4641B95EC0B56141D /* MorningLockView.swift */,
+				CE956002175E90D0E5403053 /* MotionVerificationView.swift */,
+				997935950BBB44F468A9D27B /* PendingReviewView.swift */,
+				6985563FCB5F3FDD3F26715C /* PhoneHomeView.swift */,
+				3846045D5EA11C155BBB230D /* PhotoVerificationView.swift */,
+				E2BE7AFCB5DE60870DD40C7F /* QRVerificationView.swift */,
+				3D091A4D425AA28860D37220 /* QuizVerificationView.swift */,
+				ABE40595E33E07A70F7C547A /* VerificationView.swift */,
+			);
+			path = Child;
+			sourceTree = "<group>";
+		};
+		F9B5E72AE3B5A182226DE66B /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */,
+				CBADB93F6AE67DE8DAA79F38 /* ChildPairingView.swift */,
+				2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		498134E544759DAC2614BA97 /* MomAlarmClock */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC4B467D74EC9D97132AE836 /* Build configuration list for PBXNativeTarget "MomAlarmClock" */;
+			buildPhases = (
+				039D117E67203CFEA5F7225A /* Sources */,
+				13013E4245227BF3C44B6338 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MomAlarmClock;
+			packageProductDependencies = (
+				4699B296ED229F477152517D /* FirebaseAuth */,
+				7D707FA3D4A92CC98067094E /* FirebaseFirestore */,
+				C02E8F1F24A32535AE84F2F6 /* FirebaseMessaging */,
+				848AEEA6650D9C47C114F7FF /* FirebaseCrashlytics */,
+				F1F640AEF22627E0E7DF9C20 /* FirebaseAnalytics */,
+				619FADDEB23C1A0F1DC5368B /* FirebaseAppCheck */,
+				94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */,
+			);
+			productName = MomAlarmClock;
+			productReference = BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */;
+			productType = "com.apple.product-type.application";
+		};
+		54F49B4F59602769C3711F53 /* MomAlarmClockTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E23D3DE7EBE6C1554932C4C /* Build configuration list for PBXNativeTarget "MomAlarmClockTests" */;
+			buildPhases = (
+				2C1B16AFEA28651369976A8C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A174FAEDB2E959A4D84532C0 /* PBXTargetDependency */,
+			);
+			name = MomAlarmClockTests;
+			packageProductDependencies = (
+			);
+			productName = MomAlarmClockTests;
+			productReference = 8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D518178C4DB485CB2871667C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					498134E544759DAC2614BA97 = {
+						DevelopmentTeam = TEAM_ID_HERE;
+					};
+					54F49B4F59602769C3711F53 = {
+						DevelopmentTeam = TEAM_ID_HERE;
+					};
+				};
+			};
+			buildConfigurationList = 151897724C320FBCB9337E31 /* Build configuration list for PBXProject "MomAlarmClock" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = AB16361BA0455536CD75CC01;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7AFB1F03F62368040E51CB3D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				498134E544759DAC2614BA97 /* MomAlarmClock */,
+				54F49B4F59602769C3711F53 /* MomAlarmClockTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		039D117E67203CFEA5F7225A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				68251C68239EE7473E0901DC /* AlarmControlsView.swift in Sources */,
+				485D8CC27760AF3358B9AF5A /* AlarmSchedule.swift in Sources */,
+				F135CB157017090E22025765 /* AlarmService.swift in Sources */,
+				BC65828D9AE42F8B61EB1BBF /* AppDelegate.swift in Sources */,
+				9C0E69F60AC1CED4B25993B7 /* AuthGateView.swift in Sources */,
+				DF69C5FE9A7320F428114370 /* AuthService.swift in Sources */,
+				33B77E1EF7058A6F4E7E2426 /* BetaDiagnostics.swift in Sources */,
+				353462FD33B484664BF1C161 /* ChildAlarmView.swift in Sources */,
+				7089597405F3FC3510E3C50A /* ChildPairingView.swift in Sources */,
+				A101CD8867514052308545DE /* ChildProfile.swift in Sources */,
+				A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */,
+				5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */,
+				D22C0E7172635C5E952D439E /* ConfirmationPolicy.swift in Sources */,
+				D1262D302A1B145903F83355 /* Date+Helpers.swift in Sources */,
+				9E5B2A2FBEC22213DD79D520 /* DiagnosticsView.swift in Sources */,
+				BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */,
+				005834AACB74DE2E9916A90D /* EscalationProfile.swift in Sources */,
+				FB03BF3EA28C26DD9B6B64D3 /* FamilyControlsService.swift in Sources */,
+				BD3BDAAF98973E2DB76B788C /* FirestoreSyncService.swift in Sources */,
+				910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */,
+				DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */,
+				ED46BBB6137BA6BFFB47093E /* HistoryView.swift in Sources */,
+				D1175425961DC9E48F166232 /* LocalStore.swift in Sources */,
+				4340788D197531A38DEF3FA1 /* LocalSyncService.swift in Sources */,
+				B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */,
+				8F420D606C9FEFD88B5DCF67 /* MomAppCheckProviderFactory.swift in Sources */,
+				DA9C5BE00AA5DB4BB9DFAA27 /* MorningLockView.swift in Sources */,
+				3622AFF95D6C5B724114F4C6 /* MorningSession.swift in Sources */,
+				D959C772E675F0065F9A8ABF /* MotionVerificationView.swift in Sources */,
+				2054CD539FA1CC4EAF3D1AF6 /* NetworkMonitor.swift in Sources */,
+				D3AC8848C34BFD31F59DEFDB /* NextMorningSettingsView.swift in Sources */,
+				6C9B27C55E423AD94DFE6A55 /* ParentAction.swift in Sources */,
+				997C740D2EF7215D1E8B4455 /* ParentAuthView.swift in Sources */,
+				3FFD75685823F00F32A19D30 /* ParentDashboardView.swift in Sources */,
+				E5CC0A906EB28BB905B65719 /* ParentViewModel.swift in Sources */,
+				756284152526055FB54D7486 /* PendingReviewView.swift in Sources */,
+				08EA28F99203248E7144660B /* PhoneHomeView.swift in Sources */,
+				83A5CA24BE19F50A509D721C /* PhotoVerificationView.swift in Sources */,
+				FDC9A771D1902A5E38C4CD0E /* QRVerificationView.swift in Sources */,
+				F9E1BEEEBC12D3C948445A18 /* QuizVerificationView.swift in Sources */,
+				56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */,
+				BF9B4DFACFDEBD596FEC0A71 /* RewardStoreView.swift in Sources */,
+				7A289F8A0A1EC59B4B05AC7A /* SetupWizardView.swift in Sources */,
+				4C4583CE3606C1BE55BDDE04 /* SetupWizardViewModel.swift in Sources */,
+				3C651D5BD7D3CC730FD10838 /* StatsService.swift in Sources */,
+				0EDFBF19520DF8B05D083096 /* SyncProtocol.swift in Sources */,
+				09E9A6B6468D1F0DFF19D688 /* SyncServiceFactory.swift in Sources */,
+				7C383A09AC8330D0C4F014B1 /* TamperConsequence.swift in Sources */,
+				2D1DF8043F316AD0D9707DB3 /* TamperDetectionService.swift in Sources */,
+				9BFB57CA2B9761B24F3997D8 /* TamperEvent.swift in Sources */,
+				7E9DA03DA96EB7E1306428BD /* VerificationMethod.swift in Sources */,
+				217F6A618C66D271547E7BB8 /* VerificationResult.swift in Sources */,
+				1AF54AFAF5D30D429BFA9029 /* VerificationReviewView.swift in Sources */,
+				666D4AC48E805C0AE1BB1284 /* VerificationService.swift in Sources */,
+				00E0D81E674724546788D013 /* VerificationTier.swift in Sources */,
+				87FFCA09869BE5C8744BF942 /* VerificationView.swift in Sources */,
+				0573A1B690903BEDB3F8E1CB /* VoiceAlarmCacheService.swift in Sources */,
+				BF4E494943889A94C5E93D42 /* VoiceAlarmPlayerService.swift in Sources */,
+				9BEE43696645DCC0D4B3B1EC /* VoiceAlarmRecorderView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1B16AFEA28651369976A8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E75B09EE16EB548C82DA9A6B /* CoreLogicTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A174FAEDB2E959A4D84532C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 498134E544759DAC2614BA97 /* MomAlarmClock */;
+			targetProxy = E8906CAED4D0AE8C3BB88FEB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03A3A573316B4B98E0B44637 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.momclock.MomAlarmClockTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mom Alarm Clock.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mom Alarm Clock";
+			};
+			name = Release;
+		};
+		055097B9BC609098D167F9F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = TEAM_ID_HERE;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		40E294C9121B074664AFF718 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MomAlarmClock.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.momclock.MomAlarmClock;
+				PRODUCT_NAME = "Mom Alarm Clock";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B55ACADEDEC473EC76D1ED5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.momclock.MomAlarmClockTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mom Alarm Clock.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mom Alarm Clock";
+			};
+			name = Debug;
+		};
+		C2CF1CAC63AE370EFD153866 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MomAlarmClock.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.momclock.MomAlarmClock;
+				PRODUCT_NAME = "Mom Alarm Clock";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		E0C47AC17742917EE86DCB6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = TEAM_ID_HERE;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		151897724C320FBCB9337E31 /* Build configuration list for PBXProject "MomAlarmClock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0C47AC17742917EE86DCB6D /* Debug */,
+				055097B9BC609098D167F9F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		2E23D3DE7EBE6C1554932C4C /* Build configuration list for PBXNativeTarget "MomAlarmClockTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B55ACADEDEC473EC76D1ED5D /* Debug */,
+				03A3A573316B4B98E0B44637 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC4B467D74EC9D97132AE836 /* Build configuration list for PBXNativeTarget "MomAlarmClock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40E294C9121B074664AFF718 /* Debug */,
+				C2CF1CAC63AE370EFD153866 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4699B296ED229F477152517D /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		619FADDEB23C1A0F1DC5368B /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		7D707FA3D4A92CC98067094E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		848AEEA6650D9C47C114F7FF /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		C02E8F1F24A32535AE84F2F6 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		F1F640AEF22627E0E7DF9C20 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EC09C62D947006DA7C33C03 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D518178C4DB485CB2871667C /* Project object */;
+}

@@ -38,7 +38,7 @@ struct PhoneHomeView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.blue)
 
-            Text("Send a message to your parent")
+            Text("Send a message to your guardian")
                 .font(.headline)
 
             // Quick message buttons
@@ -82,7 +82,7 @@ struct PhoneHomeView: View {
                 .foregroundStyle(.green)
             Text("Message Sent!")
                 .font(.title2.bold())
-            Text("Your parent will see this message.")
+            Text("Your guardian will see this message.")
                 .foregroundStyle(.secondary)
             Button("Done") { dismiss() }
                 .buttonStyle(.borderedProminent)
@@ -90,20 +90,12 @@ struct PhoneHomeView: View {
     }
 
     private func sendMessage() {
-        guard !messageText.isEmpty, let session = vm.activeSession else { return }
+        guard !messageText.isEmpty else { return }
         isSending = true
 
-        // Store the message on the morning session via CloudKit
         Task {
-            var updatedSession = session
-            updatedSession.parentMessage = messageText // Reusing field; in production, add a childMessage field
-            updatedSession.lastUpdated = Date()
-            do {
-                _ = try await CloudSyncService.shared.save(morningSession: updatedSession)
-                sent = true
-            } catch {
-                print("[PhoneHome] Failed to send message: \(error)")
-            }
+            await vm.sendMessageToParent(messageText)
+            sent = true
             isSending = false
         }
     }

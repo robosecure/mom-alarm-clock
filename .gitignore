@@ -1,0 +1,11 @@
+# Xcode
+ios/MomAlarmClock.xcodeproj/xcuserdata/
+ios/MomAlarmClock.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+build/
+.DS_Store

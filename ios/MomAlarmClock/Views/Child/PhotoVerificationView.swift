@@ -33,7 +33,7 @@ struct PhotoVerificationView: View {
             Text("Take a Photo")
                 .font(.title2.bold())
 
-            Text("Take a photo to prove you're up and moving. Your parent may review this.")
+            Text("Take a photo to prove you're up and moving. Your guardian may review this.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -88,12 +88,12 @@ struct PhotoVerificationView: View {
 
     private var completionView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: "hourglass.circle.fill")
                 .font(.system(size: 80))
-                .foregroundStyle(.green)
-            Text("Photo Submitted!")
+                .foregroundStyle(.orange)
+            Text("Photo Submitted")
                 .font(.title.bold())
-            Text("Your parent will see this photo. Great job getting up!")
+            Text("Your photo has been sent to your guardian for review. Please wait for their approval.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -101,13 +101,21 @@ struct PhotoVerificationView: View {
 
     private func submitPhoto() {
         isSubmitting = true
-        // TODO: Upload photo to CloudKit as a CKAsset on the morning session record.
-        // For now, auto-approve after a brief delay.
+        // Photo verification always requires parent review — no auto-approve.
+        // The photo reference is saved as proof metadata for the parent to review.
         Task {
-            try? await Task.sleep(for: .seconds(1))
+            let photoRef = "local://photo-\(UUID().uuidString)" // In production: upload to Firebase Storage
+            let result = VerificationResult(
+                method: .photo,
+                completedAt: Date(),
+                tier: vm.effectiveVerificationTier,
+                passed: true, // Provisionally passed — parent makes final call
+                photoReference: photoRef,
+                deviceTimestamp: Date()
+            )
             isComplete = true
             isSubmitting = false
-            await vm.completeVerification(method: .photo)
+            await vm.completeVerification(method: .photo, result: result)
         }
     }
 }

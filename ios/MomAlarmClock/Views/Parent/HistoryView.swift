@@ -4,6 +4,7 @@ import SwiftUI
 struct HistoryView: View {
     @Environment(ParentViewModel.self) private var vm
     @State private var selectedTab = 0
+    @State private var showClearConfirmation = false
 
     var body: some View {
         VStack {
@@ -21,6 +22,23 @@ struct HistoryView: View {
             }
         }
         .navigationTitle("History")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(role: .destructive) {
+                    showClearConfirmation = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+            }
+        }
+        .confirmationDialog("Clear History", isPresented: $showClearConfirmation, titleVisibility: .visible) {
+            Button("Clear Local History", role: .destructive) {
+                Task { await vm.clearLocalHistory() }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This clears session and tamper history from this device. Cloud data is not affected.")
+        }
     }
 
     private var morningHistoryList: some View {
@@ -42,12 +60,18 @@ struct HistoryView: View {
 
     private func morningRow(_ session: MorningSession) -> some View {
         HStack {
-            Image(systemName: session.state == .verified ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(session.state == .verified ? .green : .red)
+            Image(systemName: sessionIcon(session))
+                .foregroundStyle(sessionColor(session))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(session.alarmFiredAt.formatted(date: .abbreviated, time: .shortened))
                     .font(.subheadline)
+
+                if let result = session.verificationResult {
+                    Label(result.method.displayName, systemImage: result.method.systemImage)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
                 if let duration = session.wakeUpDuration {
                     Text("Verified in \(Int(duration / 60)) min")
@@ -60,6 +84,12 @@ struct HistoryView: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
+
+                if let action = session.parentAction {
+                    Text(parentActionLabel(action))
+                        .font(.caption)
+                        .foregroundStyle(action.isApproval ? .green : .red)
+                }
             }
 
             Spacer()
@@ -71,6 +101,33 @@ struct HistoryView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+
+    private func sessionIcon(_ session: MorningSession) -> String {
+        switch session.state {
+        case .verified: "checkmark.circle.fill"
+        case .pendingParentReview: "hourglass.circle.fill"
+        case .failed: "xmark.circle.fill"
+        default: "circle.fill"
+        }
+    }
+
+    private func sessionColor(_ session: MorningSession) -> Color {
+        switch session.state {
+        case .verified: .green
+        case .pendingParentReview: .orange
+        case .failed: .red
+        default: .gray
+        }
+    }
+
+    private func parentActionLabel(_ action: ParentAction) -> String {
+        switch action {
+        case .approved: "Parent approved"
+        case .autoAcknowledged: "Auto-acknowledged"
+        case .denied(let reason): reason.isEmpty ? "Parent denied" : "Denied: \(reason)"
+        case .escalated(let reason): reason.isEmpty ? "Escalated" : "Escalated: \(reason)"
+        }
     }
 
     private var tamperEventList: some View {
@@ -101,6 +158,22 @@ struct HistoryView: View {
                 Text(event.detail)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
+                let consequence = event.effectiveConsequence
+                if consequence.pointsImpact != 0 || consequence.escalateVerificationTier {
+                    HStack(spacing: 8) {
+                        if consequence.pointsImpact != 0 {
+                            Text("\(consequence.pointsImpact) pts")
+                                .foregroundStyle(.red)
+                        }
+                        if consequence.escalateVerificationTier {
+                            Text("Tier ↑")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    .font(.caption2.bold())
+                }
+
                 Text(event.timestamp.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)

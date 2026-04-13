@@ -4,6 +4,8 @@ import SwiftUI
 /// Parents can define custom rewards; children can see what they're working toward.
 struct RewardStoreView: View {
     @Environment(ParentViewModel.self) private var vm
+    @State private var redeemedRewardName: String?
+    @State private var showRedeemConfirmation = false
 
     /// Sample reward tiers — in production these would be parent-configurable.
     private let rewards: [Reward] = [
@@ -16,11 +18,11 @@ struct RewardStoreView: View {
 
     var body: some View {
         List {
-            if let child = vm.selectedChild {
+            if let stats = vm.selectedChildStats {
                 Section {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("\(child.stats.rewardPoints)")
+                            Text("\(stats.rewardPoints)")
                                 .font(.system(size: 48, weight: .bold, design: .rounded))
                                 .foregroundStyle(.purple)
                             Text("Reward Points")
@@ -29,7 +31,7 @@ struct RewardStoreView: View {
                         }
                         Spacer()
                         VStack(alignment: .trailing) {
-                            Label("\(child.stats.currentStreak) days", systemImage: "flame.fill")
+                            Label("\(stats.currentStreak) days", systemImage: "flame.fill")
                                 .font(.headline)
                                 .foregroundStyle(.orange)
                             Text("Current Streak")
@@ -58,14 +60,15 @@ struct RewardStoreView: View {
 
                             Spacer()
 
-                            if child.stats.rewardPoints >= reward.points {
+                            if stats.rewardPoints >= reward.points {
                                 Button("Redeem") {
-                                    // TODO: Deduct points, record redemption
+                                    redeemedRewardName = reward.name
+                                    showRedeemConfirmation = true
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .controlSize(.small)
                             } else {
-                                Text("\(reward.points - child.stats.rewardPoints) more")
+                                Text("\(reward.points - stats.rewardPoints) more")
                                     .font(.caption)
                                     .foregroundStyle(.tertiary)
                             }
@@ -85,6 +88,19 @@ struct RewardStoreView: View {
             }
         }
         .navigationTitle("Rewards")
+        .alert("Redeem Reward?", isPresented: $showRedeemConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Redeem") {
+                if let name = redeemedRewardName,
+                   let reward = rewards.first(where: { $0.name == name }) {
+                    Task { await vm.redeemPoints(reward.points) }
+                }
+            }
+        } message: {
+            if let name = redeemedRewardName {
+                Text("Redeem \"\(name)\" for your child?")
+            }
+        }
     }
 }
 

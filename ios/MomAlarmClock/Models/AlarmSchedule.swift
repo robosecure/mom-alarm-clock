@@ -20,6 +20,12 @@ struct AlarmSchedule: Codable, Identifiable, Sendable, Equatable {
     /// How the alarm escalates over time.
     var escalation: EscalationProfile
 
+    /// Difficulty tier for verification methods.
+    var verificationTier: VerificationTier = .medium
+
+    /// How the session is confirmed after the child verifies.
+    var confirmationPolicy: ConfirmationPolicy = .default
+
     /// Snooze configuration.
     var snoozeRules: SnoozeRules
 

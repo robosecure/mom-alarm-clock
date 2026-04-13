@@ -7,6 +7,15 @@ struct QuizVerificationView: View {
     @State private var userAnswer = ""
     @State private var feedback: String?
     @State private var feedbackColor: Color = .clear
+    @State private var questionStartTime: Date = .now
+    @State private var timeRemaining: Int = 45
+    @State private var questionTimer: Timer?
+    @State private var totalAnswerTime: Double = 0
+    @State private var attemptsOnCurrentQuestion: Int = 0
+    /// Reads from guardian overrides if set, otherwise defaults to 3.
+    private var maxAttemptsPerQuestion: Int {
+        vm.effectiveConfig?.maxAttempts ?? 3
+    }
     @FocusState private var isInputFocused: Bool
 
     var body: some View {
@@ -48,6 +57,20 @@ struct QuizVerificationView: View {
 
     private func questionView(_ question: VerificationService.QuizQuestion) -> some View {
         VStack(spacing: 20) {
+            // Timer + attempts
+            HStack(spacing: 24) {
+                Label("\(timeRemaining)s", systemImage: "timer")
+                    .font(.system(.title3, design: .monospaced))
+                    .foregroundStyle(timeRemaining <= 10 ? .red : .secondary)
+                Label("Attempt \(attemptsOnCurrentQuestion + 1)/\(maxAttemptsPerQuestion)", systemImage: "number")
+                    .font(.subheadline)
+                    .foregroundStyle(attemptsOnCurrentQuestion >= maxAttemptsPerQuestion - 1 ? .red : .secondary)
+            }
+            .onAppear {
+                attemptsOnCurrentQuestion = 0
+                startQuestionTimer()
+            }
+
             Text(question.text)
                 .font(.system(size: 36, weight: .bold, design: .rounded))
                 .padding()
@@ -69,12 +92,49 @@ struct QuizVerificationView: View {
                     .foregroundStyle(feedbackColor)
             }
 
-            Button("Submit") {
-                checkAnswer(question)
+            HStack(spacing: 16) {
+                Button {
+                    Task { await vm.sendMessageToParent("I'm working on it!") }
+                } label: {
+                    Label("I'm trying!", systemImage: "hand.wave")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+
+                Button("Submit") {
+                    checkAnswer(question)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(userAnswer.isEmpty)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(userAnswer.isEmpty)
+        }
+    }
+
+    private func startQuestionTimer() {
+        questionStartTime = .now
+        let limit = vm.effectiveConfig?.timerSeconds ?? vm.effectiveVerificationTier.quizTimeLimitSeconds
+        timeRemaining = limit
+        questionTimer?.invalidate()
+        questionTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            let elapsed = Int(Date.now.timeIntervalSince(questionStartTime))
+            timeRemaining = max(0, limit - elapsed)
+            if timeRemaining == 0 {
+                // Time expired — mark as wrong and advance
+                questionTimer?.invalidate()
+                let q = vm.quizQuestions[safe: vm.quizCurrentIndex]
+                feedback = "Time's up! Answer was \(q?.correctAnswer ?? 0)"
+                feedbackColor = .orange
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    totalAnswerTime += Double(limit)
+                    vm.quizCurrentIndex += 1
+                    userAnswer = ""
+                    feedback = nil
+                    if vm.quizCurrentIndex < vm.quizQuestions.count {
+                        startQuestionTimer()
+                    }
+                }
+            }
         }
     }
 
@@ -100,6 +160,24 @@ struct QuizVerificationView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+        .onAppear {
+            questionTimer?.invalidate()
+            let passed = vm.quizCorrectCount >= vm.quizQuestions.count
+            if passed {
+                let avgSeconds = vm.quizQuestions.isEmpty ? 0 : totalAnswerTime / Double(vm.quizQuestions.count)
+                let result = VerificationResult(
+                    method: .quiz,
+                    completedAt: Date(),
+                    tier: vm.effectiveVerificationTier,
+                    passed: true,
+                    quizCorrect: vm.quizCorrectCount,
+                    quizTotal: vm.quizQuestions.count,
+                    quizAverageSeconds: avgSeconds,
+                    deviceTimestamp: Date()
+                )
+                Task { await vm.completeVerification(method: .quiz, result: result) }
+            }
+        }
     }
 
     private func checkAnswer(_ question: VerificationService.QuizQuestion) {
@@ -109,24 +187,45 @@ struct QuizVerificationView: View {
             return
         }
 
+        let elapsed = Date.now.timeIntervalSince(questionStartTime)
+        questionTimer?.invalidate()
+
         if question.isCorrect(answer) {
             feedback = "Correct!"
             feedbackColor = .green
             vm.quizCorrectCount += 1
+            totalAnswerTime += elapsed
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 vm.quizCurrentIndex += 1
                 userAnswer = ""
                 feedback = nil
-
-                if vm.quizCurrentIndex >= vm.quizQuestions.count && vm.quizCorrectCount >= vm.quizQuestions.count {
-                    Task { await vm.completeVerification(method: .quiz) }
+                if vm.quizCurrentIndex < vm.quizQuestions.count {
+                    startQuestionTimer()
                 }
+                // Completion is handled by completionView.onAppear
             }
         } else {
-            feedback = "Wrong — try again"
-            feedbackColor = .red
-            userAnswer = ""
+            attemptsOnCurrentQuestion += 1
+            if attemptsOnCurrentQuestion >= maxAttemptsPerQuestion {
+                feedback = "Out of attempts — the answer was \(question.correctAnswer)"
+                feedbackColor = .orange
+                questionTimer?.invalidate()
+                totalAnswerTime += elapsed
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    vm.quizCurrentIndex += 1
+                    userAnswer = ""
+                    feedback = nil
+                    attemptsOnCurrentQuestion = 0
+                    if vm.quizCurrentIndex < vm.quizQuestions.count {
+                        startQuestionTimer()
+                    }
+                }
+            } else {
+                feedback = "Incorrect — \(maxAttemptsPerQuestion - attemptsOnCurrentQuestion) attempts left"
+                feedbackColor = .red
+                userAnswer = ""
+            }
         }
     }
 }

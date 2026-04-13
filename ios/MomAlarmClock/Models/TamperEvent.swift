@@ -22,30 +22,34 @@ struct TamperEvent: Codable, Identifiable, Sendable, Equatable {
 
     /// The morning session this event occurred during (nil if outside a session).
     var morningSessionID: UUID?
+
+    /// Consequence applied for this tamper event (computed from type if nil).
+    var consequence: TamperConsequence?
+
+    /// Returns the effective consequence, using the default for this type if none was set.
+    var effectiveConsequence: TamperConsequence {
+        consequence ?? TamperConsequence.defaultConsequence(for: type)
+    }
 }
 
 // MARK: - TamperType
 
 extension TamperEvent {
+    /// Each type has real detection code in TamperDetectionService.
+    /// Device offline / app force-quit are NOT formal TamperEvents — they are
+    /// detected parent-side via HeartbeatService.isDeviceOffline() and shown as
+    /// a UX indicator, not recorded as tamper history.
     enum TamperType: String, Codable, Sendable, CaseIterable {
-        case volumeLowered        // Device volume was reduced during alarm
-        case notificationsDisabled // Notification permissions were revoked
-        case appForceQuit         // App was force-quit during an active session
-        case airplaneModeEnabled  // Network connectivity lost during session
-        case doNotDisturbEnabled  // Focus/DND mode was enabled
-        case devicePoweredOff     // Heartbeat lost — device may have been turned off
-        case locationSpoofing     // GPS location appears inconsistent
-        case timeZoneChanged      // System time was manually altered
+        case volumeLowered        // KVO on AVAudioSession.outputVolume
+        case notificationsDisabled // UNUserNotificationCenter polling
+        case networkLost          // NWPathMonitor detects connectivity loss
+        case timeZoneChanged      // NSSystemTimeZoneDidChange notification
 
         var displayName: String {
             switch self {
             case .volumeLowered:         "Volume Lowered"
             case .notificationsDisabled: "Notifications Disabled"
-            case .appForceQuit:          "App Force Quit"
-            case .airplaneModeEnabled:   "Airplane Mode"
-            case .doNotDisturbEnabled:   "Do Not Disturb"
-            case .devicePoweredOff:      "Device Powered Off"
-            case .locationSpoofing:      "Location Spoofing"
+            case .networkLost:           "Network Lost"
             case .timeZoneChanged:       "Time Zone Changed"
             }
         }

@@ -1,11 +1,17 @@
 import UIKit
 import UserNotifications
 import BackgroundTasks
+import FirebaseCore
+import FirebaseMessaging
+import FirebaseFirestore
+import FirebaseCrashlytics
+import FirebaseAnalytics
+import FirebaseAppCheck
 
 /// AppDelegate handles notification center delegation and background task registration.
 /// Critical Alerts require the com.apple.developer.usernotifications.critical-alerts entitlement
 /// which must be requested from Apple via https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
-final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
     static let heartbeatTaskIdentifier = "com.momclock.heartbeat"
 
@@ -13,9 +19,39 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        // App Check: debug provider for dev, App Attest for production.
+        #if DEBUG
+        AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
+        #else
+        AppCheck.setAppCheckProviderFactory(MomAppCheckProviderFactory())
+        #endif
+
+        // Firebase must be configured before any Firebase service is used.
+        if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+           let plist = NSDictionary(contentsOfFile: path),
+           let apiKey = plist["API_KEY"] as? String,
+           !apiKey.hasPrefix("YOUR_") {
+            FirebaseApp.configure()
+            print("[Firebase] Configured from GoogleService-Info.plist")
+        } else {
+            print("[Firebase] Not configured — using local-only mode")
+        }
+
         UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
+        AlarmService.registerNotificationCategories()
         registerBackgroundTasks()
         requestNotificationPermissions()
+
+        // Register for remote notifications (required for FCM on iOS)
+        application.registerForRemoteNotifications()
+
+        // Reschedule all alarms from local persistence on every launch.
+        Task {
+            await AlarmService.shared.rescheduleAllAlarms()
+            await LocalStore.shared.pruneOldSessions()
+        }
+
         return true
     }
 
@@ -41,6 +77,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             using: nil
         ) { task in
             guard let refreshTask = task as? BGAppRefreshTask else { return }
+
+            // Reschedule alarms on every background refresh as a safety net
+            Task { await AlarmService.shared.rescheduleAllAlarms() }
+
             HeartbeatService.shared.handleBackgroundRefresh(refreshTask)
         }
     }
@@ -53,6 +93,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+        // Also trigger alarm session creation for foreground notifications
+        let userInfo = notification.request.content.userInfo
+        if let alarmID = userInfo["alarmID"] as? String {
+            NotificationCenter.default.post(
+                name: .alarmNotificationTapped,
+                object: nil,
+                userInfo: ["alarmID": alarmID]
+            )
+        }
         completionHandler([.banner, .sound, .badge])
     }
 
@@ -63,6 +112,14 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
+
+        // Track push delivery for diagnostics
+        let pushType = userInfo["type"] as? String ?? "alarm"
+        Task { @MainActor in
+            BetaDiagnostics.shared.recordPushReceived(type: pushType)
+            BetaDiagnostics.log(.pushReceived(type: pushType))
+        }
+
         if let alarmID = userInfo["alarmID"] as? String {
             NotificationCenter.default.post(
                 name: .alarmNotificationTapped,
@@ -71,6 +128,30 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             )
         }
         completionHandler()
+    }
+
+    // MARK: - APNS Token
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+
+    // MARK: - FCM Token
+
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken, FirebaseApp.app() != nil else { return }
+        print("[FCM] Token: \(token.prefix(20))...")
+        Task { @MainActor in BetaDiagnostics.shared.recordTokenRegistration(token) }
+
+        // Store the token under the user's Firestore doc for Cloud Functions to read
+        Task {
+            guard let authState = await LocalStore.shared.authState() else { return }
+            let db = Firestore.firestore()
+            try? await db.collection("users").document(authState.userID).updateData([
+                "fcmToken": token,
+                "fcmTokenUpdatedAt": FieldValue.serverTimestamp()
+            ])
+        }
     }
 }
 

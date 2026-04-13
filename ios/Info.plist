@@ -2,53 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Background Modes -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>fetch</string>
-        <string>remote-notification</string>
-        <string>audio</string>
-    </array>
-
-    <!-- Background Task Identifiers -->
-    <key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-        <string>com.momclock.heartbeat</string>
-    </array>
-
-    <!-- Camera Usage (for QR scanning and photo verification) -->
-    <key>NSCameraUsageDescription</key>
-    <string>Mom Alarm Clock needs camera access to scan QR codes and take verification photos.</string>
-
-    <!-- Location Usage (for geofence verification) -->
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Mom Alarm Clock uses your location to verify you've reached the designated wake-up spot.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Mom Alarm Clock monitors your location to verify geofence-based alarm dismissal.</string>
-
-    <!-- Motion Usage (for step counter verification) -->
-    <key>NSMotionUsageDescription</key>
-    <string>Mom Alarm Clock counts your steps to verify you're out of bed and moving.</string>
-
-    <!-- Photo Library (for photo verification fallback) -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Mom Alarm Clock accesses your photo library for verification photo selection.</string>
-
-    <!-- Supported interface orientations (iPhone portrait only) -->
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-    </array>
-
-    <!-- Minimum iOS version -->
-    <key>MinimumOSVersion</key>
-    <string>17.0</string>
-
-    <!-- App Transport Security -->
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <false/>
-    </dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.momclock.heartbeat</string>
+	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>MinimumOSVersion</key>
+	<string>17.0</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Mom Alarm Clock needs camera access to scan QR codes and take verification photos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Mom Alarm Clock monitors your location to verify geofence-based alarm dismissal.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Mom Alarm Clock uses your location to verify you've reached the designated wake-up spot.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Mom Alarm Clock counts your steps to verify you're out of bed and moving.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Mom Alarm Clock accesses your photo library for verification photo selection.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+		<string>audio</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

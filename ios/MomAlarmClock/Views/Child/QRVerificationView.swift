@@ -29,7 +29,7 @@ struct QRVerificationView: View {
                 .foregroundStyle(.blue)
             Text("Scan the QR Code")
                 .font(.title2.bold())
-            Text("Find the QR code your parent placed and scan it with your camera.")
+            Text("Find the QR code your guardian placed and scan it with your camera.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -93,7 +93,15 @@ struct QRVerificationView: View {
             let valid = await VerificationService.shared.validateQRCode(expected, childID: childID)
             isValid = valid
             if valid {
-                await vm.completeVerification(method: .qr)
+                let result = VerificationResult(
+                    method: .qr,
+                    completedAt: Date(),
+                    tier: vm.effectiveVerificationTier,
+                    passed: true,
+                    qrHash: String(expected.suffix(16)),
+                    deviceTimestamp: Date()
+                )
+                await vm.completeVerification(method: .qr, result: result)
             }
         }
     }
