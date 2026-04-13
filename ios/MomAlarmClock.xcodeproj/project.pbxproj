@@ -80,7 +80,6 @@
 		D3AC8848C34BFD31F59DEFDB /* NextMorningSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */; };
 		D64FFAAF842ECE1A97DA0E1F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 848AEEA6650D9C47C114F7FF /* FirebaseCrashlytics */; };
 		D959C772E675F0065F9A8ABF /* MotionVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE956002175E90D0E5403053 /* MotionVerificationView.swift */; };
-		DA9C5BE00AA5DB4BB9DFAA27 /* MorningLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C68E3E4641B95EC0B56141D /* MorningLockView.swift */; };
 		DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B5E70198F06E7B317331FD /* HeartbeatService.swift */; };
 		DF69C5FE9A7320F428114370 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE8423EC363729A4AD404DC /* AuthService.swift */; };
 		E5CC0A906EB28BB905B65719 /* ParentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */; };
@@ -134,7 +133,6 @@
 		6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSchedule.swift; sourceTree = "<group>"; };
 		7798F230AE6051270E51D954 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextMorningSettingsView.swift; sourceTree = "<group>"; };
-		7C68E3E4641B95EC0B56141D /* MorningLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningLockView.swift; sourceTree = "<group>"; };
 		7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = System/Library/Frameworks/Combine.framework; sourceTree = SDKROOT; };
 		822D8409305F93D925C1A459 /* ChildAlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildAlarmView.swift; sourceTree = "<group>"; };
 		8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MomAlarmClockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -404,7 +402,6 @@
 			children = (
 				822D8409305F93D925C1A459 /* ChildAlarmView.swift */,
 				CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */,
-				7C68E3E4641B95EC0B56141D /* MorningLockView.swift */,
 				CE956002175E90D0E5403053 /* MotionVerificationView.swift */,
 				997935950BBB44F468A9D27B /* PendingReviewView.swift */,
 				6985563FCB5F3FDD3F26715C /* PhoneHomeView.swift */,
@@ -546,7 +543,6 @@
 				4340788D197531A38DEF3FA1 /* LocalSyncService.swift in Sources */,
 				B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */,
 				8F420D606C9FEFD88B5DCF67 /* MomAppCheckProviderFactory.swift in Sources */,
-				DA9C5BE00AA5DB4BB9DFAA27 /* MorningLockView.swift in Sources */,
 				3622AFF95D6C5B724114F4C6 /* MorningSession.swift in Sources */,
 				D959C772E675F0065F9A8ABF /* MotionVerificationView.swift in Sources */,
 				2054CD539FA1CC4EAF3D1AF6 /* NetworkMonitor.swift in Sources */,
