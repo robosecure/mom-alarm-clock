@@ -132,5 +132,6 @@ Then in Xcode:
 | No push notifications | Check APNS key uploaded in Firebase Console; check Diagnostics > Push Notifications |
 | `PERMISSION_DENIED` on Firestore writes | Rules not deployed; run `firebase deploy --only firestore:rules` |
 | Alarm doesn't fire | Check Settings > Notifications > Mom Alarm Clock > enabled |
+| Alarm fires but no sound | Check device is not on silent (Ring/Silent switch). Check volume is up. Check Focus mode is off or allows Mom Alarm Clock. This is a known iOS bug affecting all alarm apps (2024-2025). |
 | Archive fails with signing error | Set DEVELOPMENT_TEAM in project.yml and re-run xcodegen |
 | Child can't join family | Code expired (24h) or already used; parent generates new code |
