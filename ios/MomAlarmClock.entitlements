@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- CloudKit for parent-child data sync -->
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array>
+        <string>iCloud.com.momclock.MomAlarmClock</string>
+    </array>
+    <key>com.apple.developer.icloud-services</key>
+    <array>
+        <string>CloudKit</string>
+    </array>
+
+    <!-- Critical Alerts — alarm sounds even in DND/silent mode -->
+    <!-- Must apply at: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/ -->
+    <key>com.apple.developer.usernotifications.critical-alerts</key>
+    <true/>
+
+    <!-- Family Controls — app blocking on child device -->
+    <!-- Must apply at: https://developer.apple.com/contact/request/family-controls-distribution -->
+    <key>com.apple.developer.family-controls</key>
+    <true/>
+
+    <!-- Push Notifications (for CloudKit subscriptions) -->
+    <key>aps-environment</key>
+    <string>development</string>
+
+    <!-- Background Modes (configured in Info.plist, entitlement implicit) -->
+</dict>
+</plist>

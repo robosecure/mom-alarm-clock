@@ -41,6 +41,7 @@
   #sim-badge { background: #1a3a1a; color: var(--green); border: 1px solid #2d5a2d; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
   #sim-badge.alarm { background: #3a1a1a; color: var(--red); border-color: #5a2d2d; animation: pulse 1.4s infinite; }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+  @keyframes ringPulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.5; transform: scale(1.1); } }
   .header-spacer { flex: 1; }
   .btn { padding: 7px 14px; border-radius: 7px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: opacity .15s, transform .1s; }
   .btn:hover { opacity: .85; }
@@ -64,7 +65,7 @@
   .panel-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
 
   /* TABS */
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding: 0 16px; background: var(--panel); }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding: 0 16px; background: var(--panel); overflow-x: auto; }
   .tab { padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; white-space: nowrap; }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -113,6 +114,14 @@
   .cheat-section { background: #1e1210; border: 1px solid #4a2020; border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
   .cheat-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
 
+  /* BYPASS REALITY PANEL */
+  .bypass-panel { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-top: 10px; animation: slideDown .3s ease; }
+  @keyframes slideDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+  .bypass-panel .bp-title { font-size: 13px; font-weight: 700; color: var(--yellow); margin-bottom: 6px; }
+  .bypass-panel .bp-row { margin-bottom: 8px; }
+  .bypass-panel .bp-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+  .bypass-panel .bp-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+
   /* VERIFY SECTIONS */
   .verify-section { display: none; }
   .verify-section.active { display: block; }
@@ -159,18 +168,33 @@
   .alarm-elapsed { font-size: 13px; color: var(--muted); margin-top: 4px; }
   .esc-step-label { font-size: 12px; color: var(--yellow); margin-top: 8px; font-weight: 600; }
 
+  /* RINGING INDICATOR */
+  .ringing-indicator { display: inline-block; font-size: 16px; font-weight: 700; color: var(--red); animation: ringPulse 0.8s infinite; margin-top: 8px; }
+
+  /* BACKUP NOTIFICATIONS */
+  .backup-notif-card { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 12px; }
+  .backup-notif-card .bkn-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; }
+  .backup-notif-card .bkn-val { font-weight: 700; color: var(--yellow); }
+
+  /* GEOFENCE MAP */
+  .geofence-map { background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 12px; position: relative; min-height: 140px; }
+  .geofence-map .gf-zone { display: inline-block; padding: 8px 16px; border: 2px solid var(--green); border-radius: 50%; font-size: 13px; font-weight: 700; color: var(--green); }
+  .geofence-map .gf-label { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .geofence-map .gf-location { font-size: 13px; font-weight: 600; margin-top: 6px; }
+
   /* INFO CARD */
   #bottom-section { padding: 16px; max-width: 1400px; margin: 0 auto; }
   .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
   .info-card h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 700px) { .info-grid { grid-template-columns: 1fr; } }
-  .info-col h3 { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
-  .info-col.native h3 { color: var(--yellow); }
+  .info-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .info-grid-3 { grid-template-columns: 1fr; } }
+  .info-col h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .info-col h3.tier-green { color: var(--green); }
+  .info-col h3.tier-yellow { color: var(--yellow); }
+  .info-col h3.tier-red { color: var(--red); }
   .info-col ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
   .info-col ul li { font-size: 13px; color: var(--muted); padding-left: 16px; position: relative; }
-  .info-col ul li::before { content: "•"; position: absolute; left: 0; color: var(--accent); }
-  .info-col.native ul li::before { color: var(--yellow); }
+  .info-col ul li::before { content: "~"; position: absolute; left: 0; color: var(--accent); }
 
   .lock-overlay { background: #1e1210; border: 1px solid #4a2020; border-radius: 8px; padding: 14px; text-align: center; }
   .lock-overlay .lock-icon { font-size: 36px; margin-bottom: 8px; }
@@ -182,17 +206,46 @@
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
 
+  /* CALLOUT BANNER */
+  .callout-banner { background: #3a2a0a; border: 1px solid var(--yellow); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: var(--yellow); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .callout-banner a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+  /* SETUP WIZARD */
+  .wizard-progress { margin-bottom: 14px; }
+  .wizard-progress .wp-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .wizard-step { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+  .wizard-step .ws-header { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .wizard-step .ws-check { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; cursor: pointer; transition: all .15s; margin-top: 1px; }
+  .wizard-step .ws-check.checked { background: var(--green); border-color: var(--green); color: #000; }
+  .wizard-step .ws-title { font-size: 14px; font-weight: 700; }
+  .wizard-step .ws-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .wizard-step .ws-sub-list { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; padding-left: 30px; }
+  .wizard-step .ws-sub-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  .wizard-step .ws-sub-check { width: 16px; height: 16px; border: 2px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; cursor: pointer; transition: all .15s; }
+  .wizard-step .ws-sub-check.checked { background: var(--green); border-color: var(--green); color: #000; }
+
+  /* REWARDS CARD */
+  .reward-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .reward-item:last-child { border-bottom: none; }
+  .reward-item .ri-icon { font-size: 16px; }
+  .reward-item .ri-text { flex: 1; }
+  .reward-item.locked { opacity: .45; }
+  .reward-item.unlocked .ri-text { color: var(--green); font-weight: 600; }
+
   select option { background: #1c2333; }
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .back-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; margin-bottom: 12px; background: none; border: none; padding: 0; }
+  .back-btn:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div id="header">
-  <div class="logo"><span>⏰</span> Mom Alarm Clock</div>
+  <div class="logo"><span>&#9200;</span> Mom Alarm Clock</div>
   <div id="sim-badge">SIM READY</div>
   <div class="header-spacer"></div>
   <button class="btn btn-ghost btn-sm" onclick="resetDemo()">Reset</button>
@@ -204,7 +257,7 @@
 <div id="main">
 
   <!-- PARENT PANEL -->
-  <div class="panel">
+  <div class="panel" id="parent-panel">
     <div class="panel-header">
       <div class="panel-label">Parent View</div>
       <div class="panel-title">Master Control Panel</div>
@@ -213,10 +266,17 @@
       <div class="tab active" onclick="switchTab('parent','dashboard')">Dashboard</div>
       <div class="tab" onclick="switchTab('parent','controls')">Alarm &amp; Controls</div>
       <div class="tab" onclick="switchTab('parent','history')">History</div>
+      <div class="tab" onclick="switchTab('parent','setup')">Setup Guide</div>
     </div>
 
     <!-- PARENT TAB: DASHBOARD -->
     <div class="tab-content active" id="parent-tab-dashboard">
+      <!-- Family Sharing Callout -->
+      <div class="callout-banner" id="family-sharing-callout">
+        &#9888;&#65039; Family Sharing Required &mdash; The child's iPhone must use a child/teen Apple ID in your Family Sharing group for app blocking to work.
+        <a onclick="switchTab('parent','setup')">Setup Guide &#8594;</a>
+      </div>
+
       <div class="form-group">
         <label>Child</label>
         <select onchange="selectChild(this.value)" id="dash-child-select">
@@ -228,22 +288,22 @@
 
       <div class="card">
         <div class="card-title">Current Config</div>
-        <div class="kv"><span class="key">Preset</span><span class="val" id="d-preset">—</span></div>
-        <div class="kv"><span class="key">Verification Method</span><span class="val" id="d-verify-method">—</span></div>
-        <div class="kv"><span class="key">Alarm Time</span><span class="val" id="d-alarm-time">—</span></div>
-        <div class="kv"><span class="key">Volume Floor</span><span class="val" id="d-volume">—</span></div>
-        <div class="kv"><span class="key">Snooze</span><span class="val" id="d-snooze">—</span></div>
-        <div class="kv"><span class="key">Turn-Off Rule</span><span class="val" id="d-turnoff">—</span></div>
-        <div class="kv"><span class="key">Escalation Profile</span><span class="val" id="d-esc-profile">—</span></div>
+        <div class="kv"><span class="key">Preset</span><span class="val" id="d-preset">&mdash;</span></div>
+        <div class="kv"><span class="key">Verification Method</span><span class="val" id="d-verify-method">&mdash;</span></div>
+        <div class="kv"><span class="key">Alarm Time</span><span class="val" id="d-alarm-time">&mdash;</span></div>
+        <div class="kv"><span class="key">Volume Floor</span><span class="val" id="d-volume">&mdash;</span></div>
+        <div class="kv"><span class="key">Snooze</span><span class="val" id="d-snooze">&mdash;</span></div>
+        <div class="kv"><span class="key">Turn-Off Rule</span><span class="val" id="d-turnoff">&mdash;</span></div>
+        <div class="kv"><span class="key">Escalation Profile</span><span class="val" id="d-esc-profile">&mdash;</span></div>
       </div>
 
       <div class="card">
         <div class="card-title">Live Status</div>
         <div class="kv"><span class="key">Alarm State</span><span class="val" id="d-alarm-state"><span class="badge badge-gray">Idle</span></span></div>
-        <div class="kv"><span class="key">Wake Verification</span><span class="val" id="d-verified">—</span></div>
-        <div class="kv"><span class="key">Escalation Step</span><span class="val" id="d-esc-step">—</span></div>
-        <div class="kv"><span class="key">Morning Lock</span><span class="val" id="d-lock-state">—</span></div>
-        <div class="kv"><span class="key">Last Ping</span><span class="val" id="d-last-ping">—</span></div>
+        <div class="kv"><span class="key">Wake Verification</span><span class="val" id="d-verified">&mdash;</span></div>
+        <div class="kv"><span class="key">Escalation Step</span><span class="val" id="d-esc-step">&mdash;</span></div>
+        <div class="kv"><span class="key">Morning Lock</span><span class="val" id="d-lock-state">&mdash;</span></div>
+        <div class="kv"><span class="key">Last Ping</span><span class="val" id="d-last-ping">&mdash;</span></div>
       </div>
 
       <div class="stats-grid">
@@ -259,6 +319,12 @@
           <div class="stat-num" id="stat-tamper" style="color:var(--red)">0</div>
           <div class="stat-label">Tamper Alerts</div>
         </div>
+      </div>
+
+      <!-- Rewards & Streaks Card -->
+      <div class="card" id="rewards-card">
+        <div class="card-title">Rewards &amp; Streaks</div>
+        <div id="rewards-content"></div>
       </div>
 
       <div class="action-row">
@@ -302,6 +368,7 @@
           <div class="radio-btn" onclick="setRadio('verifyMethod','photo')">Photo Proof</div>
           <div class="radio-btn" onclick="setRadio('verifyMethod','motion')">Motion+Steps</div>
           <div class="radio-btn" onclick="setRadio('verifyMethod','quiz')">Quick Quiz</div>
+          <div class="radio-btn" onclick="setRadio('verifyMethod','geofence')">Geofence (Kitchen)</div>
         </div>
       </div>
 
@@ -334,7 +401,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Auto "I'm Awake ✅" Message</label>
+          <label>Auto "I'm Awake" Message</label>
           <div class="radio-group" id="autoMsg-group">
             <div class="radio-btn selected" onclick="setRadio('autoMsg','on')">On</div>
             <div class="radio-btn" onclick="setRadio('autoMsg','off')">Off</div>
@@ -374,10 +441,24 @@
         <div style="color:var(--muted);font-size:13px;padding:4px 0;">No tamper events recorded.</div>
       </div>
     </div>
+
+    <!-- PARENT TAB: SETUP GUIDE -->
+    <div class="tab-content" id="parent-tab-setup">
+      <div class="wizard-progress">
+        <div class="wp-label">
+          <span>Setup Progress</span>
+          <span id="wizard-progress-label">0 of 6 steps complete</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="wizard-progress-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div id="wizard-steps"></div>
+    </div>
   </div>
 
   <!-- CHILD PANEL -->
-  <div class="panel">
+  <div class="panel" id="child-panel">
     <div class="panel-header">
       <div class="panel-label">Child View</div>
       <div class="panel-title" id="child-panel-title">Ethan's Phone</div>
@@ -401,7 +482,7 @@
           <div class="kv"><span class="key">Turn Off</span><span class="val" id="c-turnoff">Blocked until verified</span></div>
         </div>
         <div style="text-align:center; padding: 20px; color: var(--muted);">
-          <div style="font-size:36px; margin-bottom:8px;">😴</div>
+          <div style="font-size:36px; margin-bottom:8px;">&#128564;</div>
           <div>Alarm is not active. Press <strong>Start Alarm</strong> in the header to begin simulation.</div>
         </div>
       </div>
@@ -411,17 +492,24 @@
         <div class="alarm-countdown">
           <div style="font-size:12px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em;">ALARM RINGING</div>
           <div class="alarm-time-big" id="alarm-active-time">6:30 AM</div>
+          <div class="ringing-indicator" id="ringing-indicator">&#128266; RINGING</div>
           <div class="alarm-elapsed" id="alarm-elapsed">Active for 0:00</div>
           <div class="esc-step-label" id="esc-step-label">Escalation: Step 0</div>
           <div style="margin-top: 10px;">
             <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;">
               <span>Progress to next escalation</span>
-              <span id="esc-progress-label">—</span>
+              <span id="esc-progress-label">&mdash;</span>
             </div>
             <div class="progress-wrap">
               <div class="progress-bar" id="esc-progress-bar" style="width:0%"></div>
             </div>
           </div>
+        </div>
+
+        <!-- Backup Notifications Indicator -->
+        <div class="backup-notif-card" id="backup-notif-card">
+          <div class="bkn-title">Scheduled Backup Notifications</div>
+          <div><span class="bkn-val" id="backup-notif-count">5 of 5</span> remaining &mdash; even if dismissed, more will fire</div>
         </div>
 
         <div class="card">
@@ -439,23 +527,26 @@
         </div>
 
         <div class="cheat-section">
-          <div class="cheat-title">⚠ Try Cheating (Demo)</div>
+          <div class="cheat-title">&#9888; Try Cheating (Demo)</div>
           <div class="action-row">
-            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Lowered device volume below floor')">Lower Volume</button>
-            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Force-closed app')">Force Close App</button>
-            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Disabled notifications for Mom Alarm Clock')">Disable Notifications</button>
-            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Attempted app uninstall')">Uninstall App</button>
-            <button class="btn btn-ghost btn-sm" onclick="tamperAttempt('Attempted device power-off')">Power Off Phone</button>
+            <button class="btn btn-ghost btn-sm" onclick="cheatAttempt('volume')">Lower Volume</button>
+            <button class="btn btn-ghost btn-sm" onclick="cheatAttempt('forceclose')">Force Close App</button>
+            <button class="btn btn-ghost btn-sm" onclick="cheatAttempt('notifications')">Disable Notifications</button>
+            <button class="btn btn-ghost btn-sm" onclick="cheatAttempt('uninstall')">Uninstall App</button>
+            <button class="btn btn-ghost btn-sm" onclick="cheatAttempt('poweroff')">Power Off Phone</button>
           </div>
+          <!-- Bypass Reality Panel -->
+          <div id="bypass-reality-container"></div>
         </div>
       </div>
     </div>
 
     <!-- CHILD TAB: VERIFY -->
     <div class="tab-content" id="child-tab-verify">
+      <button class="back-btn" onclick="switchTab('child','alarm')">&#8592; Back to Alarm</button>
       <div id="verify-already-done" style="display:none;">
         <div style="text-align:center;padding:30px;">
-          <div style="font-size:48px;margin-bottom:10px;">✅</div>
+          <div style="font-size:48px;margin-bottom:10px;">&#9989;</div>
           <div style="font-size:18px;font-weight:700;color:var(--green);">Verified!</div>
           <div style="color:var(--muted);margin-top:6px;">Wake verification complete.</div>
         </div>
@@ -477,7 +568,7 @@
             <div class="qr-code" id="qr-code-display">RG-7412</div>
             <div class="qr-hint">Walk to the fridge and type the code above</div>
           </div>
-          <div class="verify-error" id="qr-error">Wrong code. Try again — walk to the fridge and check!</div>
+          <div class="verify-error" id="qr-error">Wrong code. Try again &mdash; walk to the fridge and check!</div>
           <input class="verify-input" id="qr-input" type="text" placeholder="Type the code exactly" maxlength="8" autocomplete="off">
           <button class="btn btn-primary" style="width:100%" onclick="submitQR()">Submit Code</button>
         </div>
@@ -490,7 +581,7 @@
             <div class="form-group">
               <label>Evidence</label>
               <select id="photo-select">
-                <option value="">— choose one —</option>
+                <option value="">-- choose one --</option>
                 <option value="sink">Sink running (video)</option>
                 <option value="toothbrush">Toothbrush + toothpaste (photo)</option>
                 <option value="breakfast">Breakfast item (photo)</option>
@@ -520,7 +611,7 @@
         <!-- QUICK QUIZ -->
         <div class="verify-section" id="verify-quiz">
           <div class="card" style="margin-bottom:12px;">
-            <div class="card-title">Quick Quiz — Prove You're Awake</div>
+            <div class="card-title">Quick Quiz &mdash; Prove You're Awake</div>
           </div>
           <div class="verify-error" id="quiz-error">Check your answers and try again.</div>
           <div class="form-group">
@@ -532,6 +623,22 @@
             <input class="verify-input" id="quiz-q2" type="text" placeholder="awake now" autocomplete="off" style="text-align:left;">
           </div>
           <button class="btn btn-primary" style="width:100%" onclick="submitQuiz()">Submit Answers</button>
+        </div>
+
+        <!-- GEOFENCE -->
+        <div class="verify-section" id="verify-geofence">
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-title">Geofence Verification &mdash; Kitchen</div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Walk to the kitchen to verify you are out of bed.</p>
+          </div>
+          <div class="geofence-map">
+            <div class="gf-zone" id="gf-zone-display">Kitchen Zone</div>
+            <div class="gf-label">Required verification zone</div>
+            <div class="gf-location" id="gf-location-display" style="color:var(--red);">Current location: Bedroom (too far)</div>
+          </div>
+          <div class="verify-error" id="geofence-error">You must be in the kitchen to verify.</div>
+          <button class="btn btn-warning" style="width:100%;margin-bottom:8px" onclick="simulateWalkToKitchen()" id="gf-walk-btn">Simulate Walking to Kitchen</button>
+          <button class="btn btn-primary" style="width:100%;opacity:.4" onclick="submitGeofence()" id="gf-complete-btn" disabled>Complete Verification</button>
         </div>
       </div>
     </div>
@@ -546,7 +653,7 @@
 
       <div id="ph-lock-warning" style="display:none;">
         <div class="lock-overlay" style="margin-bottom:12px;">
-          <div class="lock-icon">🔒</div>
+          <div class="lock-icon">&#128274;</div>
           <p>Morning Lock Active</p>
           <small>App access is restricted until you verify you're awake</small>
         </div>
@@ -568,36 +675,43 @@
 <!-- BOTTOM SECTION -->
 <div id="bottom-section">
   <div class="info-card">
-    <h2>What This Demo Proves vs. What Needs Native Work</h2>
-    <div class="info-grid">
+    <h2>3-Tier Architecture: What Works at Each Level</h2>
+    <div class="info-grid-3">
       <div class="info-col">
-        <h3>Demonstrated in This Web Prototype</h3>
+        <h3 class="tier-green">Tier 1: App Store Only</h3>
         <ul>
           <li>Full alarm state machine (idle, active, verified, locked)</li>
           <li>Escalation ladder with timed threshold crossings</li>
-          <li>Four distinct wake verification methods with validation logic</li>
-          <li>Morning Lock state with per-child config</li>
-          <li>Tamper attempt detection and logging across all cheat scenarios</li>
-          <li>Parent controls: nudge, force lock, grant access, preset toggle</li>
-          <li>Per-child configuration, streaks, on-time statistics, and history log</li>
+          <li>Four+ wake verification methods</li>
+          <li>Parent push notifications at each escalation step</li>
+          <li>Critical Alerts bypass DND and silent mode</li>
           <li>Bidirectional parent-child messaging</li>
-          <li>Fast-forward simulation for escalation testing</li>
-          <li>Persistent demo state via localStorage</li>
+          <li>Streak tracking, on-time stats, history log</li>
+          <li>Persistent state via iCloud sync</li>
         </ul>
       </div>
-      <div class="info-col native">
-        <h3>Requires Native iOS / MDM Work</h3>
+      <div class="info-col">
+        <h3 class="tier-yellow">Tier 2: App + Screen Time / FamilyControls</h3>
         <ul>
-          <li>Screen Time API + FamilyControls framework to enforce app blocking</li>
-          <li>Device Management Profile (MDM) to resist uninstall without parent PIN</li>
-          <li>DeviceActivityMonitor to track app usage and enforce "allowed apps" list</li>
-          <li>Real-device motion sensors (CMMotionManager) for motion/steps verification</li>
-          <li>Camera access for actual photo-proof capture and upload</li>
-          <li>AVFoundation audio to enforce volume floor below system level</li>
-          <li>APNs push notifications for parent alerts at each escalation step</li>
-          <li>Background audio session to keep alarm ringing when app is closed</li>
-          <li>QR code generation + camera-based scanning (Vision framework)</li>
-          <li>iCloud / server sync for multi-device parent/child communication</li>
+          <li>Morning Lock via FamilyControls (block all non-allowed apps)</li>
+          <li>DeviceActivityMonitor for app-usage enforcement</li>
+          <li>Volume floor enforcement via AVAudioSession</li>
+          <li>Prevent alarm app deletion (Screen Time restriction)</li>
+          <li>Background audio session to survive app switch</li>
+          <li>Heartbeat monitoring: detect force-quit within minutes</li>
+          <li>Requires Family Sharing with child Apple ID</li>
+        </ul>
+      </div>
+      <div class="info-col">
+        <h3 class="tier-red">Tier 3: App + MDM (Maximum Enforcement)</h3>
+        <ul>
+          <li>MDM profile prevents app uninstall without parent PIN</li>
+          <li>Restrict access to Settings during alarm window</li>
+          <li>Prevent notification permission changes</li>
+          <li>Kiosk-mode option: lock device to alarm app</li>
+          <li>Remote wipe / lock if device is lost</li>
+          <li>Enterprise-grade tamper detection</li>
+          <li>Requires MDM enrollment (Jamf, Mosyle, etc.)</li>
         </ul>
       </div>
     </div>
@@ -611,7 +725,8 @@
 // ============================================================
 //  STATE
 // ============================================================
-const STORAGE_KEY = 'mom_alarm_demo_v2';
+const STORAGE_KEY = 'mom_alarm_demo_v3';
+const WIZARD_KEY = 'mom_alarm_wizard_v1';
 
 const ESC_PROFILES = {
   standard:   [1, 3, 5, 8],
@@ -621,7 +736,7 @@ const ESC_PROFILES = {
 
 const ESC_LABELS = [
   'Reminder sent to child',
-  'Parent Notified — no confirmation yet',
+  'Parent Notified \u2014 no confirmation yet',
   'Morning Lock activated',
   'Auto-call / announce mode triggered'
 ];
@@ -633,6 +748,54 @@ const PRESET_DEFAULTS = {
 };
 
 const CHILD_NAMES = { ethan: 'Ethan', holly: 'Holly', tristyn: 'Tristyn' };
+
+const BYPASS_EXPLANATIONS = {
+  volume: {
+    tried: 'Lowered device volume below floor',
+    ios: 'System volume reduced. BUT: Critical Alerts play at their own volume level, partially bypassing this. The app also monitors system volume and can re-raise it.',
+    parent: 'Parent notified: "Volume dropped below floor." Tamper event logged with timestamp.'
+  },
+  forceclose: {
+    tried: 'Force-closed the app',
+    ios: 'App process killed. BUT: Critical Alert notifications already scheduled by iOS will still fire. The app registers a background task that iOS will restart.',
+    parent: 'Parent receives "heartbeat stopped" alert within 15\u201330 seconds. Tamper event logged.'
+  },
+  notifications: {
+    tried: 'Disabled notifications for Mom Alarm Clock',
+    ios: 'If done before alarm: Critical Alerts still fire (they bypass notification settings). Regular notifications blocked. Screen Time restrictions can prevent this change entirely.',
+    parent: 'Parent notified on next app check-in. If Critical Alerts were granted, alarm still sounds.'
+  },
+  uninstall: {
+    tried: 'Attempted app uninstall',
+    ios: 'If Screen Time "Deleting Apps" restriction is set: blocked entirely. If not: app removed, push token invalidated, all local data lost.',
+    parent: 'Parent notified within minutes when heartbeat stops. Server detects missing device. Re-install required.'
+  },
+  poweroff: {
+    tried: 'Attempted device power-off',
+    ios: 'Phone off = no alarm, no notifications, nothing. This is the hardest cheat to prevent. Some MDM solutions can detect power-off events.',
+    parent: 'Server detects missing heartbeat. Parent alerted: "Device appears offline." Logged as tamper event.'
+  }
+};
+
+const REWARDS = [
+  { threshold: 5,  label: 'Extra 30min screen time', icon: '\ud83d\udcf1' },
+  { threshold: 10, label: 'Weekend late alarm',       icon: '\ud83d\ude34' },
+  { threshold: 20, label: 'Free app download',        icon: '\ud83c\udf81' }
+];
+
+const WIZARD_STEPS = [
+  { id: 'family', title: 'Step 1: Family Sharing', desc: 'Ensure your child\'s iPhone uses a child/teen Apple ID in your Family Sharing group.', subs: [] },
+  { id: 'install', title: 'Step 2: Install Child App', desc: 'Install Mom Alarm Clock on the child\'s device from the App Store.', subs: [] },
+  { id: 'familycontrols', title: 'Step 3: Authorize FamilyControls', desc: 'On the child\'s device, approve the FamilyControls permission when prompted.', subs: [] },
+  { id: 'screentime', title: 'Step 4: Screen Time Lockdown', desc: 'Configure Screen Time restrictions on the child\'s device:', subs: [
+    { id: 'st-passcode', label: 'Set a Screen Time passcode (different from device passcode)' },
+    { id: 'st-delete', label: 'Disable "Deleting Apps" under Content & Privacy Restrictions' },
+    { id: 'st-install', label: 'Disable "Installing Apps" (optional, recommended)' },
+    { id: 'st-settings', label: 'Block Settings access during alarm window (optional)' }
+  ]},
+  { id: 'critical', title: 'Step 5: Critical Alerts', desc: 'Allow Critical Alerts when prompted on the child\'s device. This lets the alarm bypass Do Not Disturb and silent mode.', subs: [] },
+  { id: 'test', title: 'Step 6: Test Alarm', desc: 'Run a test alarm to verify everything works end-to-end.', subs: [] }
+];
 
 function defaultState() {
   return {
@@ -651,10 +814,12 @@ function defaultState() {
       snoozesUsed: 0,
       lockState: 'off',
       escStepIndex: -1,
+      escFiredSteps: {},
       lastPing: null,
       lastPingTs: null,
       qrCode: '',
-      motionTimerEnd: null
+      motionTimerEnd: null,
+      geofenceReached: false
     },
     logs: {
       history: [
@@ -680,7 +845,13 @@ let S = loadState();
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Ensure escFiredSteps exists in runtime (migration)
+      if (!parsed.runtime.escFiredSteps) parsed.runtime.escFiredSteps = {};
+      if (parsed.runtime.geofenceReached === undefined) parsed.runtime.geofenceReached = false;
+      return parsed;
+    }
   } catch(e) {}
   return defaultState();
 }
@@ -691,6 +862,83 @@ function saveState() {
 
 function getChildConfig() {
   return S.config.children[S.config.childId];
+}
+
+// ============================================================
+//  WIZARD STATE (separate localStorage)
+// ============================================================
+function loadWizard() {
+  try {
+    const raw = localStorage.getItem(WIZARD_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+}
+
+function saveWizard(data) {
+  try { localStorage.setItem(WIZARD_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+// ============================================================
+//  SIMULATED AUDIO (Web Audio API)
+// ============================================================
+let audioCtx = null;
+let alarmOscillator = null;
+let alarmGain = null;
+let alarmAudioRunning = false;
+
+function startAlarmAudio() {
+  if (alarmAudioRunning) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    alarmGain = audioCtx.createGain();
+    alarmGain.gain.value = 0.3;
+    alarmGain.connect(audioCtx.destination);
+
+    // Create a beeping pattern using oscillator scheduling
+    alarmAudioRunning = true;
+    scheduleBeeps();
+  } catch(e) {
+    // Web Audio not supported, silently fail
+  }
+}
+
+function scheduleBeeps() {
+  if (!alarmAudioRunning || !audioCtx) return;
+  const now = audioCtx.currentTime;
+  // Two-tone beep pattern
+  for (let i = 0; i < 4; i++) {
+    const osc = audioCtx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = i % 2 === 0 ? 880 : 1100;
+    const env = audioCtx.createGain();
+    env.gain.value = 0;
+    osc.connect(env);
+    env.connect(alarmGain);
+
+    const start = now + i * 0.3;
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(0.3, start + 0.02);
+    env.gain.setValueAtTime(0.3, start + 0.15);
+    env.gain.linearRampToValueAtTime(0, start + 0.2);
+
+    osc.start(start);
+    osc.stop(start + 0.25);
+  }
+  // Schedule next burst
+  alarmBeepTimeout = setTimeout(scheduleBeeps, 1600);
+}
+
+let alarmBeepTimeout = null;
+
+function stopAlarmAudio() {
+  alarmAudioRunning = false;
+  if (alarmBeepTimeout) { clearTimeout(alarmBeepTimeout); alarmBeepTimeout = null; }
+  if (audioCtx) {
+    try { audioCtx.close(); } catch(e) {}
+    audioCtx = null;
+  }
+  alarmGain = null;
 }
 
 // ============================================================
@@ -707,13 +955,13 @@ function genQR() {
 }
 
 function fmtTime(ts) {
-  if (!ts) return '—';
+  if (!ts) return '\u2014';
   const d = new Date(ts);
   return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
 function fmtDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '\u2014';
   const d = new Date(ts);
   const opts = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
   return d.toLocaleString([], opts);
@@ -749,18 +997,19 @@ function alarmTimeLabel() {
 function switchTab(panel, tabId) {
   const tabsEl = document.getElementById(panel + '-tabs');
   const tabs = tabsEl.querySelectorAll('.tab');
-  const panelEl = document.getElementById('main').querySelector(panel === 'parent' ? '.panel:first-child' : '.panel:last-child');
+  const panelEl = document.getElementById(panel + '-panel') || document.getElementById('main').querySelector(panel === 'parent' ? '.panel:first-child' : '.panel:last-child');
   const contents = panelEl.querySelectorAll('.tab-content');
 
-  tabs.forEach((t, i) => {
+  tabs.forEach(function(t) {
     const isTarget = t.getAttribute('onclick').includes("'" + tabId + "'");
     t.classList.toggle('active', isTarget);
   });
-  contents.forEach(c => {
+  contents.forEach(function(c) {
     c.classList.toggle('active', c.id === panel + '-tab-' + tabId);
   });
 
   if (panel === 'child' && tabId === 'verify') renderVerify();
+  if (panel === 'parent' && tabId === 'setup') renderWizard();
 }
 
 // ============================================================
@@ -779,7 +1028,7 @@ function selectChild(id) {
 function setRadio(field, value) {
   const group = document.getElementById(field + '-group');
   if (!group) return;
-  group.querySelectorAll('.radio-btn').forEach(btn => {
+  group.querySelectorAll('.radio-btn').forEach(function(btn) {
     const onclick = btn.getAttribute('onclick');
     btn.classList.toggle('selected', onclick && onclick.includes("'" + value + "'"));
   });
@@ -815,7 +1064,17 @@ function renderControls() {
   if (appsInput) appsInput.value = cfg.allowedApps || '';
 
   const fields = ['preset','verifyMethod','volumeFloor','snooze','turnOff','autoMsg','escProfile'];
-  fields.forEach(f => setRadio(f, cfg[f] || ''));
+  fields.forEach(function(f) { setRadioUI(f, cfg[f] || ''); });
+}
+
+// setRadioUI only updates the UI, does not call updateConfig (avoids recursion)
+function setRadioUI(field, value) {
+  const group = document.getElementById(field + '-group');
+  if (!group) return;
+  group.querySelectorAll('.radio-btn').forEach(function(btn) {
+    const onclick = btn.getAttribute('onclick');
+    btn.classList.toggle('selected', onclick && onclick.includes("'" + value + "'"));
+  });
 }
 
 // ============================================================
@@ -832,11 +1091,15 @@ function startAlarm() {
   S.runtime.snoozesUsed = 0;
   S.runtime.lockState = 'on';
   S.runtime.escStepIndex = -1;
+  S.runtime.escFiredSteps = {};
   S.runtime.qrCode = genQR();
   S.runtime.motionTimerEnd = null;
+  S.runtime.geofenceReached = false;
   saveState();
   resetMotionUI();
+  resetGeofenceUI();
   renderAll();
+  startAlarmAudio();
   toast('Alarm Started', CHILD_NAMES[S.config.childId] + "'s alarm is now ringing!", 'danger');
 }
 
@@ -860,8 +1123,8 @@ function snoozeAlarm() {
     return;
   }
 
-  let maxSnoozes = 1;
-  let snoozeMinutes = 3;
+  var maxSnoozes = 1;
+  var snoozeMinutes = 3;
   if (cfg.snooze === 'limited') { maxSnoozes = 2; snoozeMinutes = 2; }
 
   if (S.runtime.snoozesUsed >= maxSnoozes) {
@@ -878,7 +1141,7 @@ function snoozeAlarm() {
 }
 
 function tamperAttempt(reason) {
-  const entry = { childId: S.config.childId, reason: reason, ts: Date.now() };
+  var entry = { childId: S.config.childId, reason: reason, ts: Date.now() };
   S.logs.tamper.unshift(entry);
   S.runtime.lastPing = 'TAMPER: ' + reason;
   S.runtime.lastPingTs = Date.now();
@@ -887,16 +1150,39 @@ function tamperAttempt(reason) {
   toast('Tamper Alert', reason, 'danger');
 }
 
+// cheatAttempt: handles "try cheating" buttons. These are actual evasion attempts = tamper.
+// Shows bypass reality panel AND logs tamper.
+function cheatAttempt(cheatId) {
+  var info = BYPASS_EXPLANATIONS[cheatId];
+  if (!info) return;
+  tamperAttempt(info.tried);
+  showBypassPanel(cheatId);
+}
+
+function showBypassPanel(cheatId) {
+  var info = BYPASS_EXPLANATIONS[cheatId];
+  if (!info) return;
+  var container = document.getElementById('bypass-reality-container');
+  container.innerHTML =
+    '<div class="bypass-panel">' +
+      '<div class="bp-title">Bypass Reality Check</div>' +
+      '<div class="bp-row"><div class="bp-label">What the child tried</div><div class="bp-text">' + escHtml(info.tried) + '</div></div>' +
+      '<div class="bp-row"><div class="bp-label">What happens on iOS</div><div class="bp-text">' + escHtml(info.ios) + '</div></div>' +
+      '<div class="bp-row"><div class="bp-label">What the parent sees</div><div class="bp-text">' + escHtml(info.parent) + '</div></div>' +
+    '</div>';
+}
+
 function verifySuccess() {
   S.runtime.verified = true;
+  stopAlarmAudio();
   endMorning('verified', 'Verification completed');
 }
 
 function endMorning(result, note) {
-  const elapsed = elapsedMin();
-  const onTime = elapsed < 5;
-  const cfg = getChildConfig();
-  const child = S.config.childId;
+  var elapsed = elapsedMin();
+  var onTime = elapsed < 5;
+  var cfg = getChildConfig();
+  var child = S.config.childId;
 
   S.logs.history.unshift({
     childId: child,
@@ -909,17 +1195,17 @@ function endMorning(result, note) {
   });
 
   if (!S.stats[child]) S.stats[child] = { streak: 0, onTime14: [] };
-  const st = S.stats[child];
+  var st = S.stats[child];
   if (onTime && result === 'verified') {
     st.streak = (st.streak || 0) + 1;
   } else {
     st.streak = 0;
   }
-  st.onTime14 = [onTime ? 1 : 0, ...(st.onTime14 || [])].slice(0, 14);
+  st.onTime14 = [onTime ? 1 : 0].concat((st.onTime14 || []).slice(0, 13));
 
   if (cfg.autoMsg === 'on') {
-    S.logs.messages.unshift({ sender: CHILD_NAMES[child], text: "I'm awake ✅", ts: Date.now() });
-    S.runtime.lastPing = "I'm awake ✅";
+    S.logs.messages.unshift({ sender: CHILD_NAMES[child], text: "I'm awake!", ts: Date.now() });
+    S.runtime.lastPing = "I'm awake!";
     S.runtime.lastPingTs = Date.now();
   }
 
@@ -929,10 +1215,13 @@ function endMorning(result, note) {
   S.runtime.snoozesUsed = 0;
   S.runtime.lockState = 'off';
   S.runtime.escStepIndex = -1;
+  S.runtime.escFiredSteps = {};
+  S.runtime.geofenceReached = false;
 
+  stopAlarmAudio();
   saveState();
   renderAll();
-  toast('Morning Complete', CHILD_NAMES[child] + ': ' + (result === 'verified' ? 'Verified on time ✅' : 'Ended — ' + note), result === 'verified' ? 'success' : 'info');
+  toast('Morning Complete', CHILD_NAMES[child] + ': ' + (result === 'verified' ? 'Verified on time' : 'Ended \u2014 ' + note), result === 'verified' ? 'success' : 'info');
 }
 
 function fastForward(minutes) {
@@ -947,7 +1236,7 @@ function fastForward(minutes) {
 }
 
 function parentNudge() {
-  S.logs.messages.unshift({ sender: 'Parent', text: 'Nudge: Please verify now 📣', ts: Date.now() });
+  S.logs.messages.unshift({ sender: 'Parent', text: 'Nudge: Please verify now!', ts: Date.now() });
   S.runtime.lastPing = 'Nudge sent by parent';
   S.runtime.lastPingTs = Date.now();
   saveState();
@@ -956,11 +1245,11 @@ function parentNudge() {
 }
 
 function togglePreset() {
-  const cfg = getChildConfig();
-  const order = ['school', 'weekend', 'strict'];
-  const idx = order.indexOf(cfg.preset || 'school');
-  const next = order[(idx + 1) % order.length];
-  const defaults = PRESET_DEFAULTS[next];
+  var cfg = getChildConfig();
+  var order = ['school', 'weekend', 'strict'];
+  var idx = order.indexOf(cfg.preset || 'school');
+  var next = order[(idx + 1) % order.length];
+  var defaults = PRESET_DEFAULTS[next];
   Object.assign(cfg, defaults, { preset: next, autoMsg: cfg.autoMsg, allowedApps: cfg.allowedApps });
   renderControls();
   renderAll();
@@ -977,48 +1266,57 @@ function parentForceLock() {
 
 function parentGrantAccess() {
   S.runtime.lockState = 'granted';
-  if (S.runtime.alarmActive) endMorning('parentGranted', 'Parent granted access');
-  else { saveState(); renderAll(); }
+  if (S.runtime.alarmActive) {
+    stopAlarmAudio();
+    endMorning('parentGranted', 'Parent granted access');
+  } else {
+    saveState();
+    renderAll();
+  }
   toast('Full Access Granted', CHILD_NAMES[S.config.childId] + "'s phone restrictions cleared.", 'success');
 }
 
 function resetDemo() {
   S = defaultState();
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(WIZARD_KEY);
   saveState();
+  stopAlarmAudio();
   resetMotionUI();
+  resetGeofenceUI();
   renderControls();
   renderAll();
+  // Clear bypass panel
+  var bpc = document.getElementById('bypass-reality-container');
+  if (bpc) bpc.innerHTML = '';
   toast('Demo Reset', 'All state has been reset to defaults.', 'info');
 }
 
 // ============================================================
 //  ESCALATION TICK
 // ============================================================
-let escFiredSteps = {};
-
 function updateEscalation() {
   if (!S.runtime.alarmActive) return;
-  const cfg = getChildConfig();
-  const profile = ESC_PROFILES[cfg.escProfile || 'standard'];
-  const elapsed = elapsedMin();
+  var cfg = getChildConfig();
+  var profile = ESC_PROFILES[cfg.escProfile || 'standard'];
+  var elapsed = elapsedMin();
 
-  profile.forEach((threshold, idx) => {
-    const key = S.runtime.alarmStartTs + '-' + idx;
-    if (elapsed >= threshold && !escFiredSteps[key]) {
-      escFiredSteps[key] = true;
+  profile.forEach(function(threshold, idx) {
+    var key = S.runtime.alarmStartTs + '-' + idx;
+    if (elapsed >= threshold && !S.runtime.escFiredSteps[key]) {
+      S.runtime.escFiredSteps[key] = true;
       S.runtime.escStepIndex = idx;
 
-      const label = ESC_LABELS[idx];
+      var label = ESC_LABELS[idx];
       toast('Escalation Step ' + (idx + 1), label, idx >= 2 ? 'danger' : 'warn');
 
       if (idx === 2) {
         S.runtime.lockState = 'on';
-        S.logs.messages.unshift({ sender: 'System', text: 'Morning Lock activated — verify now!', ts: Date.now() });
+        S.logs.messages.unshift({ sender: 'System', text: 'Morning Lock activated \u2014 verify now!', ts: Date.now() });
       }
 
       if (idx === 1) {
-        S.logs.messages.unshift({ sender: 'System', text: 'No confirmation yet — parent notified.', ts: Date.now() });
+        S.logs.messages.unshift({ sender: 'System', text: 'No confirmation yet \u2014 parent notified.', ts: Date.now() });
         S.runtime.lastPing = 'No confirmation yet (auto-escalation)';
         S.runtime.lastPingTs = Date.now();
       }
@@ -1033,13 +1331,13 @@ function updateEscalation() {
 //  VERIFICATION METHODS
 // ============================================================
 function renderVerify() {
-  const cfg = getChildConfig();
-  const method = cfg.verifyMethod || 'qr';
-  const methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz' };
+  var cfg = getChildConfig();
+  var method = cfg.verifyMethod || 'qr';
+  var methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz', geofence: 'Geofence (Kitchen)' };
 
-  const noAlarm = document.getElementById('verify-no-alarm');
-  const main = document.getElementById('verify-main');
-  const done = document.getElementById('verify-already-done');
+  var noAlarm = document.getElementById('verify-no-alarm');
+  var main = document.getElementById('verify-main');
+  var done = document.getElementById('verify-already-done');
 
   if (!S.runtime.alarmActive && !S.runtime.verified) {
     noAlarm.style.display = 'block';
@@ -1058,38 +1356,54 @@ function renderVerify() {
   done.style.display = 'none';
   main.style.display = 'block';
 
-  const vMethodLabel = document.getElementById('v-method-label');
+  var vMethodLabel = document.getElementById('v-method-label');
   if (vMethodLabel) vMethodLabel.textContent = methodLabels[method] || method;
 
-  const sections = ['qr','photo','motion','quiz'];
-  sections.forEach(s => {
-    const el = document.getElementById('verify-' + s);
+  var sections = ['qr','photo','motion','quiz','geofence'];
+  sections.forEach(function(s) {
+    var el = document.getElementById('verify-' + s);
     if (el) el.classList.toggle('active', s === method);
   });
 
   if (method === 'qr' && S.runtime.qrCode) {
-    const display = document.getElementById('qr-code-display');
+    var display = document.getElementById('qr-code-display');
     if (display) display.textContent = S.runtime.qrCode;
+  }
+
+  if (method === 'geofence') {
+    var locDisp = document.getElementById('gf-location-display');
+    var walkBtn = document.getElementById('gf-walk-btn');
+    var completeBtn = document.getElementById('gf-complete-btn');
+    if (S.runtime.geofenceReached) {
+      if (locDisp) { locDisp.textContent = 'Current location: Kitchen (verified)'; locDisp.style.color = 'var(--green)'; }
+      if (walkBtn) { walkBtn.disabled = true; walkBtn.style.opacity = '.4'; walkBtn.textContent = 'In Kitchen'; }
+      if (completeBtn) { completeBtn.disabled = false; completeBtn.style.opacity = '1'; }
+    } else {
+      if (locDisp) { locDisp.textContent = 'Current location: Bedroom (too far)'; locDisp.style.color = 'var(--red)'; }
+      if (walkBtn) { walkBtn.disabled = false; walkBtn.style.opacity = '1'; walkBtn.textContent = 'Simulate Walking to Kitchen'; }
+      if (completeBtn) { completeBtn.disabled = true; completeBtn.style.opacity = '.4'; }
+    }
   }
 }
 
 function submitQR() {
-  const input = document.getElementById('qr-input');
-  const err = document.getElementById('qr-error');
-  const val = (input.value || '').trim().toUpperCase();
+  var input = document.getElementById('qr-input');
+  var err = document.getElementById('qr-error');
+  var val = (input.value || '').trim().toUpperCase();
   if (val === S.runtime.qrCode) {
     err.classList.remove('show');
     input.value = '';
     verifySuccess();
   } else {
+    // Bug fix #2: Wrong QR entry is NOT tamper, just an error
     err.classList.add('show');
-    tamperAttempt('Entered wrong QR code: "' + val + '"');
+    toast('Wrong Code', 'That code doesn\'t match. Walk to the fridge and check!', 'warn');
   }
 }
 
 function submitPhoto() {
-  const sel = document.getElementById('photo-select');
-  const err = document.getElementById('photo-error');
+  var sel = document.getElementById('photo-select');
+  var err = document.getElementById('photo-error');
   if (!sel.value) {
     err.classList.add('show');
     return;
@@ -1098,17 +1412,17 @@ function submitPhoto() {
   verifySuccess();
 }
 
-let motionInterval = null;
-let motionComplete = false;
+var motionInterval = null;
+var motionComplete = false;
 
 function resetMotionUI() {
   motionComplete = false;
   if (motionInterval) { clearInterval(motionInterval); motionInterval = null; }
-  const timerEl = document.getElementById('motion-timer');
-  const progEl = document.getElementById('motion-progress');
-  const startBtn = document.getElementById('motion-start-btn');
-  const completeBtn = document.getElementById('motion-complete-btn');
-  if (timerEl) timerEl.textContent = '10';
+  var timerEl = document.getElementById('motion-timer');
+  var progEl = document.getElementById('motion-progress');
+  var startBtn = document.getElementById('motion-start-btn');
+  var completeBtn = document.getElementById('motion-complete-btn');
+  if (timerEl) { timerEl.textContent = '10'; timerEl.style.color = 'var(--yellow)'; }
   if (progEl) progEl.style.width = '0%';
   if (startBtn) { startBtn.disabled = false; startBtn.style.opacity = '1'; startBtn.textContent = 'Start Moving'; }
   if (completeBtn) { completeBtn.disabled = true; completeBtn.style.opacity = '.4'; }
@@ -1116,14 +1430,14 @@ function resetMotionUI() {
 
 function startMotionTimer() {
   if (motionInterval) return;
-  const startBtn = document.getElementById('motion-start-btn');
+  var startBtn = document.getElementById('motion-start-btn');
   if (startBtn) { startBtn.disabled = true; startBtn.style.opacity = '.5'; startBtn.textContent = 'Moving...'; }
 
-  let remaining = 10;
-  const timerEl = document.getElementById('motion-timer');
-  const progEl = document.getElementById('motion-progress');
+  var remaining = 10;
+  var timerEl = document.getElementById('motion-timer');
+  var progEl = document.getElementById('motion-progress');
 
-  motionInterval = setInterval(() => {
+  motionInterval = setInterval(function() {
     remaining--;
     if (timerEl) timerEl.textContent = remaining;
     if (progEl) progEl.style.width = ((10 - remaining) / 10 * 100) + '%';
@@ -1131,8 +1445,8 @@ function startMotionTimer() {
       clearInterval(motionInterval);
       motionInterval = null;
       motionComplete = true;
-      if (timerEl) { timerEl.textContent = '✓'; timerEl.style.color = 'var(--green)'; }
-      const completeBtn = document.getElementById('motion-complete-btn');
+      if (timerEl) { timerEl.textContent = '\u2713'; timerEl.style.color = 'var(--green)'; }
+      var completeBtn = document.getElementById('motion-complete-btn');
       if (completeBtn) { completeBtn.disabled = false; completeBtn.style.opacity = '1'; }
     }
   }, 1000);
@@ -1148,28 +1462,68 @@ function submitMotion() {
 }
 
 function submitQuiz() {
-  const q1 = (document.getElementById('quiz-q1').value || '').trim().toLowerCase();
-  const q2 = (document.getElementById('quiz-q2').value || '').trim().toLowerCase();
-  const err = document.getElementById('quiz-error');
-  const ok1 = q1 === 'tuesday';
-  const ok2 = q2 === 'awake now';
+  var q1 = (document.getElementById('quiz-q1').value || '').trim().toLowerCase();
+  var q2 = (document.getElementById('quiz-q2').value || '').trim().toLowerCase();
+  var err = document.getElementById('quiz-error');
+  var ok1 = q1 === 'tuesday';
+  var ok2 = q2 === 'awake now';
   if (ok1 && ok2) {
     err.classList.remove('show');
     document.getElementById('quiz-q1').value = '';
     document.getElementById('quiz-q2').value = '';
     verifySuccess();
   } else {
+    // Bug fix #2: Failed quiz is not tamper, just an error
     err.classList.add('show');
-    tamperAttempt('Failed quiz: q1="' + q1 + '" q2="' + q2 + '"');
+    toast('Wrong Answers', 'Check your answers and try again.', 'warn');
   }
+}
+
+// Geofence verification
+function resetGeofenceUI() {
+  var locDisp = document.getElementById('gf-location-display');
+  var walkBtn = document.getElementById('gf-walk-btn');
+  var completeBtn = document.getElementById('gf-complete-btn');
+  if (locDisp) { locDisp.textContent = 'Current location: Bedroom (too far)'; locDisp.style.color = 'var(--red)'; }
+  if (walkBtn) { walkBtn.disabled = false; walkBtn.style.opacity = '1'; walkBtn.textContent = 'Simulate Walking to Kitchen'; }
+  if (completeBtn) { completeBtn.disabled = true; completeBtn.style.opacity = '.4'; }
+}
+
+function simulateWalkToKitchen() {
+  var walkBtn = document.getElementById('gf-walk-btn');
+  var locDisp = document.getElementById('gf-location-display');
+  if (walkBtn) { walkBtn.disabled = true; walkBtn.style.opacity = '.5'; walkBtn.textContent = 'Walking...'; }
+  if (locDisp) { locDisp.textContent = 'Current location: Hallway...'; locDisp.style.color = 'var(--yellow)'; }
+
+  setTimeout(function() {
+    S.runtime.geofenceReached = true;
+    saveState();
+    if (locDisp) { locDisp.textContent = 'Current location: Kitchen (verified)'; locDisp.style.color = 'var(--green)'; }
+    if (walkBtn) { walkBtn.textContent = 'In Kitchen'; }
+    var completeBtn = document.getElementById('gf-complete-btn');
+    if (completeBtn) { completeBtn.disabled = false; completeBtn.style.opacity = '1'; }
+    toast('Geofence Reached', 'You are now in the Kitchen zone.', 'success');
+  }, 2000);
+}
+
+function submitGeofence() {
+  if (!S.runtime.geofenceReached) {
+    var err = document.getElementById('geofence-error');
+    if (err) err.classList.add('show');
+    toast('Not in Zone', 'Walk to the kitchen first.', 'warn');
+    return;
+  }
+  var err = document.getElementById('geofence-error');
+  if (err) err.classList.remove('show');
+  verifySuccess();
 }
 
 // ============================================================
 //  MESSAGING
 // ============================================================
 function sendMessage() {
-  const input = document.getElementById('msg-input');
-  const text = (input.value || '').trim();
+  var input = document.getElementById('msg-input');
+  var text = (input.value || '').trim();
   if (!text) return;
   S.logs.messages.unshift({ sender: CHILD_NAMES[S.config.childId], text: text, ts: Date.now() });
   S.runtime.lastPing = text;
@@ -1190,29 +1544,23 @@ function renderAll() {
   renderMessages();
   renderTamper();
   renderPhoneHome();
+  renderRewards();
   updateSimBadge();
 }
 
 function updateSimBadge() {
-  const badge = document.getElementById('sim-badge');
+  var badge = document.getElementById('sim-badge');
   if (S.runtime.alarmActive) {
     badge.textContent = 'ALARM ACTIVE';
-    badge.className = 'sim-badge alarm';
-    badge.id = 'sim-badge';
-    badge.setAttribute('id','sim-badge');
-    badge.style.background = '#3a1a1a';
-    badge.style.color = 'var(--red)';
-    badge.style.borderColor = '#5a2d2d';
+    badge.classList.add('alarm');
   } else {
     badge.textContent = 'SIM READY';
-    badge.style.background = '#1a3a1a';
-    badge.style.color = 'var(--green)';
-    badge.style.borderColor = '#2d5a2d';
+    badge.classList.remove('alarm');
   }
 }
 
 function lockStateBadge(state) {
-  const map = {
+  var map = {
     'off':     '<span class="badge badge-gray">Off</span>',
     'on':      '<span class="badge badge-red">Locked</span>',
     'forced':  '<span class="badge badge-red">Force Locked</span>',
@@ -1222,60 +1570,61 @@ function lockStateBadge(state) {
 }
 
 function renderParentDash() {
-  const cfg = getChildConfig();
-  const rt = S.runtime;
-  const child = S.config.childId;
-  const st = S.stats[child] || { streak: 0, onTime14: [] };
+  var cfg = getChildConfig();
+  var rt = S.runtime;
+  var child = S.config.childId;
+  var st = S.stats[child] || { streak: 0, onTime14: [] };
 
-  const presetLabels = { school: 'School Morning', weekend: 'Weekend', strict: 'Strict Mode' };
-  const methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz' };
-  const snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
-  const turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
-  const profileLabels = { standard: 'Standard (1/3/5/8 min)', gentle: 'Gentle (2/5/8/12 min)', aggressive: 'Aggressive (1/2/3/5 min)' };
+  var presetLabels = { school: 'School Morning', weekend: 'Weekend', strict: 'Strict Mode' };
+  var methodLabels = { qr: 'QR Scan', photo: 'Photo Proof', motion: 'Motion + Steps', quiz: 'Quick Quiz', geofence: 'Geofence (Kitchen)' };
+  var snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
+  var turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
+  var profileLabels = { standard: 'Standard (1/3/5/8 min)', gentle: 'Gentle (2/5/8/12 min)', aggressive: 'Aggressive (1/2/3/5 min)' };
 
-  setText('d-preset', presetLabels[cfg.preset] || cfg.preset || '—');
-  setText('d-verify-method', methodLabels[cfg.verifyMethod] || '—');
+  setText('d-preset', presetLabels[cfg.preset] || cfg.preset || '\u2014');
+  setText('d-verify-method', methodLabels[cfg.verifyMethod] || '\u2014');
   setText('d-alarm-time', alarmTimeLabel());
-  setText('d-volume', (cfg.volumeFloor || '—') + '%');
-  setText('d-snooze', snoozeLabels[cfg.snooze] || '—');
-  setText('d-turnoff', turnoffLabels[cfg.turnOff] || '—');
-  setText('d-esc-profile', profileLabels[cfg.escProfile] || '—');
+  setText('d-volume', (cfg.volumeFloor || '\u2014') + '%');
+  setText('d-snooze', snoozeLabels[cfg.snooze] || '\u2014');
+  setText('d-turnoff', turnoffLabels[cfg.turnOff] || '\u2014');
+  setText('d-esc-profile', profileLabels[cfg.escProfile] || '\u2014');
 
-  const alarmStateEl = document.getElementById('d-alarm-state');
+  var alarmStateEl = document.getElementById('d-alarm-state');
   if (alarmStateEl) {
     if (rt.alarmActive) alarmStateEl.innerHTML = '<span class="badge badge-red">RINGING</span>';
     else alarmStateEl.innerHTML = '<span class="badge badge-gray">Idle</span>';
   }
 
-  const verifiedEl = document.getElementById('d-verified');
+  var verifiedEl = document.getElementById('d-verified');
   if (verifiedEl) verifiedEl.innerHTML = rt.verified ? '<span class="badge badge-green">Verified</span>' : '<span class="badge badge-gray">Pending</span>';
 
-  const escStepEl = document.getElementById('d-esc-step');
+  var escStepEl = document.getElementById('d-esc-step');
   if (escStepEl) {
     if (rt.escStepIndex < 0) escStepEl.innerHTML = '<span class="badge badge-gray">None</span>';
     else escStepEl.innerHTML = '<span class="badge badge-yellow">Step ' + (rt.escStepIndex + 1) + '</span>';
   }
 
-  const lockEl = document.getElementById('d-lock-state');
+  var lockEl = document.getElementById('d-lock-state');
   if (lockEl) lockEl.innerHTML = lockStateBadge(rt.lockState || 'off');
 
-  const pingEl = document.getElementById('d-last-ping');
+  var pingEl = document.getElementById('d-last-ping');
   if (pingEl) {
     if (rt.lastPing) pingEl.textContent = '"' + rt.lastPing + '" (' + fmtTime(rt.lastPingTs) + ')';
-    else pingEl.textContent = '—';
+    else pingEl.textContent = '\u2014';
   }
 
-  setText('stat-streak', st.streak || 0);
-  const ontime = st.onTime14 && st.onTime14.length ? Math.round(st.onTime14.filter(x=>x).length / st.onTime14.length * 100) : 0;
+  var streakDisplay = (st.streak || 0);
+  setText('stat-streak', (st.streak >= 3 ? '\ud83d\udd25 ' : '') + streakDisplay);
+  var ontime = st.onTime14 && st.onTime14.length ? Math.round(st.onTime14.filter(function(x){return x;}).length / st.onTime14.length * 100) : 0;
   setText('stat-ontime', ontime + '%');
-  setText('stat-tamper', S.logs.tamper.filter(t => t.childId === child).length);
+  setText('stat-tamper', S.logs.tamper.filter(function(t) { return t.childId === child; }).length);
 }
 
 function renderChildAlarm() {
-  const rt = S.runtime;
-  const cfg = getChildConfig();
-  const snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
-  const turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
+  var rt = S.runtime;
+  var cfg = getChildConfig();
+  var snoozeLabels = { disabled: 'Disabled', once: 'Once (3min)', limited: 'Limited (2x, 2min)' };
+  var turnoffLabels = { blocked: 'Blocked until verified', allowed: 'Allowed' };
 
   document.getElementById('alarm-idle').style.display = rt.alarmActive ? 'none' : 'block';
   document.getElementById('alarm-active').style.display = rt.alarmActive ? 'block' : 'none';
@@ -1283,107 +1632,214 @@ function renderChildAlarm() {
   // Idle
   setText('c-alarm-time', alarmTimeLabel());
   setText('c-volume', (cfg.volumeFloor || '70') + '%');
-  setText('c-snooze', snoozeLabels[cfg.snooze] || '—');
-  setText('c-turnoff', turnoffLabels[cfg.turnOff] || '—');
+  setText('c-snooze', snoozeLabels[cfg.snooze] || '\u2014');
+  setText('c-turnoff', turnoffLabels[cfg.turnOff] || '\u2014');
 
   if (!rt.alarmActive) return;
 
   // Active alarm
   setText('alarm-active-time', alarmTimeLabel());
-  const elapsed = elapsedMs();
+  var elapsed = elapsedMs();
   setText('alarm-elapsed', 'Active for ' + fmtElapsed(elapsed));
   setText('ca-volume', (cfg.volumeFloor || '70') + '%');
-  setText('ca-snooze', snoozeLabels[cfg.snooze] || '—');
+  setText('ca-snooze', snoozeLabels[cfg.snooze] || '\u2014');
   setText('ca-snoozes-used', rt.snoozesUsed || 0);
   setText('ca-turnoff', cfg.turnOff === 'blocked' ? 'Blocked' : 'Allowed');
 
-  const stepIdx = rt.escStepIndex;
-  setText('esc-step-label', stepIdx < 0 ? 'Escalation: Watching...' : 'Escalation: Step ' + (stepIdx + 1) + ' — ' + (ESC_LABELS[stepIdx] || ''));
+  var stepIdx = rt.escStepIndex;
+  setText('esc-step-label', stepIdx < 0 ? 'Escalation: Watching...' : 'Escalation: Step ' + (stepIdx + 1) + ' \u2014 ' + (ESC_LABELS[stepIdx] || ''));
 
-  const profile = ESC_PROFILES[cfg.escProfile || 'standard'];
-  const elapsedMins = elapsedMin();
-  const nextIdx = profile.findIndex(t => t > elapsedMins);
-  const progEl = document.getElementById('esc-progress-bar');
-  const progLabel = document.getElementById('esc-progress-label');
+  var profile = ESC_PROFILES[cfg.escProfile || 'standard'];
+  var elapsedMins = elapsedMin();
+  var nextIdx = profile.findIndex(function(t) { return t > elapsedMins; });
+  var progEl = document.getElementById('esc-progress-bar');
+  var progLabel = document.getElementById('esc-progress-label');
   if (nextIdx === -1) {
     if (progEl) progEl.style.width = '100%';
     if (progLabel) progLabel.textContent = 'Max escalation';
     if (progEl) progEl.style.background = 'var(--red)';
   } else {
-    const prevThresh = nextIdx === 0 ? 0 : profile[nextIdx - 1];
-    const nextThresh = profile[nextIdx];
-    const pct = Math.min(100, (elapsedMins - prevThresh) / (nextThresh - prevThresh) * 100);
+    var prevThresh = nextIdx === 0 ? 0 : profile[nextIdx - 1];
+    var nextThresh = profile[nextIdx];
+    var pct = Math.min(100, (elapsedMins - prevThresh) / (nextThresh - prevThresh) * 100);
     if (progEl) { progEl.style.width = pct + '%'; progEl.style.background = pct > 70 ? 'var(--orange)' : 'var(--green)'; }
-    const secsToNext = Math.max(0, (nextThresh - elapsedMins) * 60);
+    var secsToNext = Math.max(0, (nextThresh - elapsedMins) * 60);
     if (progLabel) progLabel.textContent = Math.ceil(secsToNext) + 's to step ' + (nextIdx + 1);
+  }
+
+  // Backup notifications indicator
+  var backupEl = document.getElementById('backup-notif-count');
+  if (backupEl) {
+    var elapsedMinutes = elapsedMin();
+    // 5 notifications scheduled at 0, 2, 4, 6, 8 minutes
+    var notifTimes = [0, 2, 4, 6, 8];
+    var remaining = notifTimes.filter(function(t) { return t > elapsedMinutes; }).length;
+    backupEl.textContent = remaining + ' of 5';
   }
 }
 
 function renderHistory() {
-  const child = S.config.childId;
-  const history = S.logs.history.filter(h => h.childId === child);
-  const el = document.getElementById('history-list');
+  var child = S.config.childId;
+  var history = S.logs.history.filter(function(h) { return h.childId === child; });
+  var el = document.getElementById('history-list');
   if (!el) return;
   if (!history.length) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">No history for ' + CHILD_NAMES[child] + ' yet.</div>';
     return;
   }
-  const resultLabel = r => r === 'verified' ? '<span class="badge badge-green">Verified</span>' : r === 'parentGranted' ? '<span class="badge badge-blue">Parent Override</span>' : '<span class="badge badge-gray">' + r + '</span>';
-  const methodLabels = { qr: 'QR', photo: 'Photo', motion: 'Motion', quiz: 'Quiz' };
-  el.innerHTML = history.slice(0,15).map(h =>
-    '<div class="history-row">' +
-    resultLabel(h.result) +
-    (h.onTime ? '<span class="badge badge-green">On Time</span>' : '<span class="badge badge-red">Late</span>') +
-    '<span style="color:var(--muted);">' + (h.minsToVerify || 0) + ' min to verify</span>' +
-    '<span class="badge badge-blue">' + (methodLabels[h.method] || h.method) + '</span>' +
-    '<span style="color:var(--muted);font-size:11px;margin-left:auto;">' + fmtDate(h.ts) + '</span>' +
-    (h.note ? '<span style="color:var(--muted);width:100%;font-size:11px;">' + h.note + '</span>' : '') +
-    '</div>'
-  ).join('');
+  var resultLabel = function(r) {
+    if (r === 'verified') return '<span class="badge badge-green">Verified</span>';
+    if (r === 'parentGranted') return '<span class="badge badge-blue">Parent Override</span>';
+    return '<span class="badge badge-gray">' + r + '</span>';
+  };
+  var methodLabels = { qr: 'QR', photo: 'Photo', motion: 'Motion', quiz: 'Quiz', geofence: 'Geofence' };
+  el.innerHTML = history.slice(0,15).map(function(h) {
+    return '<div class="history-row">' +
+      resultLabel(h.result) +
+      (h.onTime ? '<span class="badge badge-green">On Time</span>' : '<span class="badge badge-red">Late</span>') +
+      '<span style="color:var(--muted);">' + (h.minsToVerify || 0) + ' min to verify</span>' +
+      '<span class="badge badge-blue">' + (methodLabels[h.method] || h.method) + '</span>' +
+      '<span style="color:var(--muted);font-size:11px;margin-left:auto;">' + fmtDate(h.ts) + '</span>' +
+      (h.note ? '<span style="color:var(--muted);width:100%;font-size:11px;">' + h.note + '</span>' : '') +
+      '</div>';
+  }).join('');
 }
 
 function renderTamper() {
-  const child = S.config.childId;
-  const tamper = S.logs.tamper.filter(t => t.childId === child);
-  const el = document.getElementById('tamper-list');
+  var child = S.config.childId;
+  var tamper = S.logs.tamper.filter(function(t) { return t.childId === child; });
+  var el = document.getElementById('tamper-list');
   if (!el) return;
   if (!tamper.length) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:4px 0;">No tamper events recorded.</div>';
     return;
   }
-  el.innerHTML = tamper.slice(0,20).map(t =>
-    '<div class="tamper-row"><strong>' + fmtDate(t.ts) + '</strong> — ' + t.reason + '</div>'
-  ).join('');
+  el.innerHTML = tamper.slice(0,20).map(function(t) {
+    return '<div class="tamper-row"><strong>' + fmtDate(t.ts) + '</strong> \u2014 ' + t.reason + '</div>';
+  }).join('');
 }
 
 function renderMessages() {
-  const el = document.getElementById('msg-list');
+  var el = document.getElementById('msg-list');
   if (!el) return;
-  const msgs = S.logs.messages;
+  var msgs = S.logs.messages;
   if (!msgs.length) {
     el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:4px 0;">No messages yet.</div>';
     return;
   }
-  el.innerHTML = msgs.slice(0,30).map(m =>
-    '<div class="msg-row"><span class="msg-sender">' + escHtml(m.sender) + '</span> · <span style="color:var(--muted);font-size:11px;">' + fmtTime(m.ts) + '</span><br>' + escHtml(m.text) + '</div>'
-  ).join('');
+  el.innerHTML = msgs.slice(0,30).map(function(m) {
+    return '<div class="msg-row"><span class="msg-sender">' + escHtml(m.sender) + '</span> \u00b7 <span style="color:var(--muted);font-size:11px;">' + fmtTime(m.ts) + '</span><br>' + escHtml(m.text) + '</div>';
+  }).join('');
 }
 
 function renderPhoneHome() {
-  const rt = S.runtime;
-  const cfg = getChildConfig();
+  var rt = S.runtime;
+  var cfg = getChildConfig();
 
-  const lockEl = document.getElementById('ph-lock-state');
+  var lockEl = document.getElementById('ph-lock-state');
   if (lockEl) lockEl.innerHTML = lockStateBadge(rt.lockState || 'off');
 
-  setText('ph-allowed-apps', cfg.allowedApps || '—');
+  setText('ph-allowed-apps', cfg.allowedApps || '\u2014');
 
-  const warn = document.getElementById('ph-lock-warning');
+  var warn = document.getElementById('ph-lock-warning');
   if (warn) warn.style.display = (rt.lockState === 'on' || rt.lockState === 'forced') ? 'block' : 'none';
 }
 
+function renderRewards() {
+  var child = S.config.childId;
+  var st = S.stats[child] || { streak: 0, onTime14: [] };
+  var streak = st.streak || 0;
+  var el = document.getElementById('rewards-content');
+  if (!el) return;
+
+  var streakIcon = streak >= 3 ? '\ud83d\udd25 ' : '';
+  var html = '<div style="font-size:15px;font-weight:700;margin-bottom:8px;">' + streakIcon + 'Current Streak: ' + streak + ' day' + (streak !== 1 ? 's' : '') + '</div>';
+
+  REWARDS.forEach(function(r) {
+    var unlocked = streak >= r.threshold;
+    html += '<div class="reward-item ' + (unlocked ? 'unlocked' : 'locked') + '">' +
+      '<span class="ri-icon">' + (unlocked ? r.icon : '\ud83d\udd12') + '</span>' +
+      '<span class="ri-text">' + (unlocked ? 'Unlocked: ' : 'Unlock at ' + r.threshold + ' days: ') + r.label + '</span>' +
+      (unlocked ? '<span class="badge badge-green">Earned</span>' : '<span class="badge badge-gray">Locked</span>') +
+      '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+// ============================================================
+//  SETUP WIZARD
+// ============================================================
+function renderWizard() {
+  var wiz = loadWizard();
+  var container = document.getElementById('wizard-steps');
+  if (!container) return;
+
+  var completedMain = 0;
+  var totalMain = WIZARD_STEPS.length;
+
+  var html = '';
+  WIZARD_STEPS.forEach(function(step, idx) {
+    var checked = !!wiz[step.id];
+    if (step.subs.length > 0) {
+      // A step with subs is "checked" only if all subs are checked
+      var allSubsChecked = step.subs.every(function(sub) { return !!wiz[sub.id]; });
+      checked = allSubsChecked;
+    }
+    if (checked) completedMain++;
+
+    html += '<div class="wizard-step">';
+    html += '<div class="ws-header" onclick="toggleWizardStep(\'' + step.id + '\')">';
+    html += '<div class="ws-check ' + (checked ? 'checked' : '') + '" id="wc-' + step.id + '">' + (checked ? '\u2713' : '') + '</div>';
+    html += '<div><div class="ws-title">' + escHtml(step.title) + '</div>';
+    html += '<div class="ws-desc">' + escHtml(step.desc) + '</div>';
+    html += '</div></div>';
+
+    if (step.subs.length > 0) {
+      html += '<div class="ws-sub-list">';
+      step.subs.forEach(function(sub) {
+        var subChecked = !!wiz[sub.id];
+        html += '<div class="ws-sub-item" onclick="toggleWizardStep(\'' + sub.id + '\')">';
+        html += '<div class="ws-sub-check ' + (subChecked ? 'checked' : '') + '">' + (subChecked ? '\u2713' : '') + '</div>';
+        html += '<span>' + escHtml(sub.label) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Progress bar
+  var progLabel = document.getElementById('wizard-progress-label');
+  var progBar = document.getElementById('wizard-progress-bar');
+  if (progLabel) progLabel.textContent = completedMain + ' of ' + totalMain + ' steps complete';
+  if (progBar) progBar.style.width = (completedMain / totalMain * 100) + '%';
+}
+
+function toggleWizardStep(id) {
+  var wiz = loadWizard();
+  wiz[id] = !wiz[id];
+  saveWizard(wiz);
+
+  // If toggling a sub-step, check if parent step should auto-update
+  WIZARD_STEPS.forEach(function(step) {
+    if (step.subs.length > 0) {
+      step.subs.forEach(function(sub) {
+        if (sub.id === id) {
+          // This is a sub-step toggle, re-render will handle parent visual
+        }
+      });
+    }
+  });
+
+  renderWizard();
+}
+
 function setText(id, val) {
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   if (el) el.textContent = val;
 }
 
@@ -1394,22 +1850,22 @@ function escHtml(str) {
 // ============================================================
 //  TOAST
 // ============================================================
-const toastTypes = { info: 'ℹ️', warn: '⚠️', danger: '🚨', success: '✅' };
+var toastTypes = { info: '\u2139\ufe0f', warn: '\u26a0\ufe0f', danger: '\ud83d\udea8', success: '\u2705' };
 
 function toast(title, msg, type) {
   type = type || 'info';
-  const container = document.getElementById('toast-container');
-  const div = document.createElement('div');
+  var container = document.getElementById('toast-container');
+  var div = document.createElement('div');
   div.className = 'toast t-' + type;
   div.innerHTML =
-    '<div class="toast-icon">' + (toastTypes[type] || 'ℹ️') + '</div>' +
+    '<div class="toast-icon">' + (toastTypes[type] || '\u2139\ufe0f') + '</div>' +
     '<div class="toast-body"><div class="toast-title">' + escHtml(title) + '</div>' +
     '<div class="toast-msg">' + escHtml(msg) + '</div></div>';
   container.appendChild(div);
 
-  setTimeout(() => {
+  setTimeout(function() {
     div.classList.add('removing');
-    setTimeout(() => { if (div.parentNode) div.parentNode.removeChild(div); }, 300);
+    setTimeout(function() { if (div.parentNode) div.parentNode.removeChild(div); }, 300);
   }, 6000);
 }
 
@@ -1421,9 +1877,9 @@ function tick() {
   if (S.runtime.alarmActive) {
     renderChildAlarm();
     updateSimBadge();
-    const st = document.getElementById('d-alarm-state');
+    var st = document.getElementById('d-alarm-state');
     if (st) st.innerHTML = '<span class="badge badge-red">RINGING</span>';
-    const el = document.getElementById('alarm-elapsed');
+    var el = document.getElementById('alarm-elapsed');
     if (el) el.textContent = 'Active for ' + fmtElapsed(elapsedMs());
   }
 }
@@ -1438,6 +1894,13 @@ function init() {
   document.getElementById('child-panel-title').textContent = CHILD_NAMES[S.config.childId] + "'s Phone";
   renderControls();
   renderAll();
+  renderWizard();
+
+  // Resume audio if alarm was already active
+  if (S.runtime.alarmActive) {
+    startAlarmAudio();
+  }
+
   setInterval(tick, 1000);
 }
 
