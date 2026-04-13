@@ -107,6 +107,11 @@ struct ChildAlarmView: View {
             Text("Wake Up!")
                 .font(.largeTitle.bold())
 
+            Text(morningMotivation)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
             Text("\(session.minutesSinceAlarm) min elapsed")
                 .font(.title3.monospacedDigit())
                 .foregroundStyle(.secondary)
@@ -202,6 +207,21 @@ struct ChildAlarmView: View {
     }
 
     // MARK: - Idle (No Active Alarm)
+
+    private static let motivations = [
+        "Today is going to be a great day!",
+        "Rise and shine! You've got this.",
+        "A new day, a new adventure!",
+        "Your streak is counting on you!",
+        "The early bird gets the worm!",
+        "Time to make today awesome.",
+        "You're stronger than the snooze button!",
+    ]
+
+    private var morningMotivation: String {
+        let day = Calendar.current.ordinality(of: .day, in: .year, for: .now) ?? 0
+        return Self.motivations[day % Self.motivations.count]
+    }
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: .now)
