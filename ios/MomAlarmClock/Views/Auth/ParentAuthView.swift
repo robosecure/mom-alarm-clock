@@ -25,7 +25,7 @@ struct ParentAuthView: View {
                 TextField("Email", text: $email)
                     .textContentType(.emailAddress)
                     .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
+                    .textInputAutocapitalization(.never)
                 SecureField("Password", text: $password)
                     .textContentType(isSignUp ? .newPassword : .password)
             } header: {

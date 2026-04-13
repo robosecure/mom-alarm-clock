@@ -37,7 +37,7 @@ struct ChildPairingView: View {
                 TextField("Family Code", text: $familyCode)
                     .font(.system(.title2, design: .monospaced))
                     .multilineTextAlignment(.center)
-                    .autocapitalization(.allCharacters)
+                    .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
             } header: {
                 Text("Enter the code from your guardian's device")
