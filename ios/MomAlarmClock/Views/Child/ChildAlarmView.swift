@@ -177,6 +177,7 @@ struct ChildAlarmView: View {
                 .controlSize(.large)
                 .accessibilityLabel("Start wake-up verification")
                 .accessibilityHint("Opens the verification screen to prove you're awake")
+                .sensoryFeedback(.impact(weight: .medium), trigger: vm.activeSession?.state)
 
                 if let schedule = vm.alarmSchedules.first(where: { $0.id == session.alarmScheduleID }),
                    schedule.snoozeRules.allowed,

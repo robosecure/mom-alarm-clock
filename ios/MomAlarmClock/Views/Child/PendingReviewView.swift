@@ -76,6 +76,7 @@ struct PendingReviewView: View {
             Image(systemName: action.isApproval ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(action.isApproval ? .green : .red)
+                .sensoryFeedback(action.isApproval ? .success : .warning, trigger: action.displayName)
 
             Text(action.isApproval ? "Approved!" : "Verification Denied")
                 .font(.title.bold())
