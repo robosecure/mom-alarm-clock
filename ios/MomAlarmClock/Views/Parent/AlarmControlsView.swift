@@ -13,8 +13,8 @@ struct AlarmControlsView: View {
     @State private var hour = 7
     @State private var minute = 0
     @State private var selectedDays: Set<Int> = [2, 3, 4, 5, 6] // Mon-Fri
-    @State private var primaryVerification: VerificationMethod = .quiz
-    @State private var fallbackVerification: VerificationMethod? = .motion
+    @State private var primaryVerification: VerificationMethod = .quiz // Most popular default
+    @State private var fallbackVerification: VerificationMethod? = .motion // Fallback if quiz fails
     @State private var snoozeAllowed = true
     @State private var maxSnoozes = 2
     @State private var snoozeDuration = 5
