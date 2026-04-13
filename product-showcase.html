@@ -136,11 +136,31 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif; bac
       </div>
 
       <div id="g-dashboard" class="screen-content active">
+        <!-- Multi-child selector -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;">
+          <div style="display:flex;flex-direction:column;align-items:center;padding:8px 14px;background:rgba(0,122,255,0.12);border:1.5px solid rgba(0,122,255,0.3);border-radius:12px;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:18px;background:rgba(0,122,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#007AFF;">E</div>
+            <div style="font-size:11px;font-weight:600;margin-top:4px;">Emma <span style="font-size:8px;color:#FF69B4;">&#x1F3A4;</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:12px;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:18px;background:rgba(175,82,222,0.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#AF52DE;">J</div>
+            <div style="font-size:11px;font-weight:600;margin-top:4px;color:#888;">Jake</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:12px;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:18px;background:rgba(52,199,89,0.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#34C759;">L</div>
+            <div style="font-size:11px;font-weight:600;margin-top:4px;color:#888;">Lily</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:12px;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;color:#666;font-size:20px;">+</div>
+            <div style="font-size:11px;color:#666;margin-top:4px;">Add</div>
+          </div>
+        </div>
+
         <div class="card">
-          <h4>Live Status</h4>
+          <h4>Emma &middot; Live Status</h4>
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <div class="value" style="color:#34C759;">&#x1F7E2; Online</div>
+              <div class="value" style="color:#34C759;font-size:22px;">&#x1F7E2; Online</div>
               <div class="sub">Last seen: Just now</div>
             </div>
             <div style="text-align:right;">
@@ -172,7 +192,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif; bac
           <div class="quick-action"><div class="icon">&#x2600;&#xFE0F;</div><div class="name">Tomorrow</div></div>
           <div class="quick-action"><div class="icon">&#x1F3A4;</div><div class="name">Voice</div></div>
           <div class="quick-action"><div class="icon">&#x1F381;</div><div class="name">Rewards</div></div>
-          <div class="quick-action"><div class="icon">&#x1F4C5;</div><div class="name">History</div></div>
+          <div class="quick-action"><div class="icon">&#x2699;&#xFE0F;</div><div class="name">Settings</div></div>
         </div>
       </div>
 
@@ -318,6 +338,54 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif; bac
     <tr><td>Multi-child support</td><td>&#x2705;</td><td>&#x274C;</td><td>&#x274C;</td></tr>
     <tr><td>Push to guardian</td><td>&#x2705;</td><td>&#x274C;</td><td>&#x274C;</td></tr>
   </table>
+</div>
+
+<!-- PRICING -->
+<div class="section">
+  <h2>Simple Pricing</h2>
+  <p class="subtitle">Free for one child. Add more as your family grows.</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:24px;">
+    <div style="background:#111;border:2px solid #333;border-radius:20px;padding:32px 24px;text-align:center;width:260px;">
+      <div style="font-size:14px;color:#888;text-transform:uppercase;letter-spacing:2px;">Free</div>
+      <div style="font-size:48px;font-weight:800;margin:12px 0;">$0</div>
+      <div style="font-size:14px;color:#888;margin-bottom:20px;">forever</div>
+      <div style="text-align:left;font-size:14px;line-height:2;">
+        &#x2705; 1 child<br>
+        &#x2705; All verification methods<br>
+        &#x2705; Voice alarm<br>
+        &#x2705; Streaks &amp; rewards<br>
+        &#x2705; Push notifications<br>
+        &#x2705; Offline reliable
+      </div>
+    </div>
+    <div style="background:#111;border:2px solid #FF9500;border-radius:20px;padding:32px 24px;text-align:center;width:260px;position:relative;">
+      <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#FF9500;color:#000;font-size:11px;font-weight:700;padding:4px 12px;border-radius:10px;">MOST POPULAR</div>
+      <div style="font-size:14px;color:#FF9500;text-transform:uppercase;letter-spacing:2px;">Family</div>
+      <div style="font-size:48px;font-weight:800;margin:12px 0;">$4<span style="font-size:20px;">.99</span></div>
+      <div style="font-size:14px;color:#888;margin-bottom:20px;">/month</div>
+      <div style="text-align:left;font-size:14px;line-height:2;">
+        &#x2705; Up to 4 children<br>
+        &#x2705; Everything in Free<br>
+        &#x2705; Per-child voice alarms<br>
+        &#x2705; Tomorrow overrides<br>
+        &#x2705; Weekly summaries<br>
+        &#x2705; Priority support
+      </div>
+    </div>
+    <div style="background:#111;border:2px solid #333;border-radius:20px;padding:32px 24px;text-align:center;width:260px;">
+      <div style="font-size:14px;color:#888;text-transform:uppercase;letter-spacing:2px;">Annual</div>
+      <div style="font-size:48px;font-weight:800;margin:12px 0;">$29<span style="font-size:20px;">.99</span></div>
+      <div style="font-size:14px;color:#888;margin-bottom:20px;">/year (save 50%)</div>
+      <div style="text-align:left;font-size:14px;line-height:2;">
+        &#x2705; Everything in Family<br>
+        &#x2705; 2 months free<br>
+        &#x2705; Family leaderboard<br>
+        &#x2705; Achievement badges<br>
+        &#x2705; Custom reward items<br>
+        &#x2705; Early access to new features
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="footer">

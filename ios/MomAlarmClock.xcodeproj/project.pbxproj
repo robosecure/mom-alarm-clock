@@ -37,11 +37,13 @@
 		509FEFFF8821D0270B1F1AFC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */; };
 		5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C45DDE80F671326534BCC /* Collection+Safe.swift */; };
 		56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283C66F9E534B3F72E5DA53F /* RewardEngine.swift */; };
+		59A92F35C5939FB9DAB5FD28 /* ChildProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45F574B96927B7A93D7D47C /* ChildProfileEditorView.swift */; };
 		666D4AC48E805C0AE1BB1284 /* VerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */; };
 		68251C68239EE7473E0901DC /* AlarmControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B73713F415F46F619F209D1 /* AlarmControlsView.swift */; };
 		688B7C659682E131EDAC2BF5 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */; };
 		6C9B27C55E423AD94DFE6A55 /* ParentAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A283A20EF0124AE0C1670204 /* ParentAction.swift */; };
 		7089597405F3FC3510E3C50A /* ChildPairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBADB93F6AE67DE8DAA79F38 /* ChildPairingView.swift */; };
+		72C8931B4FDDE4912CAE2E66 /* FamilySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BF9CBDB3A267A5EF20286A /* FamilySettingsView.swift */; };
 		756284152526055FB54D7486 /* PendingReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 997935950BBB44F468A9D27B /* PendingReviewView.swift */; };
 		7A289F8A0A1EC59B4B05AC7A /* SetupWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5664C54971EF278CE524B3 /* SetupWizardView.swift */; };
 		7C383A09AC8330D0C4F014B1 /* TamperConsequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A200791DB3362B730CDCE0A /* TamperConsequence.swift */; };
@@ -54,6 +56,7 @@
 		910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */; };
 		92B81A6125139F5BFDBB1B9D /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */; };
 		997C740D2EF7215D1E8B4455 /* ParentAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */; };
+		9BA2E0A70FF641C52DC9F674 /* AddChildView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9062E5AB387CD6AC21F39E8A /* AddChildView.swift */; };
 		9BA6BA7EDB11E4A9B9962F25 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D707FA3D4A92CC98067094E /* FirebaseFirestore */; };
 		9BEE43696645DCC0D4B3B1EC /* VoiceAlarmRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */; };
 		9BFB57CA2B9761B24F3997D8 /* TamperEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 074B38ED078386ADBBDB9463 /* TamperEvent.swift */; };
@@ -135,6 +138,7 @@
 		7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = System/Library/Frameworks/Combine.framework; sourceTree = SDKROOT; };
 		822D8409305F93D925C1A459 /* ChildAlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildAlarmView.swift; sourceTree = "<group>"; };
 		8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MomAlarmClockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9062E5AB387CD6AC21F39E8A /* AddChildView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChildView.swift; sourceTree = "<group>"; };
 		988FB981F34061A134416044 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
 		9890DE2F176ED462AC9CCE01 /* VerificationMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationMethod.swift; sourceTree = "<group>"; };
 		997935950BBB44F468A9D27B /* PendingReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReviewView.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 		C2D8DB23042826040F530D8E /* SyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncServiceFactory.swift; sourceTree = "<group>"; };
 		C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmCacheService.swift; sourceTree = "<group>"; };
 		C3FF27537778A2C88E7A647E /* VerificationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationResult.swift; sourceTree = "<group>"; };
+		C45F574B96927B7A93D7D47C /* ChildProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildProfileEditorView.swift; sourceTree = "<group>"; };
 		C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaDiagnostics.swift; sourceTree = "<group>"; };
 		C778FE821AAE852253167003 /* AlarmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmService.swift; sourceTree = "<group>"; };
 		CA7B9F921738B6CC10F4340F /* VoiceAlarmPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmPlayerService.swift; sourceTree = "<group>"; };
@@ -162,6 +167,7 @@
 		CD456047F173EDDE237DC340 /* ChildProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildProfile.swift; sourceTree = "<group>"; };
 		CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceVerificationView.swift; sourceTree = "<group>"; };
 		CE956002175E90D0E5403053 /* MotionVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionVerificationView.swift; sourceTree = "<group>"; };
+		D0BF9CBDB3A267A5EF20286A /* FamilySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySettingsView.swift; sourceTree = "<group>"; };
 		D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLogicTests.swift; sourceTree = "<group>"; };
 		DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
@@ -350,7 +356,10 @@
 		B020DE2B2983203843509097 /* Parent */ = {
 			isa = PBXGroup;
 			children = (
+				9062E5AB387CD6AC21F39E8A /* AddChildView.swift */,
 				0B73713F415F46F619F209D1 /* AlarmControlsView.swift */,
+				C45F574B96927B7A93D7D47C /* ChildProfileEditorView.swift */,
+				D0BF9CBDB3A267A5EF20286A /* FamilySettingsView.swift */,
 				EFFB00E64A83442836B7E6A8 /* HistoryView.swift */,
 				78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */,
 				28B54E87387ABD79F6CBCD1D /* ParentDashboardView.swift */,
@@ -508,6 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BA2E0A70FF641C52DC9F674 /* AddChildView.swift in Sources */,
 				68251C68239EE7473E0901DC /* AlarmControlsView.swift in Sources */,
 				485D8CC27760AF3358B9AF5A /* AlarmSchedule.swift in Sources */,
 				F135CB157017090E22025765 /* AlarmService.swift in Sources */,
@@ -518,6 +528,7 @@
 				353462FD33B484664BF1C161 /* ChildAlarmView.swift in Sources */,
 				7089597405F3FC3510E3C50A /* ChildPairingView.swift in Sources */,
 				A101CD8867514052308545DE /* ChildProfile.swift in Sources */,
+				59A92F35C5939FB9DAB5FD28 /* ChildProfileEditorView.swift in Sources */,
 				A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */,
 				5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */,
 				D22C0E7172635C5E952D439E /* ConfirmationPolicy.swift in Sources */,
@@ -526,6 +537,7 @@
 				BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */,
 				005834AACB74DE2E9916A90D /* EscalationProfile.swift in Sources */,
 				FB03BF3EA28C26DD9B6B64D3 /* FamilyControlsService.swift in Sources */,
+				72C8931B4FDDE4912CAE2E66 /* FamilySettingsView.swift in Sources */,
 				BD3BDAAF98973E2DB76B788C /* FirestoreSyncService.swift in Sources */,
 				910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */,
 				DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */,

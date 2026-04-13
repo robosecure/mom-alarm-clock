@@ -119,6 +119,33 @@ final class ParentViewModel {
         }
     }
 
+    /// Updates a child's name and age.
+    func updateChildProfile(childID: UUID, name: String, age: Int) async {
+        guard var child = children.first(where: { $0.id == childID }), let familyID else { return }
+        child.name = name
+        child.age = age
+        do {
+            try await syncService.saveChildProfile(child, familyID: familyID)
+            if let idx = children.firstIndex(where: { $0.id == childID }) {
+                children[idx] = child
+            }
+        } catch {
+            errorMessage = "Failed to update profile: \(error.localizedDescription)"
+        }
+    }
+
+    /// Removes a child profile. Guardian-only.
+    func removeChild(_ childID: UUID) async {
+        guard let familyID else { return }
+        // Remove from local state
+        children.removeAll { $0.id == childID }
+        if selectedChildID == childID {
+            selectedChildID = children.first?.id
+        }
+        // Note: Firestore deletion requires deleteChildProfile on SyncService
+        // For now, we remove locally. Full delete can be added to SyncService.
+    }
+
     // MARK: - Alarm Management
 
     func saveAlarmSchedule(_ schedule: AlarmSchedule) async {

@@ -543,17 +543,35 @@ Child sees result → session complete
 
 ---
 
-## Business Model (Options)
+## Business Model
 
-### Option A: Free with Premium (Recommended)
-- **Free tier:** 1 child, basic verification (math), auto-acknowledge only
-- **Premium ($4.99/mo or $29.99/yr):** Up to 4 children, all verification methods, all policies, voice alarm, reward store, priority support
+### Free Tier (1 Child)
+- All verification methods (math, quiz, motion, QR, photo, geofence)
+- All confirmation policies (auto, strict, hybrid)
+- Voice alarm
+- Streaks and rewards
+- Push notifications
+- Offline reliability
+- Full diagnostics
 
-### Option B: One-Time Purchase
-- **$9.99** for the full app, all features, all children
+### Family Plan ($4.99/month)
+- **Up to 4 children** with per-child everything:
+  - Individual alarms, schedules, and verification settings
+  - Per-child voice alarm recordings
+  - Per-child streaks, rewards, and stats
+  - Tomorrow overrides per child
+- Weekly summary reports
+- Priority support
 
-### Option C: Free Forever
-- Free with no restrictions. Monetize later with optional add-ons (custom alarm sounds, theme packs, premium quiz content)
+### Annual Plan ($29.99/year — save 50%)
+- Everything in Family
+- Family leaderboard (kids compete on streaks)
+- Achievement badges
+- Custom reward store items
+- Early access to new features
+
+### Paywall Placement
+The paywall appears at the natural friction point: the "Add Child" button. When a free user taps "+" to add a second child, they see the upgrade prompt. Everything else works fully — we never cripple features to upsell.
 
 ---
 

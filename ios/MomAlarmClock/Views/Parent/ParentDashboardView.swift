@@ -37,9 +37,9 @@ struct ParentDashboardView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
-                        SetupWizardView()
+                        FamilySettingsView()
                     } label: {
-                        Image(systemName: "plus.circle.fill")
+                        Image(systemName: "gearshape.fill")
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -117,34 +117,84 @@ struct ParentDashboardView: View {
 
     // MARK: - Child Selector
 
-    @ViewBuilder
+    @State private var showAddChild = false
+    @State private var showChildEditor = false
+    @State private var showFamilySettings = false
+
+    private static let childColors: [Color] = [.blue, .purple, .green, .orange]
+
     private var childSelector: some View {
-        if vm.children.count > 1 {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(vm.children) { child in
-                        childTab(child)
-                    }
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(Array(vm.children.enumerated()), id: \.element.id) { index, child in
+                    childTab(child, color: Self.childColors[index % Self.childColors.count])
+                        .contextMenu {
+                            Button { showChildEditor = true } label: {
+                                Label("Edit Profile", systemImage: "pencil")
+                            }
+                        }
                 }
+                // Add child button
+                if vm.children.count < 4 {
+                    Button { showAddChild = true } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.gray)
+                            Text("Add")
+                                .font(.caption.bold())
+                                .foregroundStyle(.gray)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .sheet(isPresented: $showAddChild) {
+            NavigationStack { AddChildView() }
+        }
+        .sheet(isPresented: $showChildEditor) {
+            if let child = vm.selectedChild {
+                NavigationStack { ChildProfileEditorView(child: child) }
             }
         }
     }
 
-    private func childTab(_ child: ChildProfile) -> some View {
+    private func childTab(_ child: ChildProfile, color: Color) -> some View {
         Button {
             vm.selectedChildID = child.id
+            Task { try? await vm.loadChildData(child.id) }
         } label: {
             VStack(spacing: 4) {
-                Image(systemName: "person.circle.fill")
-                    .font(.title2)
-                Text(child.name)
-                    .font(.caption.bold())
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.2))
+                        .frame(width: 36, height: 36)
+                    Text(String(child.name.prefix(1)).uppercased())
+                        .font(.headline.bold())
+                        .foregroundStyle(color)
+                }
+                HStack(spacing: 2) {
+                    Text(child.name)
+                        .font(.caption.bold())
+                    if child.voiceAlarm != nil {
+                        Image(systemName: "mic.fill")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.pink)
+                    }
+                }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(
-                vm.selectedChildID == child.id ? Color.blue.opacity(0.15) : Color.clear,
+                vm.selectedChildID == child.id ? color.opacity(0.12) : Color.clear,
                 in: RoundedRectangle(cornerRadius: 12)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(vm.selectedChildID == child.id ? color.opacity(0.3) : .clear, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
