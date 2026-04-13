@@ -48,7 +48,7 @@ final class ChildViewModel {
 
     var nextAlarm: AlarmSchedule? {
         alarmSchedules
-            .filter(\.isEnabled)
+            .filter(\.isEffectivelyEnabled)
             .sorted { a, b in
                 let aNext = a.alarmTime.nextOccurrence() ?? .distantFuture
                 let bNext = b.alarmTime.nextOccurrence() ?? .distantFuture
@@ -105,7 +105,7 @@ final class ChildViewModel {
                 try await localStore.saveAlarmSchedules(alarmSchedules)
 
                 // Schedule local notifications for all active alarms
-                for schedule in alarmSchedules where schedule.isEnabled {
+                for schedule in alarmSchedules where schedule.isEffectivelyEnabled {
                     try await AlarmService.shared.scheduleAlarm(schedule)
                 }
 
@@ -131,7 +131,7 @@ final class ChildViewModel {
             alarmSchedules = schedules
             try? await localStore.saveAlarmSchedules(schedules)
             // Reschedule local notifications
-            for schedule in schedules where schedule.isEnabled {
+            for schedule in schedules where schedule.isEffectivelyEnabled {
                 try? await AlarmService.shared.scheduleAlarm(schedule)
             }
         }

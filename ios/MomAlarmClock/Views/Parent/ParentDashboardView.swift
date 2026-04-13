@@ -324,8 +324,19 @@ struct ParentDashboardView: View {
         } label: {
             HStack {
                 VStack(alignment: .leading) {
-                    Text(schedule.alarmTime.formatted)
-                        .font(.title2.monospacedDigit().bold())
+                    HStack(spacing: 6) {
+                        Text(schedule.alarmTime.formatted)
+                            .font(.title2.monospacedDigit().bold())
+                            .foregroundStyle(schedule.isEffectivelyEnabled ? .primary : .secondary)
+                        if schedule.skipUntil != nil {
+                            Text("SKIP")
+                                .font(.caption2.bold())
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(.orange.opacity(0.2), in: Capsule())
+                                .foregroundStyle(.orange)
+                        }
+                    }
                     HStack(spacing: 4) {
                         Text(schedule.label)
                         Text("·")
@@ -340,6 +351,19 @@ struct ParentDashboardView: View {
                     set: { _ in Task { await vm.toggleAlarm(schedule.id) } }
                 ))
                 .labelsHidden()
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            if schedule.skipUntil != nil {
+                Button("Unskip") {
+                    Task { await vm.clearAlarmSkip(schedule.id) }
+                }
+                .tint(.green)
+            } else {
+                Button("Skip\nTomorrow") {
+                    Task { await vm.skipAlarmTomorrow(schedule.id) }
+                }
+                .tint(.orange)
             }
         }
     }

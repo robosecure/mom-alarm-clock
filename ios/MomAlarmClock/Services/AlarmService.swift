@@ -24,7 +24,7 @@ actor AlarmService {
     func scheduleAlarm(_ schedule: AlarmSchedule) async throws {
         await cancelAlarm(schedule.id)
 
-        guard schedule.isEnabled else { return }
+        guard schedule.isEffectivelyEnabled else { return }
 
         for weekday in schedule.activeDays.sorted() {
             let primaryID = notificationID(alarmID: schedule.id, weekday: weekday, offset: 0)
@@ -62,7 +62,7 @@ actor AlarmService {
     /// Also detects drift: if scheduled notification count doesn't match expected, self-heals.
     func rescheduleAllAlarms() async {
         let schedules = await localStore.alarmSchedules()
-        let enabledSchedules = schedules.filter(\.isEnabled)
+        let enabledSchedules = schedules.filter(\.isEffectivelyEnabled)
 
         // Drift detection: count expected vs actual notifications
         let pending = await notificationCenter.pendingNotificationRequests()

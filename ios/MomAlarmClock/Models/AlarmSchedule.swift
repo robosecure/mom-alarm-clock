@@ -32,6 +32,17 @@ struct AlarmSchedule: Codable, Identifiable, Sendable, Equatable {
     /// Whether the alarm is currently enabled.
     var isEnabled: Bool = true
 
+    /// Skip this alarm until after this date (nil = not skipped).
+    /// Used for sick days, holidays, etc. Auto-expires after the date passes.
+    var skipUntil: Date?
+
+    /// Whether the alarm should fire right now (considering enabled + skipUntil).
+    var isEffectivelyEnabled: Bool {
+        guard isEnabled else { return false }
+        if let skipUntil, Date() < skipUntil { return false }
+        return true
+    }
+
     /// Human-readable label (e.g., "School Days", "Weekend").
     var label: String = "Alarm"
 

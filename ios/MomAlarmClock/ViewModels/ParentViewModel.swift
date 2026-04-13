@@ -341,6 +341,23 @@ final class ParentViewModel {
         try? await LocalStore.shared.saveRecentSessions([])
     }
 
+    /// Skips an alarm until the end of tomorrow (one-day skip for sick days, holidays).
+    func skipAlarmTomorrow(_ scheduleID: UUID) async {
+        guard var schedule = alarmSchedules.first(where: { $0.id == scheduleID }) else { return }
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 2, to: Calendar.current.startOfDay(for: .now))!
+        schedule.skipUntil = tomorrow
+        schedule.lastModified = Date()
+        await saveAlarmSchedule(schedule)
+    }
+
+    /// Clears the skip on an alarm (un-skip).
+    func clearAlarmSkip(_ scheduleID: UUID) async {
+        guard var schedule = alarmSchedules.first(where: { $0.id == scheduleID }) else { return }
+        schedule.skipUntil = nil
+        schedule.lastModified = Date()
+        await saveAlarmSchedule(schedule)
+    }
+
     /// Sets or clears voice alarm metadata for the selected child.
     func setVoiceAlarm(_ voiceAlarm: ChildProfile.VoiceAlarmMetadata?) async {
         guard var child = selectedChild, let familyID else { return }
