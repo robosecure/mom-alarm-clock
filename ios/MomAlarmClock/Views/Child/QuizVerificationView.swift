@@ -91,6 +91,7 @@ struct QuizVerificationView: View {
                 Text(feedback)
                     .font(.subheadline.bold())
                     .foregroundStyle(feedbackColor)
+                    .sensoryFeedback(feedbackColor == .green ? .success : .error, trigger: feedback)
             }
 
             HStack(spacing: 16) {
