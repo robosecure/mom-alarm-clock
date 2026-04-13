@@ -380,6 +380,8 @@ struct ParentDashboardView: View {
                     HStack(spacing: 4) {
                         Text(schedule.label)
                         Text("·")
+                        Text(activeDaysShort(schedule.activeDays))
+                        Text("·")
                         Text(schedule.primaryVerification.displayName)
                     }
                     .font(.caption)
@@ -482,6 +484,14 @@ struct ParentDashboardView: View {
         }
         .padding()
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func activeDaysShort(_ days: Set<Int>) -> String {
+        if days.count == 7 { return "Every day" }
+        if days == Set([2, 3, 4, 5, 6]) { return "Weekdays" }
+        if days == Set([1, 7]) { return "Weekends" }
+        let names = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+        return days.sorted().map { names[($0 - 1) % 7] }.joined(separator: " ")
     }
 
     private func quickActionButton(title: String, icon: String, color: Color) -> some View {
