@@ -7,7 +7,7 @@
 - **Reason deferred:** Consolidating would change aggregate reward calculation behavior. StatsService.computeRewardPoints sums points across history; RewardEngine calculates per-session. Replacing one with the other would shift dashboard totals. Requires daytime review with before/after comparison.
 - **Notes:** Both functions work correctly for their respective purposes. The risk is rubric divergence over time, not a current bug.
 
-## [R0-002] Firestore rules content integrity unverified
+## [R0-002] Firestore rules content integrity unverified ✅ RESOLVED
 - **Severity:** P1
 - **Found in:** Round 0
 - **Assigned to:** Round 1
