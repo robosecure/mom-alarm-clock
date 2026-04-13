@@ -409,12 +409,18 @@ struct ParentDashboardView: View {
                 .font(.headline)
 
             if let stats = vm.selectedChildStats {
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     statBadge(value: "\(stats.currentStreak)", label: "Streak", icon: "flame.fill", color: .orange)
                     statBadge(value: "\(stats.onTimeCount)", label: "On Time", icon: "checkmark.circle", color: .green)
-                    statBadge(value: "\(stats.lateCount)", label: "Late", icon: "exclamationmark.triangle", color: .yellow)
                     statBadge(value: "\(stats.rewardPoints)", label: "Points", icon: "star.fill", color: .purple)
+                    if stats.bestStreak > 0 {
+                        statBadge(value: "\(stats.bestStreak)", label: "Best", icon: "trophy.fill", color: .yellow)
+                    }
                 }
+            } else {
+                Text("Stats will appear after the first morning session.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding()
