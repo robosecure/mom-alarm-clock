@@ -19,22 +19,22 @@ enum ConfirmationPolicy: Codable, Sendable, Equatable {
     var displayName: String {
         switch self {
         case .autoAcknowledge:
-            "Auto-Acknowledge"
+            "Trust Mode"
         case .requireParentApproval:
-            "Require Guardian Approval"
+            "Approval Required"
         case .hybrid(let minutes):
-            "Auto + \(minutes)min Review Window"
+            "Auto + \(minutes)min Review"
         }
     }
 
     var description: String {
         switch self {
         case .autoAcknowledge:
-            "The alarm clears as soon as your child completes verification. You'll be notified but don't need to act."
+            "Alarm clears when your child verifies. You get notified but don't need to act."
         case .requireParentApproval:
-            "Your child's device stays locked until you review and approve their verification."
+            "Your child waits until you approve. Best for building the habit."
         case .hybrid(let minutes):
-            "The alarm clears automatically, but you have \(minutes) minutes to review and flag if needed."
+            "Clears automatically, but you can review and deny within \(minutes) minutes."
         }
     }
 }
