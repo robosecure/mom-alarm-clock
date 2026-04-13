@@ -81,3 +81,10 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (replace 2 Pickers with 1 DatePicker, convert Date ↔ hour/minute)
 - **Risk:** Low — standard SwiftUI component
 - **Files affected:** AlarmControlsView.swift
+
+## [P-012] Handle location permission denial gracefully in GeofenceVerificationView
+- **What:** If CLLocationManager authorization is denied/restricted, show a clear message instead of silently failing on 'Check My Location'
+- **Why:** If child hasn't granted location, the check button does nothing. Needs a Settings link.
+- **Effort:** Small (check CLLocationManager.authorizationStatus before attempting)
+- **Risk:** Low — standard permission check
+- **Files affected:** GeofenceVerificationView.swift, VerificationService.swift
