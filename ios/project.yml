@@ -56,16 +56,13 @@ targets:
     entitlements:
       path: MomAlarmClock.entitlements
       properties:
-        com.apple.developer.icloud-container-identifiers:
-          - "iCloud.com.momclock.MomAlarmClock"
-        com.apple.developer.icloud-services:
-          - CloudKit
+
         com.apple.developer.family-controls: true
         com.apple.developer.usernotifications.critical-alerts: true
         aps-environment: development
     dependencies:
       - sdk: SwiftUI.framework
-      - sdk: CloudKit.framework
+
       - sdk: UserNotifications.framework
       - sdk: BackgroundTasks.framework
       - sdk: AVFoundation.framework

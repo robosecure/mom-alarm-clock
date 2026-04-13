@@ -63,7 +63,6 @@
 		9C0E69F60AC1CED4B25993B7 /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */; };
 		9E5B2A2FBEC22213DD79D520 /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */; };
 		A101CD8867514052308545DE /* ChildProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD456047F173EDDE237DC340 /* ChildProfile.swift */; };
-		A481714D6163D32DC71F39E2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */; };
 		A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD96A1EC695BB2CA1667C389 /* ChildViewModel.swift */; };
 		B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */; };
 		BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */; };
@@ -169,7 +168,6 @@
 		D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLogicTests.swift; sourceTree = "<group>"; };
 		DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
-		DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
 		E21ACA8FCBB64184BC3D14C5 /* VerificationReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationReviewView.swift; sourceTree = "<group>"; };
 		E2BE7AFCB5DE60870DD40C7F /* QRVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRVerificationView.swift; sourceTree = "<group>"; };
@@ -187,7 +185,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				688B7C659682E131EDAC2BF5 /* SwiftUI.framework in Frameworks */,
-				A481714D6163D32DC71F39E2 /* CloudKit.framework in Frameworks */,
 				45AA55E8CF85C6B1AA3A6894 /* UserNotifications.framework in Frameworks */,
 				04E6C6E0F832DAEC4E381AE3 /* BackgroundTasks.framework in Frameworks */,
 				BFD701B0043B849B6AB73325 /* AVFoundation.framework in Frameworks */,
@@ -270,7 +267,6 @@
 			children = (
 				99D362789207D516DB298DB5 /* AVFoundation.framework */,
 				988FB981F34061A134416044 /* BackgroundTasks.framework */,
-				DDA4870F1D0DB4DD533A3887 /* CloudKit.framework */,
 				7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */,
 				E9A6C9BA7C02244AD42B44B3 /* CoreLocation.framework */,
 				12F8D7F38C3C362486B61D68 /* CoreMotion.framework */,
