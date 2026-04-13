@@ -23,7 +23,7 @@ struct DiagnosticsView: View {
                 row("Family ID", auth.currentUser?.familyID ?? "None")
                 row("Firebase UID", Auth.auth().currentUser?.uid ?? "No Firebase user")
                 row("Firebase Configured", FirebaseApp.app() != nil ? "Yes" : "No (local mode)")
-                row("Parent PIN Set", auth.hasParentPIN ? "Yes" : "No")
+                row("Guardian PIN Set", auth.hasParentPIN ? "Yes" : "No")
             }
 
             Section("App Check") {

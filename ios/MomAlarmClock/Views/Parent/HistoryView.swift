@@ -123,9 +123,9 @@ struct HistoryView: View {
 
     private func parentActionLabel(_ action: ParentAction) -> String {
         switch action {
-        case .approved: "Parent approved"
+        case .approved: "Guardian approved"
         case .autoAcknowledged: "Auto-acknowledged"
-        case .denied(let reason): reason.isEmpty ? "Parent denied" : "Denied: \(reason)"
+        case .denied(let reason): reason.isEmpty ? "Guardian denied" : "Denied: \(reason)"
         case .escalated(let reason): reason.isEmpty ? "Escalated" : "Escalated: \(reason)"
         }
     }

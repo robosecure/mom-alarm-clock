@@ -30,10 +30,10 @@ struct EscalationProfile: Codable, Sendable, Equatable {
             switch self {
             case .gentleReminder:      "Gentle Reminder"
             case .increasedVolume:     "Increased Volume"
-            case .parentNotified:      "Parent Notified"
+            case .parentNotified:      "Guardian Notified"
             case .appLockPartial:      "Block Entertainment Apps"
             case .appLockFull:         "Full App Lock"
-            case .parentCallTriggered: "Call Parent"
+            case .parentCallTriggered: "Call Guardian"
             }
         }
 

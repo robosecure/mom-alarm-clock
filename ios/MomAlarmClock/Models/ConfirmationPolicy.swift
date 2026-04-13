@@ -21,7 +21,7 @@ enum ConfirmationPolicy: Codable, Sendable, Equatable {
         case .autoAcknowledge:
             "Auto-Acknowledge"
         case .requireParentApproval:
-            "Require Parent Approval"
+            "Require Guardian Approval"
         case .hybrid(let minutes):
             "Auto + \(minutes)min Review Window"
         }

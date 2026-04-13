@@ -88,7 +88,7 @@ final class ChildViewModel {
 
     func loadData() async {
         guard let authState = await localStore.authState() else {
-            errorMessage = "No child profile configured. Please pair with a parent device."
+            errorMessage = "No child profile configured. Please pair with a guardian's device."
             return
         }
         familyID = authState.familyID

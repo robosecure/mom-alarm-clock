@@ -61,7 +61,7 @@ final class SetupWizardViewModel {
         var title: String {
             switch self {
             case .welcome:              "Welcome"
-            case .enterPairingCode:     "Pair with Parent"
+            case .enterPairingCode:     "Pair with Guardian"
             case .grantNotifications:   "Allow Notifications"
             case .grantFamilyControls:  "Screen Time Access"
             case .grantLocation:        "Location Access"
