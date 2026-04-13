@@ -33,7 +33,7 @@ struct PhotoVerificationView: View {
             Text("Take a Photo")
                 .font(.title2.bold())
 
-            Text("Take a photo to prove you're up and moving. Your guardian may review this.")
+            Text("Snap a quick photo showing you're awake.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -93,7 +93,7 @@ struct PhotoVerificationView: View {
                 .foregroundStyle(.orange)
             Text("Photo Submitted")
                 .font(.title.bold())
-            Text("Your photo has been sent to your guardian for review. Please wait for their approval.")
+            Text("Photo sent! Waiting for your guardian to check in.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }

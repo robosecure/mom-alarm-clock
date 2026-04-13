@@ -36,7 +36,7 @@ struct ChildAlarmView: View {
             }
             .task { await vm.loadData() }
             .task { await vm.observeAlarmChanges() }
-            .alert("Error", isPresented: Binding(
+            .alert("Something went wrong", isPresented: Binding(
                 get: { vm.errorMessage != nil },
                 set: { if !$0 { vm.errorMessage = nil } }
             )) {
@@ -121,7 +121,7 @@ struct ChildAlarmView: View {
             }
 
             if let remaining = vm.timeUntilNextEscalation {
-                Text("Next escalation in \(Int(remaining / 60)) min")
+                Text("Reminder in \(Int(remaining / 60)) min")
                     .font(.caption)
                     .foregroundStyle(.red)
             }

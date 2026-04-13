@@ -69,7 +69,7 @@ struct ParentDashboardView: View {
             .task {
                 await vm.observeActiveSessions()
             }
-            .alert("Error", isPresented: Binding(
+            .alert("Something went wrong", isPresented: Binding(
                 get: { vm.errorMessage != nil },
                 set: { if !$0 { vm.errorMessage = nil } }
             )) {
