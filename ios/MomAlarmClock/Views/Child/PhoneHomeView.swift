@@ -28,7 +28,7 @@ struct PhoneHomeView: View {
             }
         }
         .padding()
-        .navigationTitle("Message Parent")
+        .navigationTitle("Message Guardian")
         .navigationBarTitleDisplayMode(.inline)
     }
 
