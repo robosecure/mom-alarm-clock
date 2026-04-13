@@ -40,6 +40,7 @@ struct PhoneHomeView: View {
 
             Text("Send a message to your guardian")
                 .font(.headline)
+                            .accessibilityAddTraits(.isHeader)
 
             // Quick message buttons
             VStack(spacing: 8) {

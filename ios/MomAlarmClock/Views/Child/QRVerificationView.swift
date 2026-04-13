@@ -33,6 +33,7 @@ struct QRVerificationView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                            .accessibilityAddTraits(.isHeader)
         }
     }
 

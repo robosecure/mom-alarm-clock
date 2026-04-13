@@ -37,6 +37,7 @@ struct PhotoVerificationView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                            .accessibilityAddTraits(.isHeader)
 
             // Camera capture button
             // In production, use UIImagePickerController with .camera source type
