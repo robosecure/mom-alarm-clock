@@ -56,6 +56,9 @@ firebase use --add  # select your project
 # Deploy Firestore rules and indexes
 firebase deploy --only firestore:rules,firestore:indexes
 
+# Deploy Storage rules (for Voice Alarm)
+firebase deploy --only storage
+
 # Deploy Cloud Functions
 cd functions && npm install && cd ..
 firebase deploy --only functions
