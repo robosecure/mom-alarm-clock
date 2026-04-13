@@ -20,8 +20,9 @@ struct GeofenceVerificationView: View {
         VStack(spacing: 20) {
             Text("Go to the \(targetName)")
                 .font(.title2.bold())
+                .accessibilityAddTraits(.isHeader)
 
-            Text("Walk to the designated location to verify you're awake.")
+            Text("Walk to the spot to show you're up!")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
