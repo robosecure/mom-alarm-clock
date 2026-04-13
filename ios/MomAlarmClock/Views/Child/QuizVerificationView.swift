@@ -76,6 +76,7 @@ struct QuizVerificationView: View {
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(.purple.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                .accessibilityLabel("Math problem: \(question.text)")
 
             TextField("Your answer", text: $userAnswer)
                 .keyboardType(.numberPad)
@@ -97,16 +98,20 @@ struct QuizVerificationView: View {
                     Task { await vm.sendMessageToParent("I'm working on it!") }
                 } label: {
                     Label("I'm trying!", systemImage: "hand.wave")
+                        .frame(minHeight: 48)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                .accessibilityLabel("Send message to guardian: I'm trying")
 
                 Button("Submit") {
                     checkAnswer(question)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .frame(minHeight: 48)
                 .disabled(userAnswer.isEmpty)
+                .accessibilityLabel("Submit answer")
             }
         }
     }
