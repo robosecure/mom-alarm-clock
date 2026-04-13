@@ -203,12 +203,26 @@ struct ChildAlarmView: View {
 
     // MARK: - Idle (No Active Alarm)
 
+    private var greeting: String {
+        let hour = Calendar.current.component(.hour, from: .now)
+        if hour < 12 { return "Good morning" }
+        if hour < 17 { return "Good afternoon" }
+        return "Good evening"
+    }
+
     private var idleContent: some View {
         VStack(spacing: 20) {
             Spacer()
 
+            // Greeting
+            if let name = vm.profile?.name {
+                Text("\(greeting), \(name)")
+                    .font(.title2.bold())
+                    .foregroundStyle(.primary)
+            }
+
             Image(systemName: "moon.zzz.fill")
-                .font(.system(size: 64))
+                .font(.system(size: 56))
                 .foregroundStyle(.purple.opacity(0.6))
 
             if let nextAlarm = vm.nextAlarm,
@@ -228,19 +242,30 @@ struct ChildAlarmView: View {
                 Text("No Alarm Set")
                     .font(.title)
                     .foregroundStyle(.secondary)
-                Text("Waiting for your guardian to configure an alarm.")
+                Text("Waiting for your guardian to set an alarm.")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
             }
 
             Spacer()
 
-            if let stats = vm.profile?.stats, stats.currentStreak > 0 {
-                Label("\(stats.currentStreak)-day streak!", systemImage: "flame.fill")
-                    .font(.headline)
-                    .foregroundStyle(.orange)
-                    .padding()
-                    .background(.orange.opacity(0.1), in: Capsule())
+            // Stats bar
+            if let stats = vm.profile?.stats {
+                HStack(spacing: 20) {
+                    if stats.currentStreak > 0 {
+                        Label("\(stats.currentStreak)-day streak", systemImage: "flame.fill")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.orange)
+                    }
+                    if stats.rewardPoints > 0 {
+                        Label("\(stats.rewardPoints) pts", systemImage: "star.fill")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.purple)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: Capsule())
             }
         }
     }
