@@ -117,8 +117,8 @@ struct AlarmControlsView: View {
                 }
             }
 
-            Section("Escalation") {
-                Toggle("Use Default Escalation", isOn: $useDefaultEscalation)
+            Section("If They Don't Get Up") {
+                Toggle("Use Default Reminders", isOn: $useDefaultEscalation)
                 if useDefaultEscalation {
                     ForEach(EscalationProfile.default.levels) { level in
                         HStack {
