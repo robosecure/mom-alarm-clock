@@ -197,7 +197,8 @@ struct VerificationReviewView: View {
                         await vm.sendMessage(approveNote, toSession: session.id)
                     }
                     await vm.approveSession(session.id)
-                    actionReceipt = "Approved. Child's device will unlock."
+                    let rewardNote = vm.lastRewardOutcome.map { " (+\($0.pointsDelta) points)" } ?? ""
+                    actionReceipt = "Approved!\(rewardNote) Great job getting up."
                 }
             } label: {
                 Label("Approve", systemImage: "checkmark.circle.fill")
