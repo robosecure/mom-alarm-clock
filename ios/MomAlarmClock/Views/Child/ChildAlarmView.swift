@@ -15,7 +15,14 @@ struct ChildAlarmView: View {
                 backgroundGradient
 
                 VStack(spacing: 24) {
-                    if vm.isAwaitingParentReview {
+                    if vm.isLoading {
+                        VStack {
+                            Spacer()
+                            ProgressView()
+                                .controlSize(.large)
+                            Spacer()
+                        }
+                    } else if vm.isAwaitingParentReview {
                         PendingReviewView()
                     } else if let session = vm.activeSession, session.isActive {
                         activeAlarmContent(session)

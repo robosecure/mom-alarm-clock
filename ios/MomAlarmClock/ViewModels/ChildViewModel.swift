@@ -18,6 +18,7 @@ final class ChildViewModel {
 
     var profile: ChildProfile?
     var alarmSchedules: [AlarmSchedule] = []
+    var isLoading = true
     var activeSession: MorningSession?
     var currentVerificationMethod: VerificationMethod?
     var isDeviceLocked: Bool = false
@@ -122,6 +123,7 @@ final class ChildViewModel {
                 errorMessage = error.localizedDescription
             }
         }
+        isLoading = false
     }
 
     /// Observes real-time alarm schedule changes from the parent.
