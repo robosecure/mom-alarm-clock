@@ -88,3 +88,10 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (check CLLocationManager.authorizationStatus before attempting)
 - **Risk:** Low — standard permission check
 - **Files affected:** GeofenceVerificationView.swift, VerificationService.swift
+
+## [P-013] Add try/catch to all Cloud Function await calls
+- **What:** Wrap all Firestore/FCM await calls in try/catch with structured error logging
+- **Why:** 7 of 11 await calls in Cloud Functions lack error handling. If Firestore is temporarily unavailable, these functions would throw unhandled rejections. Adding catch blocks with console.error prevents silent failures and makes debugging easier.
+- **Effort:** Small (wrap existing code, no logic change)
+- **Risk:** Low — only adds error handling, no behavior change
+- **Files affected:** functions/index.js
