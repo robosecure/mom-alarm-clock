@@ -90,7 +90,7 @@ struct ChildPairingView: View {
             case 0:
                 permissionCard(
                     title: "Allow Notifications",
-                    description: "Notifications are required for your alarm to sound. This is the most important permission.",
+                    description: "This lets the alarm wake you up on time. It's the most important step!",
                     action: "Enable Notifications"
                 ) {
                     // Request notification permission
