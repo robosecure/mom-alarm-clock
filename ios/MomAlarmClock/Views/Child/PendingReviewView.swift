@@ -83,9 +83,25 @@ struct PendingReviewView: View {
 
             switch action {
             case .approved, .autoAcknowledged:
-                Text("Great job getting up! Your device is unlocked.")
+                Text("Great job getting up!")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+
+                if let stats = vm.profile?.stats {
+                    HStack(spacing: 16) {
+                        if stats.currentStreak > 0 {
+                            Label("\(stats.currentStreak)-day streak!", systemImage: "flame.fill")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.orange)
+                        }
+                        if stats.rewardPoints > 0 {
+                            Label("\(stats.rewardPoints) pts", systemImage: "star.fill")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.purple)
+                        }
+                    }
+                    .padding(.top, 4)
+                }
 
             case .denied(let reason):
                 VStack(spacing: 8) {
