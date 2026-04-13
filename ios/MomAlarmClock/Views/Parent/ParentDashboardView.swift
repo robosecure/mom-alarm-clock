@@ -25,11 +25,15 @@ struct ParentDashboardView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(.orange, in: RoundedRectangle(cornerRadius: 10))
                     }
-                    childSelector
-                    liveStatusCard
-                    alarmSummarySection
-                    statsSection
-                    quickActionsSection
+                    if vm.children.isEmpty {
+                        emptyFamilyState
+                    } else {
+                        childSelector
+                        liveStatusCard
+                        alarmSummarySection
+                        statsSection
+                        quickActionsSection
+                    }
                 }
                 .padding()
             }
@@ -113,6 +117,35 @@ struct ParentDashboardView: View {
             }
         }
         .presentationDetents([.medium])
+    }
+
+    // MARK: - Empty State
+
+    private var emptyFamilyState: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            Image(systemName: "person.badge.plus")
+                .font(.system(size: 56))
+                .foregroundStyle(.blue.opacity(0.6))
+            Text("Welcome!")
+                .font(.title.bold())
+            Text("Add your first child to get started. You'll get a join code to pair their device.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            Button {
+                showAddChild = true
+            } label: {
+                Label("Add Child", systemImage: "plus.circle.fill")
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 50)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .padding(.horizontal, 40)
+            Spacer()
+        }
     }
 
     // MARK: - Child Selector
