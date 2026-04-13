@@ -19,6 +19,15 @@ struct ChildAlarmView: View {
                         PendingReviewView()
                     } else if let session = vm.activeSession, session.isActive {
                         activeAlarmContent(session)
+                    } else if let session = vm.activeSession, session.parentAction != nil, !session.isActive {
+                        // Show result briefly before transitioning to idle
+                        PendingReviewView()
+                            .onAppear {
+                                Task {
+                                    try? await Task.sleep(for: .seconds(5))
+                                    vm.activeSession = nil
+                                }
+                            }
                     } else {
                         idleContent
                     }
