@@ -37,6 +37,7 @@ struct PendingReviewView: View {
 
             Text("Waiting for Guardian")
                 .font(.title2.bold())
+                .accessibilityAddTraits(.isHeader)
 
             Text("Your verification has been submitted. Your guardian will review it shortly.")
                 .font(.subheadline)
@@ -78,6 +79,7 @@ struct PendingReviewView: View {
 
             Text(action.isApproval ? "Approved!" : "Verification Denied")
                 .font(.title.bold())
+                .accessibilityAddTraits(.isHeader)
 
             switch action {
             case .approved, .autoAcknowledged:

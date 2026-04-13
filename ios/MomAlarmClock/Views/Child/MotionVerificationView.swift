@@ -16,6 +16,7 @@ struct MotionVerificationView: View {
 
             Text("Get Moving!")
                 .font(.title.bold())
+                .accessibilityAddTraits(.isHeader)
 
             if let progress = vm.motionProgress {
                 // Progress ring
@@ -37,11 +38,14 @@ struct MotionVerificationView: View {
                     }
                 }
                 .frame(width: 200, height: 200)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(progress.currentSteps) of \(progress.requiredSteps) steps")
 
                 if progress.isComplete {
                     Label("Verification Complete!", systemImage: "checkmark.circle.fill")
                         .font(.headline)
                         .foregroundStyle(.green)
+                        .accessibilityLabel("Verification complete. You did it!")
                 }
             } else {
                 ProgressView("Starting pedometer...")
