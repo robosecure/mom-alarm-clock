@@ -9,3 +9,22 @@ DerivedData/
 *.dSYM
 build/
 .DS_Store
+
+# Firebase config (contains API keys — each developer gets their own)
+GoogleService-Info.plist
+# Node.js dependencies
+node_modules/
+functions/node_modules/
+# Environment files
+.env
+.env.local
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+# macOS
+Thumbs.db
+# Firebase emulator data
+.firebase/
+firebase-debug.log
+# Token monitor cache
+scripts/.token_budget.json
