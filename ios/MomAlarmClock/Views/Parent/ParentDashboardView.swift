@@ -335,6 +335,7 @@ struct ParentDashboardView: View {
             HStack {
                 Text("Alarms")
                     .font(.headline)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
                 NavigationLink {
                     AlarmControlsView()
@@ -416,6 +417,7 @@ struct ParentDashboardView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("This Week")
                 .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
             if let stats = vm.selectedChildStats {
                 HStack(spacing: 12) {
@@ -455,6 +457,7 @@ struct ParentDashboardView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Quick Actions")
                 .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
             HStack(spacing: 12) {
                 NavigationLink {
