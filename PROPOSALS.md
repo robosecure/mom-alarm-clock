@@ -59,3 +59,11 @@ These are improvements identified during overnight sessions that need human revi
 - **Risk:** Low — audio assets are small (~100KB each), standard iOS notification sound API
 - **Files affected:** AlarmSchedule.swift (sound field), AlarmService.swift (notification sound), AlarmControlsView.swift (picker), bundle audio files
 - **Note:** Guardian voice alarm already provides personalization; this adds variety for families that prefer non-voice options.
+
+## [P-009] Simplify guardian setup wizard from 8 steps to 3
+- **What:** Reduce wizard to: (1) Add child name/age (2) Set first alarm time + days (3) Share code. Move verification method, escalation, and test alarm to post-setup configuration.
+- **Why:** 8 steps is too many for first-time onboarding. Research shows 3-step onboarding has 2x completion rate vs 7+ steps. Users who complete setup are 3x more likely to retain.
+- **Effort:** Medium (restructure wizard, move steps to post-setup)
+- **Risk:** Medium — changes first-time experience significantly. Needs testing.
+- **Files affected:** SetupWizardView.swift, SetupWizardViewModel.swift
+- **Approach:** Use smart defaults (quiz verification, medium difficulty, default escalation) so the user doesn't HAVE to configure them upfront.
