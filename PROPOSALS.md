@@ -67,3 +67,17 @@ These are improvements identified during overnight sessions that need human revi
 - **Risk:** Medium — changes first-time experience significantly. Needs testing.
 - **Files affected:** SetupWizardView.swift, SetupWizardViewModel.swift
 - **Approach:** Use smart defaults (quiz verification, medium difficulty, default escalation) so the user doesn't HAVE to configure them upfront.
+
+## [P-010] Wire push notification approve/deny actions into ParentViewModel
+- **What:** When guardian taps Approve/Deny on the push notification, actually perform the action (find session by ID, call approveSession/denySession in ParentViewModel)
+- **Why:** The PENDING_REVIEW notification category with action buttons is registered but the actions are not fully wired — tapping them posts a NotificationCenter notification but nobody handles it yet
+- **Effort:** Medium (need to listen for .guardianNotificationAction in MomAlarmClockApp, look up session, call approve/deny)
+- **Risk:** Medium — performing actions from background requires careful session lookup
+- **Files affected:** MomAlarmClockApp.swift, ParentViewModel.swift
+
+## [P-011] Replace hour/minute pickers with DatePicker wheel
+- **What:** Use SwiftUI DatePicker(displayedComponents: .hourAndMinute) with .wheel style instead of two separate Picker wheels
+- **Why:** One tap to set time instead of scrolling two separate wheels. Native iOS alarm UX.
+- **Effort:** Small (replace 2 Pickers with 1 DatePicker, convert Date ↔ hour/minute)
+- **Risk:** Low — standard SwiftUI component
+- **Files affected:** AlarmControlsView.swift
