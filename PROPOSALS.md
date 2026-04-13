@@ -51,3 +51,11 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (UIActivityViewController / ShareLink in SwiftUI)
 - **Risk:** Low — standard iOS API
 - **Files affected:** ParentAuthView.swift, FamilySettingsView.swift
+
+## [P-008] Gentle/melodic alarm sound option (reduces morning stress)
+- **What:** Add 3-4 built-in alarm sound options: gentle melody, nature sounds, chime progression. Let guardian choose per alarm.
+- **Why:** Research (PLoS ONE 2020, Chronobiology International) shows melodic alarm tones significantly reduce sleep inertia vs. jarring beeps. Children with sensory sensitivities especially benefit from gentler wake-up sounds.
+- **Effort:** Medium (add audio assets to bundle, picker in AlarmControlsView, play via UNNotificationSound)
+- **Risk:** Low — audio assets are small (~100KB each), standard iOS notification sound API
+- **Files affected:** AlarmSchedule.swift (sound field), AlarmService.swift (notification sound), AlarmControlsView.swift (picker), bundle audio files
+- **Note:** Guardian voice alarm already provides personalization; this adds variety for families that prefer non-voice options.
