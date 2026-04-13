@@ -1,0 +1,116 @@
+name: MomAlarmClock
+options:
+  bundleIdPrefix: com.momclock
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  FirebaseSDK:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: "11.0.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    SWIFT_STRICT_CONCURRENCY: complete
+    DEVELOPMENT_TEAM: TEAM_ID_HERE
+
+targets:
+  MomAlarmClock:
+    type: application
+    platform: iOS
+    sources:
+      - path: MomAlarmClock
+        type: group
+    settings:
+      base:
+        PRODUCT_NAME: "Mom Alarm Clock"
+        PRODUCT_BUNDLE_IDENTIFIER: com.momclock.MomAlarmClock
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_ENTITLEMENTS: MomAlarmClock.entitlements
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_EMIT_LOC_STRINGS: "YES"
+    info:
+      path: Info.plist
+      properties:
+        UIBackgroundModes:
+          - fetch
+          - remote-notification
+          - audio
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.momclock.heartbeat
+        NSCameraUsageDescription: "Mom Alarm Clock needs camera access to scan QR codes and take verification photos."
+        NSLocationWhenInUseUsageDescription: "Mom Alarm Clock uses your location to verify you've reached the designated wake-up spot."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "Mom Alarm Clock monitors your location to verify geofence-based alarm dismissal."
+        NSMotionUsageDescription: "Mom Alarm Clock counts your steps to verify you're out of bed and moving."
+        NSPhotoLibraryUsageDescription: "Mom Alarm Clock accesses your photo library for verification photo selection."
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        MinimumOSVersion: "17.0"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+    entitlements:
+      path: MomAlarmClock.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers:
+          - "iCloud.com.momclock.MomAlarmClock"
+        com.apple.developer.icloud-services:
+          - CloudKit
+        com.apple.developer.family-controls: true
+        com.apple.developer.usernotifications.critical-alerts: true
+        aps-environment: development
+    dependencies:
+      - sdk: SwiftUI.framework
+      - sdk: CloudKit.framework
+      - sdk: UserNotifications.framework
+      - sdk: BackgroundTasks.framework
+      - sdk: AVFoundation.framework
+      - sdk: CoreMotion.framework
+      - sdk: CoreLocation.framework
+      - sdk: ManagedSettings.framework
+      - sdk: FamilyControls.framework
+      - sdk: DeviceActivity.framework
+      - sdk: Network.framework
+      - sdk: CryptoKit.framework
+      - sdk: Combine.framework
+      - package: FirebaseSDK
+        product: FirebaseAuth
+      - package: FirebaseSDK
+        product: FirebaseFirestore
+      - package: FirebaseSDK
+        product: FirebaseMessaging
+      - package: FirebaseSDK
+        product: FirebaseCrashlytics
+      - package: FirebaseSDK
+        product: FirebaseAnalytics
+      - package: FirebaseSDK
+        product: FirebaseAppCheck
+      - package: FirebaseSDK
+        product: FirebaseStorage
+
+  MomAlarmClockTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MomAlarmClockTests
+        type: group
+    settings:
+      base:
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Mom Alarm Clock.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mom Alarm Clock"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: "YES"
+    dependencies:
+      - target: MomAlarmClock
+
+schemes:
+  MomAlarmClock:
+    build:
+      targets:
+        MomAlarmClock: all
+        MomAlarmClockTests: [test]
+    test:
+      targets:
+        - MomAlarmClockTests
