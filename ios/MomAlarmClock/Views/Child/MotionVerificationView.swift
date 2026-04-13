@@ -51,10 +51,16 @@ struct MotionVerificationView: View {
                 ProgressView("Starting pedometer...")
                     .padding()
 
-                Text("Walk at least 50 steps to verify you're awake.")
+                Text("Walk at least \(vm.effectiveConfig?.requiredSteps ?? 50) steps to verify you're awake.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+
+                Text("If this doesn't start, check that Motion & Fitness is enabled in Settings.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 8)
             }
 
             Spacer()
