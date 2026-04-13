@@ -35,6 +35,8 @@
 	<string>Mom Alarm Clock monitors your location to verify geofence-based alarm dismissal.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Mom Alarm Clock uses your location to verify you've reached the designated wake-up spot.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mom Alarm Clock uses the microphone to record a personal voice alarm message for your child.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Mom Alarm Clock counts your steps to verify you're out of bed and moving.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

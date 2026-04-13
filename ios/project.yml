@@ -47,6 +47,7 @@ targets:
         NSLocationAlwaysAndWhenInUseUsageDescription: "Mom Alarm Clock monitors your location to verify geofence-based alarm dismissal."
         NSMotionUsageDescription: "Mom Alarm Clock counts your steps to verify you're out of bed and moving."
         NSPhotoLibraryUsageDescription: "Mom Alarm Clock accesses your photo library for verification photo selection."
+        NSMicrophoneUsageDescription: "Mom Alarm Clock uses the microphone to record a personal voice alarm message for your child."
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         MinimumOSVersion: "17.0"
