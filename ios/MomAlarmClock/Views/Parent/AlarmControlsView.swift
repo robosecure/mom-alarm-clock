@@ -6,11 +6,14 @@ struct AlarmControlsView: View {
     @Environment(ParentViewModel.self) private var vm
     @Environment(\.dismiss) private var dismiss
 
+    /// Pass an existing schedule to edit; nil = create new.
+    var existingSchedule: AlarmSchedule?
+
     @State private var label = "School Days"
     @State private var hour = 7
     @State private var minute = 0
     @State private var selectedDays: Set<Int> = [2, 3, 4, 5, 6] // Mon-Fri
-    @State private var primaryVerification: VerificationMethod = .qr
+    @State private var primaryVerification: VerificationMethod = .quiz
     @State private var fallbackVerification: VerificationMethod? = .motion
     @State private var snoozeAllowed = true
     @State private var maxSnoozes = 2
@@ -18,6 +21,8 @@ struct AlarmControlsView: View {
     @State private var useDefaultEscalation = true
     @State private var verificationTier: VerificationTier = .medium
     @State private var confirmationPolicy: ConfirmationPolicy = .default
+
+    private var isEditing: Bool { existingSchedule != nil }
 
     private let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -128,14 +133,27 @@ struct AlarmControlsView: View {
             }
 
             Section {
-                Button("Save Alarm") {
+                Button(isEditing ? "Save Changes" : "Create Alarm") {
                     Task { await saveAlarm() }
                 }
                 .bold()
                 .frame(maxWidth: .infinity)
             }
+
+            if isEditing, let existing = existingSchedule {
+                Section {
+                    Button("Delete Alarm", role: .destructive) {
+                        Task {
+                            await vm.deleteAlarmSchedule(existing.id)
+                            dismiss()
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
         }
-        .navigationTitle("Configure Alarm")
+        .navigationTitle(isEditing ? "Edit Alarm" : "New Alarm")
+        .onAppear { loadExisting() }
     }
 
     private func dayToggle(day: Int) -> some View {
@@ -153,15 +171,30 @@ struct AlarmControlsView: View {
         .buttonStyle(.plain)
     }
 
+    private func loadExisting() {
+        guard let s = existingSchedule else { return }
+        label = s.label
+        hour = s.alarmTime.hour
+        minute = s.alarmTime.minute
+        selectedDays = s.activeDays
+        primaryVerification = s.primaryVerification
+        fallbackVerification = s.fallbackVerification
+        snoozeAllowed = s.snoozeRules.allowed
+        maxSnoozes = s.snoozeRules.maxCount
+        snoozeDuration = s.snoozeRules.durationMinutes
+        verificationTier = s.verificationTier
+        confirmationPolicy = s.confirmationPolicy
+    }
+
     private func saveAlarm() async {
         guard let childID = vm.selectedChildID else { return }
 
-        let schedule = AlarmSchedule(
+        var schedule = AlarmSchedule(
             alarmTime: AlarmSchedule.AlarmTime(hour: hour, minute: minute),
             activeDays: selectedDays,
             primaryVerification: primaryVerification,
             fallbackVerification: fallbackVerification,
-            escalation: .default, // Custom escalation editing deferred to future wave
+            escalation: existingSchedule?.escalation ?? .default,
             verificationTier: verificationTier,
             confirmationPolicy: confirmationPolicy,
             snoozeRules: AlarmSchedule.SnoozeRules(
@@ -172,6 +205,11 @@ struct AlarmControlsView: View {
             label: label,
             childProfileID: childID
         )
+
+        // Reuse existing ID when editing (so Firestore overwrites, not creates duplicate)
+        if let existing = existingSchedule {
+            schedule.id = existing.id
+        }
 
         await vm.saveAlarmSchedule(schedule)
         dismiss()

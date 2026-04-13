@@ -296,10 +296,12 @@ struct ParentDashboardView: View {
                 Text("Alarms")
                     .font(.headline)
                 Spacer()
-                NavigationLink("Edit") {
+                NavigationLink {
                     AlarmControlsView()
+                } label: {
+                    Label("New", systemImage: "plus")
+                        .font(.subheadline)
                 }
-                .font(.subheadline)
             }
 
             if vm.selectedChildSchedules.isEmpty {
@@ -317,20 +319,28 @@ struct ParentDashboardView: View {
     }
 
     private func alarmRow(_ schedule: AlarmSchedule) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(schedule.alarmTime.formatted)
-                    .font(.title2.monospacedDigit().bold())
-                Text(schedule.label)
+        NavigationLink {
+            AlarmControlsView(existingSchedule: schedule)
+        } label: {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(schedule.alarmTime.formatted)
+                        .font(.title2.monospacedDigit().bold())
+                    HStack(spacing: 4) {
+                        Text(schedule.label)
+                        Text("·")
+                        Text(schedule.primaryVerification.displayName)
+                    }
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { schedule.isEnabled },
+                    set: { _ in Task { await vm.toggleAlarm(schedule.id) } }
+                ))
+                .labelsHidden()
             }
-            Spacer()
-            Toggle("", isOn: Binding(
-                get: { schedule.isEnabled },
-                set: { _ in Task { await vm.toggleAlarm(schedule.id) } }
-            ))
-            .labelsHidden()
         }
     }
 
