@@ -107,7 +107,7 @@ struct PendingReviewView: View {
 
             case .escalated(let reason):
                 VStack(spacing: 8) {
-                    Text("Your guardian has escalated consequences.")
+                    Text("Your guardian needs to talk to you about this morning.")
                         .foregroundStyle(.red)
                     if !reason.isEmpty {
                         Text("Reason: \(reason)")
