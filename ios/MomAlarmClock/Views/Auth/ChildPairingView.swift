@@ -155,7 +155,8 @@ struct ChildPairingView: View {
         error = nil
 
         do {
-            try await auth.pairAsChild(familyCode: familyCode, displayName: childName)
+            let trimmedCode = familyCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+            try await auth.pairAsChild(familyCode: trimmedCode, displayName: childName.trimmingCharacters(in: .whitespacesAndNewlines))
             isPaired = true
         } catch {
             self.error = error.localizedDescription
