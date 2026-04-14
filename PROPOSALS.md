@@ -102,3 +102,10 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small-Medium (define 5-6 tips, attach to relevant views)
 - **Risk:** Low — standard Apple framework, non-intrusive, auto-manages tip lifecycle
 - **Files affected:** New: Tips/AlarmTips.swift, modified: ParentDashboardView, ChildAlarmView, VerificationReviewView
+
+## [P-015] Use DisclosureGroup for advanced alarm settings (progressive disclosure)
+- **What:** Collapse 'Snooze Rules', 'If They Don't Get Up', and 'Verification Difficulty' into DisclosureGroups that default to collapsed. Guardian sees only: Time, Days, Verification Method, Confirmation Policy by default.
+- **Why:** 7 sections is overwhelming for a new guardian. Progressive disclosure shows only what's needed, with advanced options one tap away. Apple's WWDC22 talk specifically recommends this pattern.
+- **Effort:** Small (wrap 3 sections in DisclosureGroup)
+- **Risk:** Low — standard SwiftUI component, no data model change
+- **Files affected:** AlarmControlsView.swift
