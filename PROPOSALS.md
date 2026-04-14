@@ -153,3 +153,15 @@ These are improvements identified during overnight sessions that need human revi
   
   **Keywords (100 chars max):**
   alarm,kids,wake,morning,family,parental,quiz,routine,child,streak,reward,verification,guardian
+
+## [P-017] App Store privacy compliance (required for submission)
+- **What:** Complete these before App Store submission:
+  1. Add privacy policy URL (host on a simple webpage)
+  2. Fill out privacy nutrition labels in App Store Connect
+  3. Add PrivacyInfo.xcprivacy manifest file for Firebase SDK usage
+  4. Verify account deletion actually deletes Firestore data (not just local)
+- **Why:** Apple requires all four for App Store approval. Missing any one = rejection.
+- **Effort:** Medium (privacy policy needs legal review, manifest file needs Firebase API audit)
+- **Risk:** Medium — privacy policy needs real legal content, not placeholder
+- **Files affected:** New: PrivacyInfo.xcprivacy, project.yml, FamilySettingsView (actual Firestore deletion)
+- **Note:** Account deletion UI exists but currently only calls auth.signOut() — needs to actually delete the user's Firestore data + Firebase Auth account
