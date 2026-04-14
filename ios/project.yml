@@ -53,6 +53,8 @@ targets:
         MinimumOSVersion: "17.0"
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: false
+        UILaunchScreen:
+          UIColorName: ""
     entitlements:
       path: MomAlarmClock.entitlements
       properties:
