@@ -191,3 +191,38 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (copywriting only)
 - **Risk:** None — marketing positioning
 - **Files affected:** PRODUCT_BRIEF.md, App Store listing (P-016)
+
+## [P-021] Step Counter as .99 one-time in-app purchase
+- **What:** Lock Motion/Steps verification behind a one-time .99 purchase. Quiz remains free. When guardian selects 'Motion / Steps' in alarm setup, show a purchase prompt if not bought.
+- **Why:** Steps is the most physically effective verification — gets kids OUT of bed. Low price = impulse buy. Once someone pays , they're 5x more likely to subscribe later (foot-in-the-door).
+- **Effort:** Small (StoreKit 2 non-consumable product, gate in AlarmControlsView + ChildViewModel)
+- **Risk:** Low — standard StoreKit purchase, doesn't affect free quiz flow
+- **Files affected:** StoreKitManager.swift (new), AlarmControlsView.swift (gate), VerificationMethod.swift (isPaid flag)
+
+## [P-022] Achievement Badges system
+- **What:** 15+ collectible badges: Early Bird, No Snooze Hero, Quiz Master, Iron Streak (30 days), seasonal badges. Free tier gets 3 basic badges, paid gets full collection.
+- **Why:** Kids collect badges like Pokemon. Parents see them as proof the system works. Drives daily engagement.
+- **Effort:** Medium (Badge model, badge display view, unlock logic, per-child tracking)
+- **Risk:** Low — additive feature, no core flow changes
+- **Files affected:** New: Badge.swift, BadgeView.swift. Modified: ChildProfile (badges array), ChildAlarmView (badge showcase)
+
+## [P-023] Morning Timeline + Insights (guardian premium)
+- **What:** Visual timeline of each morning (alarm 7:00 → snooze 7:05 → verify 7:12 → approved 7:15). Weekly/monthly trend charts. Exportable PDF for co-parents.
+- **Why:** Parents who SEE improvement keep paying. PDF export is gold for shared custody. Competing apps charge /yr for less.
+- **Effort:** Medium-Large (timeline view, Swift Charts for trends, PDF generation)
+- **Risk:** Low — read-only view, no data model changes
+- **Files affected:** New: MorningTimelineView.swift, InsightsView.swift
+
+## [P-024] Custom Alarm Sound Pack Store
+- **What:** Library of alarm sounds: nature (birds, waves), music box, video game, funny (roosters, trumpets). Child can CHOOSE their sound as a reward (spend points to unlock).
+- **Why:** Sound choice = ownership. Kids who pick their alarm resent it less. Points-to-unlock creates a virtuous cycle: wake up → earn points → unlock cooler sound → more motivated.
+- **Effort:** Medium (audio assets, sound picker UI, points-to-unlock mechanic)
+- **Risk:** Low — audio files are small, standard AVAudioPlayer
+- **Files affected:** New: SoundPackStore.swift, alarm sound assets. Modified: AlarmSchedule (soundID), AlarmService (play selected sound)
+
+## [P-025] Family Leaderboard (multi-child competitive)
+- **What:** Cross-child leaderboard: who has the longest streak? Most points this week? 'Early Bird Champion' crown on dashboard. Weekly winner gets a guardian-defined reward.
+- **Why:** Sibling competition is the most powerful motivator for ages 6-14. Kids motivate EACH OTHER. Parents love it.
+- **Effort:** Small (leaderboard view sorted by streak/points, champion badge on child tab)
+- **Risk:** Low — read-only display from existing per-child stats
+- **Files affected:** New: LeaderboardView.swift. Modified: ParentDashboardView (champion indicator)

@@ -561,7 +561,7 @@ Child sees result → session complete
 ## Business Model
 
 ### Free Tier (1 Child)
-- All verification methods (math, quiz, motion, QR, photo, geofence)
+- Math/Quiz verification (all difficulties)
 - All confirmation policies (auto, strict, hybrid)
 - Voice alarm
 - Streaks and rewards
@@ -569,24 +569,39 @@ Child sees result → session complete
 - Offline reliability
 - Full diagnostics
 
-### Family Plan ($4.99/month)
+### Step Counter Verification — .99 one-time
+- Unlock Motion/Steps verification method
+- Child must physically walk 30-100 steps to verify
+- The most effective way to get kids OUT of bed, not just awake in bed
+- One-time purchase, works forever, applies to all children
+
+### Family Plan (.99/month)
 - **Up to 4 children** with per-child everything:
   - Individual alarms, schedules, and verification settings
   - Per-child voice alarm recordings
   - Per-child streaks, rewards, and stats
   - Tomorrow overrides per child
 - Weekly summary reports
+- Achievement badges
+- Family leaderboard (kids compete on streaks)
 - Priority support
 
-### Annual Plan ($29.99/year — save 50%)
+### Family+ Plan (.99/month)
 - Everything in Family
-- Family leaderboard (kids compete on streaks)
-- Achievement badges
-- Custom reward store items
+- Morning checklist (post wake-up routine builder)
+- Custom alarm sounds (nature, music box, funny)
+- PDF morning reports (great for co-parenting)
 - Early access to new features
 
-### Paywall Placement
-The paywall appears at the natural friction point: the "Add Child" button. When a free user taps "+" to add a second child, they see the upgrade prompt. Everything else works fully — we never cripple features to upsell.
+### Annual Plans (save ~50%)
+- Family: .99/year
+- Family+: .99/year
+
+### Paywall Strategy
+- **Quiz verification is always free** — proves the concept, hooks the user
+- **Steps (.99)** — impulse buy at the "choose verification method" screen. Once they pay , they're 5x more likely to subscribe.
+- **Add Child** — subscription paywall when free user taps "+" for child #2
+- **Never cripple** core alarm functionality. Free users get a complete, working alarm.
 
 ---
 
