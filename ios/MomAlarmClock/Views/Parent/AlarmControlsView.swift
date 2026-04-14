@@ -55,7 +55,7 @@ struct AlarmControlsView: View {
                 .padding(.vertical, 4)
             }
 
-            Section("Verification") {
+            Section("How They Prove They're Up") {
                 Picker("Primary Method", selection: $primaryVerification) {
                     ForEach(VerificationMethod.allCases) { method in
                         Label(method.displayName, systemImage: method.systemImage)
@@ -72,7 +72,7 @@ struct AlarmControlsView: View {
                 }
             }
 
-            Section("Verification Difficulty") {
+            Section("Difficulty") {
                 Picker("Tier", selection: $verificationTier) {
                     ForEach(VerificationTier.allCases) { tier in
                         Text(tier.displayName).tag(tier)
@@ -108,7 +108,7 @@ struct AlarmControlsView: View {
                 .buttonStyle(.plain)
             }
 
-            Section("Snooze Rules") {
+            Section("Snooze") {
                 Toggle("Allow Snooze", isOn: $snoozeAllowed)
 
                 if snoozeAllowed {
