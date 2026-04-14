@@ -67,6 +67,7 @@
 		B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */; };
 		BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */; };
 		BC65828D9AE42F8B61EB1BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69601E335B515C3776FAA4E8 /* AppDelegate.swift */; };
+		BD300D7A69FFC350AC5DBE8A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */; };
 		BD3BDAAF98973E2DB76B788C /* FirestoreSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777481E761E13914002CF51 /* FirestoreSyncService.swift */; };
 		BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225932C9D4339E76EBD77491 /* EffectiveVerificationConfig.swift */; };
 		BF4E494943889A94C5E93D42 /* VoiceAlarmPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7B9F921738B6CC10F4340F /* VoiceAlarmPlayerService.swift */; };
@@ -147,6 +148,7 @@
 		A283A20EF0124AE0C1670204 /* ParentAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentAction.swift; sourceTree = "<group>"; };
 		ABE40595E33E07A70F7C547A /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
 		AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmRecorderView.swift; sourceTree = "<group>"; };
 		B58C45DDE80F671326534BCC /* Collection+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Safe.swift"; sourceTree = "<group>"; };
 		BA34D6E0A573788189B65ED9 /* MorningSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningSession.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 				0455FAFC2D3F7025187619DB /* Services */,
 				0987BFF24D5569BD8C48AE08 /* ViewModels */,
 				E644F2D9DF5AFA52C492EF21 /* Views */,
+				B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */,
 			);
 			path = MomAlarmClock;
 			sourceTree = "<group>";
@@ -427,6 +430,7 @@
 			buildConfigurationList = DC4B467D74EC9D97132AE836 /* Build configuration list for PBXNativeTarget "MomAlarmClock" */;
 			buildPhases = (
 				039D117E67203CFEA5F7225A /* Sources */,
+				370AAF7558B679F915011DEC /* Resources */,
 				13013E4245227BF3C44B6338 /* Frameworks */,
 			);
 			buildRules = (
@@ -504,6 +508,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		370AAF7558B679F915011DEC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD300D7A69FFC350AC5DBE8A /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		039D117E67203CFEA5F7225A /* Sources */ = {
