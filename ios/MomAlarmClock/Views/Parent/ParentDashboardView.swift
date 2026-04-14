@@ -99,7 +99,15 @@ struct ParentDashboardView: View {
     private var messageComposerSheet: some View {
         NavigationStack {
             Form {
-                Section("Send a message to your child") {
+                Section("Quick Messages") {
+                    ForEach(["Good morning!", "Time to get up!", "You've got this!", "I'm proud of you!"], id: \.self) { msg in
+                        Button(msg) {
+                            messageText = msg
+                        }
+                        .foregroundStyle(messageText == msg ? .blue : .primary)
+                    }
+                }
+                Section("Or write your own") {
                     TextField("Type a message...", text: $messageText)
                 }
                 Section {
