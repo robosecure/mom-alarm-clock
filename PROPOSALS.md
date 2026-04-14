@@ -109,3 +109,47 @@ These are improvements identified during overnight sessions that need human revi
 - **Effort:** Small (wrap 3 sections in DisclosureGroup)
 - **Risk:** Low — standard SwiftUI component, no data model change
 - **Files affected:** AlarmControlsView.swift
+
+## [P-016] App Store listing draft (ready for submission)
+- **What:** Pre-written App Store metadata: name, subtitle, description, keywords, screenshots list
+- **Why:** A polished listing increases downloads. First sentence is critical — most users don't tap 'read more.'
+- **Effort:** Small (copywriting only, no code)
+- **Risk:** None — just text
+- **Draft:**
+
+  **Name:** Mom Alarm Clock
+  **Subtitle:** Get kids up. Stay informed.
+  
+  **Description (first 3 lines — visible without tapping):**
+  The only alarm app built for families. Set alarms from your phone. Your child proves they're awake with math quizzes. You approve from your lock screen.
+  
+  **Full description:**
+  Mom Alarm Clock is a two-device alarm system where the guardian controls the alarm and the child proves they're awake.
+  
+  SET IT AND FORGET IT
+  - Create weekly alarms from your phone
+  - Alarms fire on your child's device automatically
+  - Skip tomorrow with one swipe (sick days, holidays)
+  
+  THEY MUST PROVE THEY'RE AWAKE
+  - Math quizzes, step counting, or QR code scanning
+  - Difficulty scales from easy to hard
+  - Can't just tap dismiss
+  
+  YOU STAY IN THE LOOP
+  - Get notified when your child verifies
+  - Approve or deny from your lock screen
+  - See proof of verification (quiz score, time, steps)
+  
+  MAKE MORNINGS POSITIVE
+  - Record a personal voice alarm message
+  - Streaks and reward points motivate consistency
+  - Calm mode eases the wake-up transition
+  
+  BUILT FOR FAMILIES
+  - Up to 4 children per family
+  - Per-child settings, voice alarms, and rewards
+  - Works offline — alarms fire even without internet
+  
+  **Keywords (100 chars max):**
+  alarm,kids,wake,morning,family,parental,quiz,routine,child,streak,reward,verification,guardian
