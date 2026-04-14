@@ -152,7 +152,7 @@ struct QuizVerificationView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(passed ? .green : .orange)
 
-            Text(passed ? "All Correct!" : "Try Again")
+            Text(passed ? "All Correct!" : "Not quite!")
                 .font(.title.bold())
 
             Text("\(vm.quizCorrectCount)/\(vm.quizQuestions.count) correct")
@@ -160,7 +160,11 @@ struct QuizVerificationView: View {
                 .foregroundStyle(.secondary)
 
             if !passed {
-                Button("New Quiz") {
+                Text("You need all correct to verify. Let's try new questions.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Button("New Questions") {
                     Task { await vm.beginVerification() }
                 }
                 .buttonStyle(.borderedProminent)
