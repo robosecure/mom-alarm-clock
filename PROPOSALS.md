@@ -176,3 +176,18 @@ These are improvements identified during overnight sessions that need human revi
   - SubscriptionStoreView is one line: 
   - Check entitlement:  → if subscribed, allow 4 children
   - Test in Xcode StoreKit sandbox (no real money, no App Store Connect needed initially)
+
+## [P-019] Visual countdown timer on alarm screen (ADHD-friendly)
+- **What:** Show a prominent visual countdown timer on the alarm ringing screen: 'Verify within 15 minutes' with a circular progress ring that depletes over time.
+- **Why:** Research on ADHD morning routines shows visual timers significantly reduce decision fatigue and time-blindness. Apps like Brili and Tiimo use this pattern. Our escalation system already has timeouts — making them visible empowers the child to self-manage.
+- **Effort:** Small (circular progress ring based on escalation profile timing, already have the data)
+- **Risk:** Low — visual only, uses existing escalation timers
+- **Files affected:** ChildAlarmView.swift (alarm ringing section)
+- **Note:** This could be a positioning differentiator for ADHD/neurodivergent families — a significant and underserved market.
+
+## [P-020] Market positioning for ADHD/neurodivergent families
+- **What:** Add ADHD-friendly messaging to App Store listing and product brief. Mention: visual timers, structured verification, positive reinforcement, guardian oversight.
+- **Why:** Apps like Brili (/yr), RoutineFlow, and Tiimo target ADHD families specifically. Our app already has many ADHD-friendly features (structured routine, timers, rewards, calm mode) but doesn't market them as such.
+- **Effort:** Small (copywriting only)
+- **Risk:** None — marketing positioning
+- **Files affected:** PRODUCT_BRIEF.md, App Store listing (P-016)
