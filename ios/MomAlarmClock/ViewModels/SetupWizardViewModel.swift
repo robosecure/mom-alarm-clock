@@ -25,7 +25,7 @@ final class SetupWizardViewModel {
             case .createChild:        "Add Your Child"
             case .configureAlarm:     "Set Alarm Time"
             case .chooseVerification: "Verification Method"
-            case .setEscalation:      "Escalation Rules"
+            case .setEscalation:      "If They Don't Get Up"
             case .pairDevice:         "Pair Child's Device"
             case .testAlarm:          "Test Alarm"
             case .complete:           "All Set!"
