@@ -29,7 +29,7 @@ struct QRVerificationView: View {
                 .foregroundStyle(.blue)
             Text("Scan the QR Code")
                 .font(.title2.bold())
-            Text("Find the QR code your guardian placed and scan it with your camera.")
+            Text("Scan the QR code your guardian placed.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

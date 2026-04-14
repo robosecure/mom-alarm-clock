@@ -51,7 +51,7 @@ struct MotionVerificationView: View {
                 ProgressView("Starting pedometer...")
                     .padding()
 
-                Text("Walk at least \(vm.effectiveConfig?.requiredSteps ?? 50) steps to verify you're awake.")
+                Text("Walk \(vm.effectiveConfig?.requiredSteps ?? 50) steps to prove you're up!")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
