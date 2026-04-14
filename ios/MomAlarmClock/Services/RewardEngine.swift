@@ -109,6 +109,7 @@ enum RewardEngine {
             let bonus = streakBonus(currentStreak: stats.currentStreak)
             if bonus > 0 {
                 stats.rewardPoints += bonus
+                BetaDiagnostics.log(.streakMilestone(days: stats.currentStreak))
             }
         }
     }
