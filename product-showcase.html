@@ -341,105 +341,76 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif; bac
 <div class="phone">
   <div class="phone-header">
     <div class="label">Child&#x2019;s Phone</div>
-    <h3>&#x1F514; Alarm</h3>
+    <h3>&#x1F514; My Alarm</h3>
   </div>
   <div class="phone-screen">
     <div class="tabs">
-      <button class="active" onclick="cShow('idle',this)">Idle</button>
-      <button onclick="cShow('ring',this)">Ringing</button>
-      <button onclick="cShow('quiz',this)">Quiz</button>
-      <button onclick="cShow('calm',this)">Calm</button>
-      <button onclick="cShow('wait',this)">Waiting</button>
-      <button onclick="cShow('done',this)">Done</button>
+      <button class="active" onclick="cShow('sleep',this)">&#x1F319; Sleep</button>
+      <button onclick="cShow('alarm2',this)">&#x1F514; Alarm</button>
+      <button onclick="cShow('result',this)">&#x2705; Done</button>
     </div>
 
-    <!-- Idle -->
-    <div id="c-idle" class="scr active">
-      <div style="text-align:center;padding:30px 0;">
-        <div style="font-size:18px;font-weight:600;">Good evening, Emma</div>
-        <div style="font-size:48px;margin:16px 0;">&#x1F319;</div>
-        <div style="font-size:56px;font-weight:800;font-family:system-ui;">7:00 AM</div>
-        <div style="font-size:15px;color:#888;margin-top:4px;">tomorrow morning</div>
-        <div style="font-size:13px;color:#666;margin-top:2px;">School Days</div>
-        <div style="margin-top:24px;display:flex;justify-content:center;gap:16px;">
-          <span style="background:rgba(255,255,255,0.08);padding:6px 14px;border-radius:20px;font-size:13px;">&#x1F525; 5-day streak</span>
-          <span style="background:rgba(255,255,255,0.08);padding:6px 14px;border-radius:20px;font-size:13px;">&#x2B50; 245 pts</span>
+    <!-- Sleep / Idle -->
+    <div id="c-sleep" class="scr active">
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:17px;font-weight:600;">Good evening, Emma</div>
+        <div style="font-size:44px;margin:20px 0;">&#x1F319;</div>
+        <div style="font-size:52px;font-weight:800;font-family:system-ui;">7:00 AM</div>
+        <div style="font-size:14px;color:#888;margin-top:4px;">tomorrow morning</div>
+        <div style="font-size:12px;color:#666;margin-top:2px;">School Days</div>
+        <div style="margin-top:20px;display:flex;justify-content:center;gap:12px;">
+          <span style="background:rgba(255,255,255,0.08);padding:5px 12px;border-radius:16px;font-size:12px;">&#x1F525; 5-day streak</span>
+          <span style="background:rgba(255,255,255,0.08);padding:5px 12px;border-radius:16px;font-size:12px;">&#x2B50; 245 pts</span>
+        </div>
+        <div style="margin-top:24px;background:rgba(175,82,222,0.08);padding:12px;border-radius:12px;">
+          <div style="font-size:11px;color:#AF52DE;font-weight:600;margin-bottom:4px;">&#x1F3B6; Wind-Down Sounds</div>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <span style="background:#222;padding:4px 10px;border-radius:8px;font-size:11px;">&#x1F30A; Ocean</span>
+            <span style="background:rgba(175,82,222,0.2);padding:4px 10px;border-radius:8px;font-size:11px;color:#AF52DE;">&#x1F327; Rain</span>
+            <span style="background:#222;padding:4px 10px;border-radius:8px;font-size:11px;">&#x1F343; Forest</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Ringing -->
-    <div id="c-ring" class="scr">
-      <div style="text-align:center;background:linear-gradient(180deg,rgba(255,59,48,0.15),transparent);border-radius:14px;padding:20px;">
-        <div style="font-size:70px;" class="pulse">&#x1F514;</div>
-        <div style="font-size:32px;font-weight:800;margin:12px 0;">Wake Up!</div>
-        <div style="font-size:13px;color:#888;">Today is going to be a great day!</div>
-        <div style="font-size:15px;color:#999;margin-top:6px;font-family:monospace;">12 min elapsed</div>
-        <div style="background:rgba(0,122,255,0.1);padding:8px;border-radius:10px;margin:12px 0;font-size:13px;">&#x1F4AC; &ldquo;Time to get up, sweetie!&rdquo;</div>
-        <div style="font-size:11px;color:#888;margin-bottom:4px;">&#x23F0; Reminder in 3 min</div>
+    <!-- Alarm (ringing + quiz combined) -->
+    <div id="c-alarm2" class="scr">
+      <div style="text-align:center;background:linear-gradient(180deg,rgba(255,59,48,0.12),transparent);border-radius:14px;padding:16px;">
+        <div style="font-size:60px;" class="pulse">&#x1F514;</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0;">Wake Up!</div>
+        <div style="font-size:12px;color:#888;">You&#x2019;re stronger than the snooze button!</div>
+        <div style="background:rgba(0,122,255,0.1);padding:6px;border-radius:8px;margin:8px 0;font-size:12px;">&#x1F4AC; &#x201C;Good morning sweetie!&#x201D;</div>
       </div>
-      <button class="btn btn-primary" style="margin-top:12px;font-size:18px;font-weight:700;min-height:52px;">&#x2705; I&#x2019;m Awake &mdash; Verify</button>
-      <button class="btn btn-secondary">&#x1F4A4; Snooze (1/2)</button>
-      <button class="btn btn-secondary" style="font-size:13px;padding:8px;">&#x1F4AC; Message Guardian</button>
-    </div>
-
-    <!-- Quiz -->
-    <div id="c-quiz" class="scr">
-      <div style="text-align:center;">
-        <div style="font-size:40px;margin-bottom:6px;">&#x1F9E0;</div>
-        <h3>Wake-Up Quiz</h3>
-        <div style="display:flex;justify-content:center;gap:16px;margin:10px 0;font-size:13px;">
-          <span style="color:#888;">&#x23F1; 42s</span>
-          <span style="color:#888;"># Attempt 1/3</span>
+      <div style="margin-top:10px;text-align:center;">
+        <div style="font-size:10px;color:#888;margin-bottom:6px;">VERIFICATION</div>
+        <div style="display:flex;justify-content:center;gap:12px;font-size:12px;color:#888;margin-bottom:8px;">
+          <span>&#x23F1; 42s</span><span># Attempt 1/3</span>
         </div>
-        <div class="quiz-q">24 + 37 = ?</div>
-        <input type="text" value="61" style="width:100px;text-align:center;font-size:24px;padding:10px;border:2px solid #333;border-radius:10px;background:#111;color:#fff;display:block;margin:0 auto;">
-        <div style="display:flex;gap:10px;margin:12px 0;">
-          <button class="btn btn-secondary" style="flex:1;min-height:44px;">&#x1F44B; I&#x2019;m trying!</button>
-          <button class="btn btn-primary" style="flex:1;min-height:44px;">Submit</button>
+        <div class="quiz-q" style="font-size:32px;padding:16px;">24 + 37 = ?</div>
+        <input type="text" value="61" style="width:80px;text-align:center;font-size:22px;padding:8px;border:2px solid #333;border-radius:8px;background:#111;color:#fff;display:block;margin:6px auto;">
+        <div style="display:flex;gap:8px;margin:8px 0;">
+          <button class="btn btn-secondary" style="flex:1;font-size:13px;padding:10px;">&#x1F44B; I&#x2019;m trying!</button>
+          <button class="btn btn-primary" style="flex:1;font-size:13px;padding:10px;">Submit</button>
         </div>
-        <div class="quiz-dots">
-          <div class="quiz-dot done"></div>
-          <div class="quiz-dot cur"></div>
-          <div class="quiz-dot"></div>
-        </div>
-        <div style="margin-top:8px;font-size:14px;font-weight:600;color:#34C759;">&#x2705; Correct!</div>
+        <div class="quiz-dots"><div class="quiz-dot done"></div><div class="quiz-dot cur"></div><div class="quiz-dot"></div></div>
       </div>
     </div>
 
-    <!-- Calm Mode (P-002 style) -->
-    <div id="c-calm" class="scr">
-      <div style="text-align:center;padding:60px 0;">
-        <div style="font-size:56px;">&#x1F33F;</div>
-        <div style="font-size:24px;font-weight:700;margin:20px 0;">Take a breath.</div>
-        <div style="font-size:17px;color:#888;">You&#x2019;ve got this.</div>
-        <div style="margin-top:40px;font-size:12px;color:#555;">Starting quiz in 3 seconds...</div>
-      </div>
-    </div>
-
-    <!-- Waiting -->
-    <div id="c-wait" class="scr">
-      <div style="text-align:center;padding:30px 0;">
-        <div style="font-size:56px;">&#x23F3;</div>
-        <h3 style="margin:14px 0 6px;">Waiting for Guardian</h3>
-        <p style="color:#888;font-size:13px;line-height:1.4;">Your verification has been submitted. Your guardian will review it shortly.</p>
-        <div class="card" style="margin-top:16px;text-align:left;">
-          <div style="font-size:13px;">&#x1F9EE; Wake-Up Quiz &middot; 3/3 correct</div>
+    <!-- Done (result) -->
+    <div id="c-result" class="scr">
+      <div style="text-align:center;padding:24px 0;">
+        <div style="font-size:64px;">&#x2705;</div>
+        <h3 style="margin:12px 0 4px;font-size:22px;">Approved!</h3>
+        <p style="color:#888;font-size:13px;">Great job getting up!</p>
+        <div style="display:flex;justify-content:center;gap:12px;margin-top:10px;">
+          <span style="font-size:13px;font-weight:600;color:#FF9500;">&#x1F525; 5-day streak!</span>
+          <span style="font-size:13px;font-weight:600;color:#AF52DE;">&#x2B50; +20 pts</span>
         </div>
-      </div>
-    </div>
-
-    <!-- Done -->
-    <div id="c-done" class="scr">
-      <div style="text-align:center;padding:30px 0;">
-        <div style="font-size:70px;">&#x2705;</div>
-        <h3 style="margin:14px 0 6px;font-size:24px;">Approved!</h3>
-        <p style="color:#888;font-size:14px;">Great job getting up!</p>
-        <div style="display:flex;justify-content:center;gap:14px;margin-top:12px;">
-          <span style="font-size:14px;font-weight:600;color:#FF9500;">&#x1F525; 5-day streak!</span>
-          <span style="font-size:14px;font-weight:600;color:#AF52DE;">&#x2B50; 245 pts</span>
+        <div style="background:rgba(0,122,255,0.1);padding:8px;border-radius:10px;margin:14px 0;font-size:12px;">&#x1F4AC; &#x201C;Great job!&#x201D; &#x2014; Guardian</div>
+        <div style="margin-top:16px;background:rgba(52,199,89,0.08);padding:10px;border-radius:10px;">
+          <div style="font-size:11px;color:#34C759;font-weight:600;margin-bottom:4px;">&#x1F3C6; NEW BADGE EARNED</div>
+          <div style="font-size:13px;">Early Bird &#x2014; Verified within 5 minutes!</div>
         </div>
-        <div style="background:rgba(0,122,255,0.1);padding:10px;border-radius:10px;margin:16px 0;font-size:13px;">&#x1F4AC; &ldquo;Great job!&rdquo; &mdash; Guardian</div>
       </div>
     </div>
   </div>
