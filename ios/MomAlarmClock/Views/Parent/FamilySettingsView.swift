@@ -110,12 +110,18 @@ struct FamilySettingsView: View {
         .confirmationDialog("Delete Account?", isPresented: $showDeleteAccountConfirmation, titleVisibility: .visible) {
             Button("Delete Everything", role: .destructive) {
                 Task {
+                    // TODO: P-017 — implement real Firestore data + Firebase Auth deletion
+                    // Currently only signs out. For App Store compliance, this must:
+                    // 1. Delete families/{fid} and all subcollections
+                    // 2. Delete users/{uid}
+                    // 3. Delete Firebase Auth account
+                    // 4. Clear LocalStore
                     await auth.signOut()
                     dismiss()
                 }
             }
         } message: {
-            Text("This will permanently delete your account, family, all children's data, and alarm history. This cannot be undone.")
+            Text("This will sign you out and clear local data. Full account deletion is coming in a future update.")
         }
     }
 
