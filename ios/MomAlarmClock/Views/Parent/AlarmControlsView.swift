@@ -85,7 +85,7 @@ struct AlarmControlsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("Confirmation Policy") {
+            Section("After Verification") {
                 Button {
                     confirmationPolicy = .autoAcknowledge
                 } label: {
