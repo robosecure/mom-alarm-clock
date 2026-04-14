@@ -45,7 +45,7 @@ struct SetupWizardView: View {
             Text("Let's Set Up Your Child's Alarm")
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
-            Text("This wizard will walk you through creating a profile, setting an alarm, and pairing your child's device.")
+            Text("We'll help you add your child, set their alarm, and pair their device. It only takes a minute.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
