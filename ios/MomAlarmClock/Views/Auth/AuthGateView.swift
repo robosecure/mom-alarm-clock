@@ -13,7 +13,17 @@ struct AuthGateView: View {
             if auth.isLoading {
                 loadingView
             } else if !auth.isAuthenticated {
-                AuthLandingView()
+                VStack(spacing: 0) {
+                    if let error = auth.error {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.white)
+                            .padding(10)
+                            .frame(maxWidth: .infinity)
+                            .background(.orange)
+                    }
+                    AuthLandingView()
+                }
             } else if let user = auth.currentUser {
                 switch user.role {
                 case .parent:
