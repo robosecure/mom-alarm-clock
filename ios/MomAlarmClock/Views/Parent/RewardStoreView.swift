@@ -95,7 +95,10 @@ struct RewardStoreView: View {
             Button("Redeem") {
                 if let name = redeemedRewardName,
                    let reward = rewards.first(where: { $0.name == name }) {
-                    Task { await vm.redeemPoints(reward.points) }
+                    Task {
+                                        await vm.redeemPoints(reward.points)
+                                        BetaDiagnostics.log(.rewardRedeemed(points: reward.points))
+                                    }
                 }
             }
         } message: {

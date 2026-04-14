@@ -154,6 +154,8 @@ final class BetaDiagnostics {
         case pushReceived(type: String)
         case sessionCreated
         case tamperDetected(type: String)
+        case streakMilestone(days: Int)
+        case rewardRedeemed(points: Int)
 
         var name: String {
             switch self {
@@ -166,6 +168,8 @@ final class BetaDiagnostics {
             case .pushReceived: "push_received"
             case .sessionCreated: "session_created"
             case .tamperDetected: "tamper_detected"
+            case .streakMilestone: "streak_milestone"
+            case .rewardRedeemed: "reward_redeemed"
             }
         }
 
@@ -189,6 +193,10 @@ final class BetaDiagnostics {
                 return [:]
             case .tamperDetected(let type):
                 return ["type": type]
+            case .streakMilestone(let days):
+                return ["days": days]
+            case .rewardRedeemed(let points):
+                return ["points": points]
             }
         }
     }
