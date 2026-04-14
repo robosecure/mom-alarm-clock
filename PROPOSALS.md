@@ -165,3 +165,14 @@ These are improvements identified during overnight sessions that need human revi
 - **Risk:** Medium — privacy policy needs real legal content, not placeholder
 - **Files affected:** New: PrivacyInfo.xcprivacy, project.yml, FamilySettingsView (actual Firestore deletion)
 - **Note:** Account deletion UI exists but currently only calls auth.signOut() — needs to actually delete the user's Firestore data + Firebase Auth account
+
+## [P-018] Implement StoreKit 2 subscription paywall (monetization)
+- **What:** Add StoreKit 2 subscription with iOS 17's built-in SubscriptionStoreView. Two products: Family Monthly ($4.99) and Family Annual ($29.99). Free tier = 1 child, paid = up to 4.
+- **Why:** Monetization is required for sustainability. StoreKit 2 + SubscriptionStoreView makes this extremely simple — Apple provides the paywall UI. The paywall triggers at 'Add Child' when the free limit (1 child) is reached.
+- **Effort:** Medium (StoreKit config file, Product.products fetch, SubscriptionStoreView presentation, entitlement check in AddChildView)
+- **Risk:** Medium — needs App Store Connect product setup and testing in sandbox
+- **Files affected:** New: StoreKit.storekit (config), StoreKitManager.swift. Modified: AddChildView.swift (paywall gate), project.yml (StoreKit framework)
+- **Implementation notes:**
+  - SubscriptionStoreView is one line: 
+  - Check entitlement:  → if subscribed, allow 4 children
+  - Test in Xcode StoreKit sandbox (no real money, no App Store Connect needed initially)
