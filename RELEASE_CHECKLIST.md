@@ -31,6 +31,17 @@
 - [ ] Storage rules enforce guardian-only write, family-scoped read
 - [ ] Cloud Functions have re-entrant guards on all session-update triggers
 
+## App Store Connect Setup (Before First Upload)
+
+- [ ] Create app in App Store Connect
+- [ ] Set primary language, category (Utilities), age rating (4+)
+- [ ] Upload screenshots (1320 x 2868 pixels, iPhone 6.9-inch)
+- [ ] Write description (see PROPOSALS.md P-016 for draft)
+- [ ] Set keywords (100 chars max, comma-separated)
+- [ ] Add privacy policy URL
+- [ ] Complete privacy nutrition labels
+- [ ] Verify PrivacyInfo.xcprivacy is included in the build
+
 ## Archive + Upload
 
 - [ ] Select "Any iOS Device (arm64)" as destination
