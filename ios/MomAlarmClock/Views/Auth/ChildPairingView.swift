@@ -108,9 +108,12 @@ struct ChildPairingView: View {
                 }
             default:
                 VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 56))
+                        .foregroundStyle(.green)
                     Text("You're All Set!")
                         .font(.title.bold())
-                    Text("Your guardian will configure your alarm. You'll see it on the next screen.")
+                    Text("Your guardian will set your alarm. You'll see it on the next screen.")
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                     Button("Get Started") {
