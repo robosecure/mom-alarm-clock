@@ -35,7 +35,7 @@ enum VerificationMethod: String, Codable, CaseIterable, Identifiable, Sendable {
         switch self {
         case .qr:       "Scan a QR code placed in another room to prove you got out of bed."
         case .photo:    "Take a photo of a specific item or activity to verify you are awake."
-        case .motion:   "Walk a minimum number of steps or shake the phone to verify motion."
+        case .motion:   "Walk a minimum number of steps to verify motion."
         case .quiz:     "Answer math or trivia questions correctly — harder at higher escalation."
         case .geofence: "Arrive at a designated location (e.g., kitchen) to dismiss the alarm."
         }
