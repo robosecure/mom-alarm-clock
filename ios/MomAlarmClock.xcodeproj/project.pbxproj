@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		005834AACB74DE2E9916A90D /* EscalationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFC4262A33119CB0F9D16F7 /* EscalationProfile.swift */; };
 		00E0D81E674724546788D013 /* VerificationTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B99864E2CF3BA3D3429E57 /* VerificationTier.swift */; };
+		01FD198832AF72A4BB07C197 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF4A6C64F5CD788E4ABC1712 /* AuthenticationServices.framework */; };
 		04E6C6E0F832DAEC4E381AE3 /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 988FB981F34061A134416044 /* BackgroundTasks.framework */; };
 		0573A1B690903BEDB3F8E1CB /* VoiceAlarmCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */; };
 		08EA28F99203248E7144660B /* PhoneHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6985563FCB5F3FDD3F26715C /* PhoneHomeView.swift */; };
@@ -22,11 +23,13 @@
 		2054CD539FA1CC4EAF3D1AF6 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */; };
 		217F6A618C66D271547E7BB8 /* VerificationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3FF27537778A2C88E7A647E /* VerificationResult.swift */; };
 		2D1DF8043F316AD0D9707DB3 /* TamperDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */; };
+		2EEE7A6408CC77AAA70B25C5 /* Reward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434B9E50E0445A70EB548D7D /* Reward.swift */; };
 		33B77E1EF7058A6F4E7E2426 /* BetaDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */; };
 		353462FD33B484664BF1C161 /* ChildAlarmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822D8409305F93D925C1A459 /* ChildAlarmView.swift */; };
 		3622AFF95D6C5B724114F4C6 /* MorningSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA34D6E0A573788189B65ED9 /* MorningSession.swift */; };
 		3A4F94302440613D3166B581 /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */; };
 		3C651D5BD7D3CC730FD10838 /* StatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3123B7C12AA44FF454600C78 /* StatsService.swift */; };
+		3C910A00D61B4A883CB97E99 /* EmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4438D62CA3DB78DB04298002 /* EmailVerificationView.swift */; };
 		3E2529B9CF4C29F4AB672CA6 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C02E8F1F24A32535AE84F2F6 /* FirebaseMessaging */; };
 		3FFD75685823F00F32A19D30 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B54E87387ABD79F6CBCD1D /* ParentDashboardView.swift */; };
 		4340788D197531A38DEF3FA1 /* LocalSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3EE9FC3BD0A643370641A8 /* LocalSyncService.swift */; };
@@ -36,6 +39,7 @@
 		4C4583CE3606C1BE55BDDE04 /* SetupWizardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10486BE4F328CAF09410DDE /* SetupWizardViewModel.swift */; };
 		509FEFFF8821D0270B1F1AFC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */; };
 		5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C45DDE80F671326534BCC /* Collection+Safe.swift */; };
+		554326839BC9B6A2B55C1D5F /* ChildSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29795882E62699C0886AF3F /* ChildSettingsView.swift */; };
 		56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283C66F9E534B3F72E5DA53F /* RewardEngine.swift */; };
 		59A92F35C5939FB9DAB5FD28 /* ChildProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45F574B96927B7A93D7D47C /* ChildProfileEditorView.swift */; };
 		666D4AC48E805C0AE1BB1284 /* VerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */; };
@@ -55,6 +59,7 @@
 		8F420D606C9FEFD88B5DCF67 /* MomAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A92FAAD3B5B69D131F49D1 /* MomAppCheckProviderFactory.swift */; };
 		910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */; };
 		92B81A6125139F5BFDBB1B9D /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */; };
+		93DE893C76EBB4482D35E940 /* AgeBand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7675CC2E4B40D713DCAEC7EA /* AgeBand.swift */; };
 		997C740D2EF7215D1E8B4455 /* ParentAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */; };
 		9BA2E0A70FF641C52DC9F674 /* AddChildView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9062E5AB387CD6AC21F39E8A /* AddChildView.swift */; };
 		9BA6BA7EDB11E4A9B9962F25 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D707FA3D4A92CC98067094E /* FirebaseFirestore */; };
@@ -64,9 +69,11 @@
 		9E5B2A2FBEC22213DD79D520 /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */; };
 		A101CD8867514052308545DE /* ChildProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD456047F173EDDE237DC340 /* ChildProfile.swift */; };
 		A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD96A1EC695BB2CA1667C389 /* ChildViewModel.swift */; };
+		AFD43C9493DD842A747905B1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E1B57D846208CA860483812B /* GoogleService-Info.plist */; };
 		B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */; };
 		BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */; };
 		BC65828D9AE42F8B61EB1BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69601E335B515C3776FAA4E8 /* AppDelegate.swift */; };
+		BC7E65A40996ABD6C15CC104 /* CelebrationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6EDD438FA946BBC66135B4 /* CelebrationOverlay.swift */; };
 		BD300D7A69FFC350AC5DBE8A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */; };
 		BD3BDAAF98973E2DB76B788C /* FirestoreSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777481E761E13914002CF51 /* FirestoreSyncService.swift */; };
 		BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225932C9D4339E76EBD77491 /* EffectiveVerificationConfig.swift */; };
@@ -78,12 +85,14 @@
 		D1262D302A1B145903F83355 /* Date+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB209D879DD6A00D2D42FF4 /* Date+Helpers.swift */; };
 		D22C0E7172635C5E952D439E /* ConfirmationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */; };
 		D3AC8848C34BFD31F59DEFDB /* NextMorningSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */; };
+		D3FF1649E98782DA624166A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3CADC90F46ED314D4E0FD9C /* Assets.xcassets */; };
 		D64FFAAF842ECE1A97DA0E1F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 848AEEA6650D9C47C114F7FF /* FirebaseCrashlytics */; };
 		D959C772E675F0065F9A8ABF /* MotionVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE956002175E90D0E5403053 /* MotionVerificationView.swift */; };
 		DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B5E70198F06E7B317331FD /* HeartbeatService.swift */; };
 		DF69C5FE9A7320F428114370 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE8423EC363729A4AD404DC /* AuthService.swift */; };
 		E5CC0A906EB28BB905B65719 /* ParentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */; };
 		E75B09EE16EB548C82DA9A6B /* CoreLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */; };
+		EC8666E6CDB14EC34176B0AD /* InputValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE0DC851008D1BF0671AB02 /* InputValidation.swift */; };
 		ED46BBB6137BA6BFFB47093E /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB00E64A83442836B7E6A8 /* HistoryView.swift */; };
 		F135CB157017090E22025765 /* AlarmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778FE821AAE852253167003 /* AlarmService.swift */; };
 		F9E1BEEEBC12D3C948445A18 /* QuizVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D091A4D425AA28860D37220 /* QuizVerificationView.swift */; };
@@ -118,11 +127,14 @@
 		36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomAlarmClockApp.swift; sourceTree = "<group>"; };
 		3846045D5EA11C155BBB230D /* PhotoVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoVerificationView.swift; sourceTree = "<group>"; };
 		3D091A4D425AA28860D37220 /* QuizVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizVerificationView.swift; sourceTree = "<group>"; };
+		434B9E50E0445A70EB548D7D /* Reward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reward.swift; sourceTree = "<group>"; };
+		4438D62CA3DB78DB04298002 /* EmailVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationView.swift; sourceTree = "<group>"; };
 		51BD1C2297F666355D8B906D /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
 		54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TamperDetectionService.swift; sourceTree = "<group>"; };
 		57098A1C920B00DDF94219D4 /* SyncProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProtocol.swift; sourceTree = "<group>"; };
 		59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		5C1BEC252CD833F7B5A30A8D /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
+		5E6EDD438FA946BBC66135B4 /* CelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelebrationOverlay.swift; sourceTree = "<group>"; };
 		63B99864E2CF3BA3D3429E57 /* VerificationTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationTier.swift; sourceTree = "<group>"; };
 		64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		69601E335B515C3776FAA4E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +143,7 @@
 		6CB209D879DD6A00D2D42FF4 /* Date+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Helpers.swift"; sourceTree = "<group>"; };
 		6E25D0C9EF6031A12B4AAC0B /* VerificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationService.swift; sourceTree = "<group>"; };
 		6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSchedule.swift; sourceTree = "<group>"; };
+		7675CC2E4B40D713DCAEC7EA /* AgeBand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeBand.swift; sourceTree = "<group>"; };
 		7798F230AE6051270E51D954 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		78B7E70677259C3EECC8E446 /* NextMorningSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextMorningSettingsView.swift; sourceTree = "<group>"; };
 		7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = System/Library/Frameworks/Combine.framework; sourceTree = SDKROOT; };
@@ -144,11 +157,13 @@
 		9A3EE9FC3BD0A643370641A8 /* LocalSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncService.swift; sourceTree = "<group>"; };
 		9AE8423EC363729A4AD404DC /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		9C8E6644EEF67C870D7FE7C9 /* ParentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentViewModel.swift; sourceTree = "<group>"; };
+		9CE0DC851008D1BF0671AB02 /* InputValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidation.swift; sourceTree = "<group>"; };
 		A0D6B23C699351F08E7CEAB3 /* RewardStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardStoreView.swift; sourceTree = "<group>"; };
 		A283A20EF0124AE0C1670204 /* ParentAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentAction.swift; sourceTree = "<group>"; };
 		ABE40595E33E07A70F7C547A /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
 		AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B29795882E62699C0886AF3F /* ChildSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSettingsView.swift; sourceTree = "<group>"; };
 		B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmRecorderView.swift; sourceTree = "<group>"; };
 		B58C45DDE80F671326534BCC /* Collection+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Safe.swift"; sourceTree = "<group>"; };
 		BA34D6E0A573788189B65ED9 /* MorningSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningSession.swift; sourceTree = "<group>"; };
@@ -166,13 +181,16 @@
 		CD456047F173EDDE237DC340 /* ChildProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildProfile.swift; sourceTree = "<group>"; };
 		CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceVerificationView.swift; sourceTree = "<group>"; };
 		CE956002175E90D0E5403053 /* MotionVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionVerificationView.swift; sourceTree = "<group>"; };
+		CF4A6C64F5CD788E4ABC1712 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		D0BF9CBDB3A267A5EF20286A /* FamilySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySettingsView.swift; sourceTree = "<group>"; };
 		D115026DBCE57A90FB3B9CDC /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		D714A9A4042ED065C712FD65 /* CoreLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLogicTests.swift; sourceTree = "<group>"; };
 		DCF08B6F74B54EB8502FD0FE /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 		DFE536704AC3BB3A1D68081B /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		E1B57D846208CA860483812B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E21ACA8FCBB64184BC3D14C5 /* VerificationReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationReviewView.swift; sourceTree = "<group>"; };
 		E2BE7AFCB5DE60870DD40C7F /* QRVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRVerificationView.swift; sourceTree = "<group>"; };
+		E3CADC90F46ED314D4E0FD9C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E9A6C9BA7C02244AD42B44B3 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		EA3AF430232D1C8587828DA5 /* LocalStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStore.swift; sourceTree = "<group>"; };
 		EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationPolicy.swift; sourceTree = "<group>"; };
@@ -197,6 +215,7 @@
 				09CC5801789BBB5B00E27C88 /* DeviceActivity.framework in Frameworks */,
 				49715FB278A294317027419E /* Network.framework in Frameworks */,
 				92B81A6125139F5BFDBB1B9D /* CryptoKit.framework in Frameworks */,
+				01FD198832AF72A4BB07C197 /* AuthenticationServices.framework in Frameworks */,
 				BAEB7DFB31A9FCE075543C97 /* Combine.framework in Frameworks */,
 				20056B868D04C4C1219188AD /* FirebaseAuth in Frameworks */,
 				9BA6BA7EDB11E4A9B9962F25 /* FirebaseFirestore in Frameworks */,
@@ -220,6 +239,7 @@
 				C4768431BE924C4B15BB8712 /* BetaDiagnostics.swift */,
 				2D862F763DFB793C90A2353E /* FamilyControlsService.swift */,
 				C1B5E70198F06E7B317331FD /* HeartbeatService.swift */,
+				9CE0DC851008D1BF0671AB02 /* InputValidation.swift */,
 				30A92FAAD3B5B69D131F49D1 /* MomAppCheckProviderFactory.swift */,
 				64BA4EEC0DA7EBA77D1FEF5E /* NetworkMonitor.swift */,
 				283C66F9E534B3F72E5DA53F /* RewardEngine.swift */,
@@ -252,6 +272,8 @@
 				0455FAFC2D3F7025187619DB /* Services */,
 				0987BFF24D5569BD8C48AE08 /* ViewModels */,
 				E644F2D9DF5AFA52C492EF21 /* Views */,
+				E3CADC90F46ED314D4E0FD9C /* Assets.xcassets */,
+				E1B57D846208CA860483812B /* GoogleService-Info.plist */,
 				B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */,
 			);
 			path = MomAlarmClock;
@@ -268,6 +290,7 @@
 		34B69E56965A6EE2A32C04A7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF4A6C64F5CD788E4ABC1712 /* AuthenticationServices.framework */,
 				99D362789207D516DB298DB5 /* AVFoundation.framework */,
 				988FB981F34061A134416044 /* BackgroundTasks.framework */,
 				7FA2BF1C211FCFC0016CA3D2 /* Combine.framework */,
@@ -304,6 +327,7 @@
 		7097AD190EA52ECECFA832B7 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				7675CC2E4B40D713DCAEC7EA /* AgeBand.swift */,
 				6E8D275131D82CC70DD20938 /* AlarmSchedule.swift */,
 				CD456047F173EDDE237DC340 /* ChildProfile.swift */,
 				EE0601D088EA87C76A1C3DBA /* ConfirmationPolicy.swift */,
@@ -311,6 +335,7 @@
 				0FFC4262A33119CB0F9D16F7 /* EscalationProfile.swift */,
 				BA34D6E0A573788189B65ED9 /* MorningSession.swift */,
 				A283A20EF0124AE0C1670204 /* ParentAction.swift */,
+				434B9E50E0445A70EB548D7D /* Reward.swift */,
 				6A200791DB3362B730CDCE0A /* TamperConsequence.swift */,
 				074B38ED078386ADBBDB9463 /* TamperEvent.swift */,
 				9890DE2F176ED462AC9CCE01 /* VerificationMethod.swift */,
@@ -399,7 +424,9 @@
 		F2AD1D3C887823EDDC3C5CF3 /* Child */ = {
 			isa = PBXGroup;
 			children = (
+				5E6EDD438FA946BBC66135B4 /* CelebrationOverlay.swift */,
 				822D8409305F93D925C1A459 /* ChildAlarmView.swift */,
+				B29795882E62699C0886AF3F /* ChildSettingsView.swift */,
 				CD9F55B6F83345C37BADF381 /* GeofenceVerificationView.swift */,
 				CE956002175E90D0E5403053 /* MotionVerificationView.swift */,
 				997935950BBB44F468A9D27B /* PendingReviewView.swift */,
@@ -417,6 +444,7 @@
 			children = (
 				59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */,
 				CBADB93F6AE67DE8DAA79F38 /* ChildPairingView.swift */,
+				4438D62CA3DB78DB04298002 /* EmailVerificationView.swift */,
 				2BC6CE6E7FD722D6C0E6DEC9 /* ParentAuthView.swift */,
 			);
 			path = Auth;
@@ -479,10 +507,10 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					498134E544759DAC2614BA97 = {
-						DevelopmentTeam = TEAM_ID_HERE;
+						DevelopmentTeam = U474UU36TW;
 					};
 					54F49B4F59602769C3711F53 = {
-						DevelopmentTeam = TEAM_ID_HERE;
+						DevelopmentTeam = U474UU36TW;
 					};
 				};
 			};
@@ -514,6 +542,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3FF1649E98782DA624166A0 /* Assets.xcassets in Resources */,
+				AFD43C9493DD842A747905B1 /* GoogleService-Info.plist in Resources */,
 				BD300D7A69FFC350AC5DBE8A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -526,6 +556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BA2E0A70FF641C52DC9F674 /* AddChildView.swift in Sources */,
+				93DE893C76EBB4482D35E940 /* AgeBand.swift in Sources */,
 				68251C68239EE7473E0901DC /* AlarmControlsView.swift in Sources */,
 				485D8CC27760AF3358B9AF5A /* AlarmSchedule.swift in Sources */,
 				F135CB157017090E22025765 /* AlarmService.swift in Sources */,
@@ -533,16 +564,19 @@
 				9C0E69F60AC1CED4B25993B7 /* AuthGateView.swift in Sources */,
 				DF69C5FE9A7320F428114370 /* AuthService.swift in Sources */,
 				33B77E1EF7058A6F4E7E2426 /* BetaDiagnostics.swift in Sources */,
+				BC7E65A40996ABD6C15CC104 /* CelebrationOverlay.swift in Sources */,
 				353462FD33B484664BF1C161 /* ChildAlarmView.swift in Sources */,
 				7089597405F3FC3510E3C50A /* ChildPairingView.swift in Sources */,
 				A101CD8867514052308545DE /* ChildProfile.swift in Sources */,
 				59A92F35C5939FB9DAB5FD28 /* ChildProfileEditorView.swift in Sources */,
+				554326839BC9B6A2B55C1D5F /* ChildSettingsView.swift in Sources */,
 				A4A283EDCAA23FDDBAEBC4B3 /* ChildViewModel.swift in Sources */,
 				5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */,
 				D22C0E7172635C5E952D439E /* ConfirmationPolicy.swift in Sources */,
 				D1262D302A1B145903F83355 /* Date+Helpers.swift in Sources */,
 				9E5B2A2FBEC22213DD79D520 /* DiagnosticsView.swift in Sources */,
 				BD54352E7DE8DE8E232AA44A /* EffectiveVerificationConfig.swift in Sources */,
+				3C910A00D61B4A883CB97E99 /* EmailVerificationView.swift in Sources */,
 				005834AACB74DE2E9916A90D /* EscalationProfile.swift in Sources */,
 				FB03BF3EA28C26DD9B6B64D3 /* FamilyControlsService.swift in Sources */,
 				72C8931B4FDDE4912CAE2E66 /* FamilySettingsView.swift in Sources */,
@@ -550,6 +584,7 @@
 				910D056689638F28BACD59F0 /* GeofenceVerificationView.swift in Sources */,
 				DCF69DBAEC4534BABEEC2087 /* HeartbeatService.swift in Sources */,
 				ED46BBB6137BA6BFFB47093E /* HistoryView.swift in Sources */,
+				EC8666E6CDB14EC34176B0AD /* InputValidation.swift in Sources */,
 				D1175425961DC9E48F166232 /* LocalStore.swift in Sources */,
 				4340788D197531A38DEF3FA1 /* LocalSyncService.swift in Sources */,
 				B286008A386EF3282A6237A3 /* MomAlarmClockApp.swift in Sources */,
@@ -567,6 +602,7 @@
 				83A5CA24BE19F50A509D721C /* PhotoVerificationView.swift in Sources */,
 				FDC9A771D1902A5E38C4CD0E /* QRVerificationView.swift in Sources */,
 				F9E1BEEEBC12D3C948445A18 /* QuizVerificationView.swift in Sources */,
+				2EEE7A6408CC77AAA70B25C5 /* Reward.swift in Sources */,
 				56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */,
 				BF9B4DFACFDEBD596FEC0A71 /* RewardStoreView.swift in Sources */,
 				7A289F8A0A1EC59B4B05AC7A /* SetupWizardView.swift in Sources */,
@@ -660,7 +696,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = TEAM_ID_HERE;
+				DEVELOPMENT_TEAM = U474UU36TW;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -687,6 +723,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MomAlarmClock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Info.plist;
@@ -723,6 +760,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MomAlarmClock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Info.plist;
@@ -773,7 +811,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = TEAM_ID_HERE;
+				DEVELOPMENT_TEAM = U474UU36TW;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

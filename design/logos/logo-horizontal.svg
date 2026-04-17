@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="180" viewBox="0 0 720 180">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B8A"/>
+      <stop offset="55%" stop-color="#FF8A5C"/>
+      <stop offset="100%" stop-color="#FF9500"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF6B8A"/>
+      <stop offset="100%" stop-color="#FF9500"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon mark (scaled down + simplified version) -->
+  <g transform="translate(20 20)">
+    <rect width="140" height="140" fill="url(#bg)" rx="32" ry="32"/>
+    <g transform="translate(70 76) rotate(-6)">
+      <circle cx="-28" cy="-36" r="10" fill="#FFFFFF"/>
+      <circle cx="28" cy="-36" r="10" fill="#FFFFFF"/>
+      <circle cx="0" cy="0" r="38" fill="#FFF4EC"/>
+      <rect x="-1.2" y="-35" width="2.4" height="5" rx="1" fill="#FF6B8A"/>
+      <rect x="30" y="-1.2" width="5" height="2.4" rx="1" fill="#FF8A5C"/>
+      <rect x="-1.2" y="30" width="2.4" height="5" rx="1" fill="#FF9500"/>
+      <rect x="-35" y="-1.2" width="5" height="2.4" rx="1" fill="#FF8A5C"/>
+      <line x1="0" y1="0" x2="-13" y2="13" stroke="#FF6B8A" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="0" y2="-24" stroke="#FF9500" stroke-width="2.6" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="3.2" fill="#FF6B8A"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(190 0)">
+    <text x="0" y="82"
+          font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif"
+          font-size="52"
+          font-weight="800"
+          letter-spacing="-1.2"
+          fill="#1C1C1E">Mom</text>
+    <text x="0" y="138"
+          font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif"
+          font-size="52"
+          font-weight="800"
+          letter-spacing="-1.2"
+          fill="url(#textGrad)">Alarm Clock</text>
+  </g>
+</svg>

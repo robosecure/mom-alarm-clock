@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Warm sunrise gradient: brand pink -> orange -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B8A"/>
+      <stop offset="55%" stop-color="#FF8A5C"/>
+      <stop offset="100%" stop-color="#FF9500"/>
+    </linearGradient>
+
+    <!-- Soft inner glow for the clock face -->
+    <radialGradient id="faceGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="85%" stop-color="#FFF4EC"/>
+      <stop offset="100%" stop-color="#FFE8D6"/>
+    </radialGradient>
+
+    <!-- Subtle shadow under the clock -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+      <feOffset dx="0" dy="12"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.18"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- iOS rounded square background (22.37% corner radius for iOS 17+) -->
+  <rect width="1024" height="1024" fill="url(#bg)" rx="229" ry="229"/>
+
+  <!-- Main composition: tilted 6° for personality -->
+  <g transform="translate(512 540) rotate(-6)" filter="url(#softShadow)">
+
+    <!-- Alarm bells (top hats) -->
+    <g>
+      <circle cx="-200" cy="-260" r="72" fill="#FFFFFF"/>
+      <circle cx="200" cy="-260" r="72" fill="#FFFFFF"/>
+      <!-- Bell stems connecting to clock body -->
+      <path d="M -172 -196 L -130 -158" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round"/>
+      <path d="M 172 -196 L 130 -158" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round"/>
+    </g>
+
+    <!-- Clock body -->
+    <circle cx="0" cy="0" r="270" fill="url(#faceGlow)"/>
+
+    <!-- Clock ring (subtle, adds depth) -->
+    <circle cx="0" cy="0" r="270" fill="none" stroke="#FFD9C2" stroke-width="6" opacity="0.6"/>
+
+    <!-- Hour markers — 12, 3, 6, 9 only (minimalist) -->
+    <rect x="-8" y="-248" width="16" height="30" rx="6" fill="#FF6B8A"/>
+    <rect x="218" y="-8" width="30" height="16" rx="6" fill="#FF8A5C"/>
+    <rect x="-8" y="218" width="16" height="30" rx="6" fill="#FF9500"/>
+    <rect x="-248" y="-8" width="30" height="16" rx="6" fill="#FF8A5C"/>
+
+    <!-- Clock hands pointing to 7:00 (wake-up time) -->
+    <!-- Hour hand to 7 -->
+    <line x1="0" y1="0" x2="-95" y2="90" stroke="#FF6B8A" stroke-width="22" stroke-linecap="round"/>
+    <!-- Minute hand to 12 -->
+    <line x1="0" y1="0" x2="0" y2="-175" stroke="#FF9500" stroke-width="18" stroke-linecap="round"/>
+
+    <!-- Center cap -->
+    <circle cx="0" cy="0" r="22" fill="#FF6B8A"/>
+    <circle cx="0" cy="0" r="10" fill="#FFFFFF"/>
+
+    <!-- Legs (bottom of clock) — soft little feet -->
+    <ellipse cx="-180" cy="260" rx="40" ry="18" fill="#FFFFFF" transform="rotate(-25 -180 260)"/>
+    <ellipse cx="180" cy="260" rx="40" ry="18" fill="#FFFFFF" transform="rotate(25 180 260)"/>
+
+  </g>
+
+  <!-- Subtle sparkle accent (top-right) — evokes "morning" -->
+  <g transform="translate(820 180)" opacity="0.85">
+    <path d="M 0 -24 L 5 -5 L 24 0 L 5 5 L 0 24 L -5 5 L -24 0 L -5 -5 Z" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(890 260)" opacity="0.6">
+    <path d="M 0 -12 L 3 -3 L 12 0 L 3 3 L 0 12 L -3 3 L -12 0 L -3 -3 Z" fill="#FFFFFF"/>
+  </g>
+
+</svg>
