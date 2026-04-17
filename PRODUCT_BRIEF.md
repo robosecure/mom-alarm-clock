@@ -1,6 +1,6 @@
 # Mom Alarm Clock — Product Brief
 
-> **"The alarm clock that gets kids up — and keeps parents informed."**
+> **"The alarm clock that gets kids out of bed — and only bothers you when it matters."**
 
 ---
 
@@ -8,683 +8,174 @@
 
 Every morning, millions of parents face the same battle: getting their kids out of bed on time. Traditional alarm clocks get ignored, snoozed, or turned off. Parents resort to yelling from downstairs, walking up multiple times, or accepting chronic lateness.
 
-**The result:**
-- Stressful mornings for the whole family
-- Kids who never learn to self-manage their wake-up routine
-- Parents who can't trust that their child is actually awake and moving
-
 No existing alarm app solves this because they all work on a single device. The child controls the alarm — they can silence it, delete it, or just ignore it. Parents have zero visibility.
 
 ## The Solution
 
-**Mom Alarm Clock** is a two-device alarm system where the parent/guardian controls the alarm and the child proves they're awake.
+**Mom Alarm Clock** is a two-device family alarm system. The guardian controls the alarm. The child proves they're awake. On good mornings, nobody has to yell.
 
 ```
 ┌─────────────────┐          ┌─────────────────┐
 │  GUARDIAN PHONE  │◄────────►│   CHILD PHONE   │
-│                  │  Firebase │                  │
-│  • Set alarms    │  real-    │  • Alarm rings   │
-│  • Choose verify │  time     │  • Must verify   │
-│  • Review proof  │  sync     │  • Can't silence │
-│  • Approve/deny  │          │  • Sees result   │
+│                  │ Firebase  │                  │
+│  • Set alarms    │ real-time │  • Alarm fires   │
+│  • Choose method │   sync    │  • Must verify   │
+│  • Review proof  │          │  • Can't silence  │
+│  • See results   │          │  • Earns rewards  │
 └─────────────────┘          └─────────────────┘
 ```
 
-**How it works:**
-1. **Guardian** creates an alarm and chooses how the child must verify they're awake (math problems, step counting, etc.)
-2. **Alarm fires** on the child's device at the scheduled time
-3. **Child must verify** — solve math problems, take steps, or complete a quiz. They can't just tap "dismiss."
-4. **Guardian gets notified** — sees the proof, can approve or send back for re-verification
-5. **Child sees the result** — "Approved! Great job!" or "Try again."
-6. **Rewards build over time** — streaks, points, and positive reinforcement for consistent wake-ups
+**Default behavior:** The child verifies, the alarm clears, and the guardian hears nothing. Exception-based parenting — you're only pulled in when something goes wrong.
 
 ---
 
-## Who It's For
+## Key Features (v1.0)
 
-### Primary Users
+### Verification Methods (4 at launch)
+| Method | How it works | Age-aware |
+|--------|-------------|-----------|
+| **Quiz** | Age-appropriate math questions (easy → medium) | Yes — 2 questions for 5-7yo, 3 for 8+ |
+| **Motion** | Step counting via pedometer | Step count adjusts by tier |
+| **Photo** | Submit photo for guardian review | Always requires approval |
+| **Geofence** | Reach a designated location | Radius adjusts by tier |
 
-**Parents / Guardians**
-- Parents of kids ages 6-16
-- Especially helpful for:
-  - Working parents who leave before kids wake up
-  - Families where mornings are a consistent struggle
-  - Parents of teens who sleep through traditional alarms
-  - Co-parenting situations where both parents want visibility
+### Confirmation Policies
+| Policy | Behavior |
+|--------|----------|
+| **Trust Mode** (default) | Auto-completes on verification. Guardian not notified. |
+| **Strict Mode** | Child waits for guardian approval every morning. |
+| **Review Window** | Auto-completes, but guardian can override within N minutes. |
 
-**Children**
-- Ages 6-16 (age-appropriate quiz difficulty scales automatically)
-- Kids who need external accountability to wake up
-- Kids who respond well to positive reinforcement (streaks, points)
+### Voice Alarm
+Guardian records a personal wake-up message. Cached on child's device for offline playback. Max 30 seconds, 5MB. Falls back to standard alarm sound if removed.
 
-### Use Cases
-- **School mornings** — ensure kids are up and moving by 7 AM
-- **Summer schedule** — maintain routine even without school
-- **Shared custody** — both parents can monitor wake-up from their own device
-- **Teens** — accountability without constant nagging
+### Age-Aware Content
+Quiz difficulty, question count, timer, and encouragement style adapt to the child's age group:
+- **5-7:** 2 easy questions, 90s timer, warm encouragement
+- **8-10:** 3 easy questions, 60s timer, supportive
+- **11-13:** 3 medium questions, 45s timer, direct
+- **14+:** 3 medium questions, 30s timer, minimal
 
----
+Guardian overrides and tomorrow overrides always take priority over age defaults.
 
-## Key Features
+### Streaks & Rewards (Server-Authoritative)
+- +15 pts on-time first try, +10 retries, +5 late
+- +5 no-snooze bonus
+- Streak milestones: +25 at 3 days, +75 at 7, +150 at 14
+- Calculated by Cloud Function with Firestore transaction (no client tampering)
 
-### 1. Cross-Device Alarm Management
-The guardian sets alarms from their phone. Alarms fire on the child's phone. Both devices stay synced in real-time via Firebase.
+### Escalation System (4 launch-ready levels)
+| Minutes | Action |
+|---------|--------|
+| 0 | Gentle reminder (alarm is ringing) |
+| 10 | Guardian notified (push) |
+| 20 | Entertainment apps blocked (FamilyControls) |
+| 30 | Full app lock |
 
-- **Repeating weekly schedules** (Mon-Fri, weekends, custom)
-- **Multiple children** (up to 4 per family)
-- **Snooze limits** (configurable: 0-3 snoozes)
-- **Backup reminders** (automatic 2-minute follow-up)
-
-### 2. Wake-Up Verification
-The child can't just tap "dismiss." They must prove they're awake:
-
-| Method | How It Works | Best For |
-|--------|-------------|----------|
-| **Math Quiz** | Solve randomized math problems (difficulty scales by tier) | All ages |
-| **Step Counter** | Walk a minimum number of steps (30/50/100) | Kids who need to physically get moving |
-| **QR Code** | Scan a QR code placed in the bathroom/kitchen | Ensuring they leave the bedroom |
-| **Photo** | Take a photo (guardian reviews) | Visual proof of being up |
-| **Geofence** | Be within a GPS radius of a target location | Older kids / specific location requirement |
-
-### 3. Two-Way Confirmation Protocol
-Three policy modes let the guardian choose the right level of oversight:
-
-| Policy | What Happens |
-|--------|-------------|
-| **Auto-Acknowledge** | Alarm clears as soon as verification passes. Guardian is notified but doesn't need to act. |
-| **Require Approval** | Child's device stays "pending" until guardian explicitly approves or denies. |
-| **Hybrid** | Auto-clears, but guardian has a review window (default 30 min) to retroactively deny or escalate. |
-
-### 4. Guardian Voice Alarm
-Guardian records a personal wake-up message (up to 30 seconds) that plays when the alarm fires. "Good morning sweetie, time for school!" instead of a generic beep.
-
-- Record, preview, and re-record from the guardian's phone
-- Cached on child device for offline playback
-- Falls back to system sound if no voice clip is set
-
-### 5. Rewards & Streaks
-Positive reinforcement keeps kids motivated:
-
-- **Points** for on-time wake-ups (+15 first try, +10 retries, +5 late)
-- **No-snooze bonus** (+5 for not hitting snooze)
-- **Streak milestones** (+25 at 3 days, +75 at 7, +150 at 14)
-- **Reward store** where kids can "spend" points (guardian configures rewards)
-
-### 6. Tomorrow Overrides
-Guardian can adjust next morning's settings with one tap:
-- Verification method (switch to easier quiz)
-- Difficulty tier (easy / medium / hard)
-- Max attempts per question
-- Timer duration
-- "Calm mode" (brief breathing interstitial before verification)
-
-Overrides auto-clear after one session — no permanent changes.
-
-### 7. Tamper Detection (Best-Effort)
-The app monitors for attempts to circumvent the alarm:
-
-| Detection | How | Reliability |
-|-----------|-----|-------------|
-| Volume lowered | AVAudioSession KVO | Foreground only |
-| Notifications disabled | Permission polling | While app runs |
-| Network lost | NWPathMonitor | Reliable |
-| Timezone changed | NSSystemTimeZoneDidChange | Foreground only |
-| Device offline | Heartbeat gap (parent-side) | UX indicator |
-
-**Honest limitation:** iOS does not allow apps to prevent the user from closing them or changing system settings. Tamper detection is *accountability* (guardian is informed), not *enforcement* (child is blocked). We are transparent about this.
-
-### 8. Offline-First Reliability
-Alarms fire even without internet. All actions queue locally and sync when connectivity returns.
-
-- Local notification scheduling survives app restart
-- Offline actions replay idempotently (no duplicates)
-- UI converges cleanly with conflict banners
-
-### 9. Skip Tomorrow (One-Swipe Sick Day)
-Swipe left on any alarm to skip it for tomorrow. No need to disable and remember to re-enable. Perfect for sick days, holidays, and snow days. Auto-expires after one day.
-
-### 10. Family Settings & Account Management
-Full family management screen: view family ID, paired children with status, re-generate join codes, sign out, and delete account (Apple App Store requirement). Copy join code with one tap.
-
-### 11. Actionable Push Notifications
-When a child completes verification, the guardian gets a push with "Approve" and "Deny" action buttons directly on the lock screen — no need to open the app. 80% higher engagement than passive notifications.
-
-### 12. Guided Onboarding
-New guardians see a warm welcome screen with clear "Add Child" CTA instead of a blank dashboard. Empty states guide users through every first-time experience. Join codes have a "Copy" button with expiry notice.
-
-### 13. Accessibility
-All child-facing screens have VoiceOver labels, 48pt+ touch targets, and header traits. Designed for bleary-eyed kids and children with sensory needs.
-
-### 14. Diagnostics & Support
-Built-in tools for troubleshooting:
-- **Beta Proof Script** — one-tap validation of all system components
-- **Push health panel** — token status, delivery timestamps
-- **Sync health panel** — queue length, rejection reasons
-- **Diagnostics export** — copy-to-clipboard JSON for support tickets
+### Offline Support
+- Alarms fire from local notifications regardless of network
+- Verification completes locally and queues for sync
+- Offline actions classified on drain: success, rules rejected, auth expired, transient
+- Deterministic session IDs prevent duplicates
 
 ---
 
 ## Technical Architecture
 
-### Stack
-- **iOS:** SwiftUI (iOS 17+), @Observable pattern
-- **Backend:** Firebase (Auth, Firestore, Cloud Functions, Storage, Messaging, Crashlytics, Analytics, App Check)
-- **Sync:** Real-time Firestore listeners with offline queue + server timestamps
-- **Security:** Firestore Security Rules with field-level permissions, state machine enforcement, server-managed review windows
+| Component | Technology |
+|-----------|-----------|
+| iOS client | SwiftUI, @Observable, iOS 17+ |
+| Backend | Firebase Firestore (real-time sync) |
+| Auth | Firebase Auth (email/password + anonymous) |
+| Push | FCM + APNs with action buttons (approve/deny) |
+| Storage | Firebase Storage (voice clips, 5MB max) |
+| Functions | 7 Cloud Functions (Node.js 18, v2 triggers) |
+| Security | App Check (App Attest), role-based Firestore rules |
+| Local | JSON files + iOS File Protection, Keychain (PIN) |
+| Build | xcodegen (project.yml → Xcode project) |
 
-### Security Model
+### Cloud Functions
+1. **setReviewWindowDeadline** — server-managed hybrid review window
+2. **notifyParentOnPendingReview** — push to guardian (idempotent)
+3. **notifyParentOnTamperEvent** — tamper alert push
+4. **clearOverridesOnSessionComplete** — auto-clear tomorrow overrides
+5. **applyRewardOnVerified** — server-authoritative reward calculation (transaction)
+6. **cleanupOldSessions** — retention cap at 500 per child
+7. **cleanupOldTamperEvents** — retention cap at 2000 per child
 
-```
-┌──────────────────────────────────────────────────┐
-│                  FIRESTORE RULES                  │
-│                                                   │
-│  Guardian can:                                    │
-│    ✓ Create/edit alarms                          │
-│    ✓ Approve/deny/escalate sessions              │
-│    ✓ Modify child profile + stats                │
-│    ✓ Create join codes                           │
-│    ✗ Cannot write verification fields            │
-│                                                   │
-│  Child can:                                       │
-│    ✓ Create sessions (state=ringing only)        │
-│    ✓ Submit verification + update state          │
-│    ✓ Send messages                               │
-│    ✓ Update heartbeat                            │
-│    ✗ Cannot write parentAction fields            │
-│    ✗ Cannot approve/deny/escalate                │
-│    ✗ Cannot change role or family membership     │
-│    ✗ Cannot modify review window deadline        │
-│                                                   │
-│  Server (Cloud Functions) manages:                │
-│    • Review window deadlines                     │
-│    • Reward point calculations                   │
-│    • Override auto-clear                         │
-│    • Push notifications                          │
-│    • Data retention cleanup                      │
-│                                                   │
-│  App Check: Device attestation (App Attest)       │
-│  Auth: Guardian email/password, Child anonymous   │
-└──────────────────────────────────────────────────┘
-```
-
-### Data Flow
-
-```
-Guardian sets alarm
-    ↓
-Firestore: families/{fid}/alarms/{aid}
-    ↓
-Child device: real-time listener → LocalStore cache → UNCalendarNotificationTrigger (repeats: true)
-    ↓
-Alarm fires (even offline)
-    ↓
-MorningSession created (deterministic ID — no duplicates)
-    ↓
-Child verifies (math/quiz/motion)
-    ↓
-Session → pendingParentReview (strict) OR verified (auto/hybrid)
-    ↓
-Cloud Function: push notification → guardian device
-    ↓
-Guardian reviews → approve/deny/escalate
-    ↓
-Cloud Function: apply reward points (server-authoritative, exactly-once)
-Cloud Function: clear tomorrow overrides
-    ↓
-Child sees result → session complete
-```
-
-### Cloud Functions (7 total)
-
-| Function | Trigger | Purpose |
-|----------|---------|---------|
-| `setReviewWindowDeadline` | Session → verified | Sets server-managed review window |
-| `notifyParentOnPendingReview` | Session → pendingParentReview | Push to guardian |
-| `notifyParentOnTamperEvent` | Tamper event created | Push to guardian |
-| `clearOverridesOnSessionComplete` | Session terminal state | Auto-clear tomorrow overrides |
-| `applyRewardOnVerified` | Session → verified | Server-authoritative reward points |
-| `cleanupOldSessions` | Session created | Retention cap (500/child) |
-| `cleanupOldTamperEvents` | Tamper event created | Retention cap (2000/child) |
+### Firestore Security Highlights
+- Family isolation (cross-family access blocked)
+- Role enforcement (child vs guardian field-level permissions)
+- Server-managed fields blocked from both client roles
+- Version monotonic guard (prevents state regression)
+- Hybrid window fail-closed (missing field blocks retroaction)
+- Tamper count monotonic (can only increase)
 
 ---
 
-## Screen-by-Screen Design
+## Privacy & Compliance
 
-### Guardian Screens
-
-#### 1. Landing / Role Selection
-```
-┌────────────────────────────┐
-│                            │
-│      🔔 Mom Alarm Clock    │
-│                            │
-│   Who is using this device? │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ 🛡 I'm the Parent /  │  │
-│  │    Guardian           │  │
-│  │ Create account, set   │  │
-│  │ alarms, monitor       │  │
-│  └──────────────────────┘  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ 👤 I'm the Child     │  │
-│  │ Enter family code to  │  │
-│  │ pair with guardian    │  │
-│  └──────────────────────┘  │
-│                            │
-└────────────────────────────┘
-```
-
-#### 2. Guardian Dashboard
-```
-┌────────────────────────────┐
-│ ← History    Dashboard  + →│
-│────────────────────────────│
-│                            │
-│  [Emma ▾]  [Jake]  [Lily] │  ← Child selector tabs
-│                            │
-│  ┌──────────────────────┐  │
-│  │ 🟢 LIVE STATUS       │  │
-│  │ Last seen: Just now   │  │
-│  │ Next alarm: 7:00 AM   │  │
-│  │ Streak: 🔥 5 days    │  │
-│  └──────────────────────┘  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ ⏰ ALARMS            │  │
-│  │ School Days  7:00 AM  │  │  ← Toggle on/off
-│  │ Weekends    8:30 AM   │  │
-│  └──────────────────────┘  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ 📊 STATS             │  │
-│  │ On-time: 85%  Points: │  │
-│  │ 245  Best: 12 days   │  │
-│  └──────────────────────┘  │
-│                            │
-│  ┌────┐ ┌────┐ ┌────┐     │
-│  │☀️  │ │🎤  │ │🎁  │     │
-│  │Tmrw│ │Voic│ │Rwrd│     │  ← Quick actions
-│  └────┘ └────┘ └────┘     │
-│                            │
-└────────────────────────────┘
-```
-
-#### 3. Alarm Setup
-```
-┌────────────────────────────┐
-│ Cancel    New Alarm    Save│
-│────────────────────────────│
-│                            │
-│  Time:     [ 7 : 00  AM ] │
-│  Label:    [ School Days ] │
-│                            │
-│  Days:                     │
-│  [M] [T] [W] [T] [F] [ ] [ ]│
-│   ●   ●   ●   ●   ●       │
-│                            │
-│  Verification:             │
-│  [Math Quiz ▾]             │
-│  Difficulty: [Easy|Med|Hard]│
-│                            │
-│  Policy:                   │
-│  ( ) Auto-acknowledge      │
-│  (●) Require my approval   │
-│  ( ) Hybrid (30min window) │
-│                            │
-│  Snooze: [Allowed ▾]      │
-│  Max: [2 times]            │
-│                            │
-└────────────────────────────┘
-```
-
-#### 4. Verification Review (Push brings guardian here)
-```
-┌────────────────────────────┐
-│    Review Verification     │
-│────────────────────────────│
-│                            │
-│        ⏳ Awaiting         │
-│      Your Review           │
-│  Apr 13, 2026 at 7:12 AM  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ ✅ Verification Proof │  │
-│  │ Method: Math Quiz     │  │
-│  │ Tier: Medium          │  │
-│  │ Completed: 7:12 AM    │  │
-│  │ Result: Passed        │  │
-│  │ 3/3 correct, avg 8s   │  │
-│  └──────────────────────┘  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ Wake-up time: 12 min  │  │
-│  │ Snoozes used: 1       │  │
-│  └──────────────────────┘  │
-│                            │
-│  Add a note: [Great job!] │
-│                            │
-│  [██ Approve ██████████]   │  ← Green
-│  [ Deny — Re-verify    ]  │  ← Bordered
-│  [ Escalate             ]  │  ← Red bordered
-│                            │
-└────────────────────────────┘
-```
-
-### Child Screens
-
-#### 5. Child Idle (No Active Alarm)
-```
-┌────────────────────────────┐
-│                            │
-│                            │
-│         🌙 zzz             │
-│                            │
-│        7:00 AM             │  ← Large, readable
-│                            │
-│      tomorrow morning      │
-│      School Days           │
-│                            │
-│                            │
-│                            │
-│    🔥 5-day streak!        │
-│                            │
-│                            │
-└────────────────────────────┘
-```
-
-#### 6. Child Alarm Ringing
-```
-┌────────────────────────────┐
-│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │  ← Red gradient
-│                            │
-│         🔔                 │  ← Pulsing
-│      Wake Up!              │
-│                            │
-│    12 min elapsed          │
-│                            │
-│  ⚠️ Next level in 3 min   │
-│                            │
-│  💬 "Time to get up!"     │  ← Guardian message
-│                            │
-│                            │
-│  [████ I'm Awake ████████] │  ← Large, prominent
-│  [    Verify Now    ]      │
-│                            │
-│  [  Snooze (1/2)  ]       │
-│                            │
-│  💬 Message Guardian       │
-│                            │
-└────────────────────────────┘
-```
-
-#### 7. Child Math Verification
-```
-┌────────────────────────────┐
-│       Wake-Up Quiz         │
-│────────────────────────────│
-│                            │
-│       🧠                   │
-│                            │
-│   ⏱ 42s    # Attempt 1/3  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │                      │  │
-│  │     24 + 37 = ?      │  │  ← Large, clear
-│  │                      │  │
-│  └──────────────────────┘  │
-│                            │
-│       [ 61 ]               │  ← Number input
-│                            │
-│  ┌────────┐ ┌────────────┐ │
-│  │ 👋     │ │  Submit    │ │
-│  │I'm     │ │            │ │
-│  │trying! │ │            │ │
-│  └────────┘ └────────────┘ │
-│                            │
-│   ● ● ○   (2 of 3)        │  ← Progress dots
-│                            │
-└────────────────────────────┘
-```
-
-#### 8. Child Waiting for Guardian
-```
-┌────────────────────────────┐
-│    Verification Submitted  │
-│────────────────────────────│
-│                            │
-│                            │
-│         ⏳                  │
-│                            │
-│   Waiting for Guardian     │
-│                            │
-│  Your verification has     │
-│  been submitted. Your      │
-│  guardian will review it   │
-│  shortly.                  │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ 🧮 Math Quiz         │  │
-│  │ 3/3 correct          │  │
-│  └──────────────────────┘  │
-│                            │
-│                            │
-└────────────────────────────┘
-```
-
-#### 9. Child Result — Approved
-```
-┌────────────────────────────┐
-│                            │
-│                            │
-│         ✅                  │
-│                            │
-│      Approved!             │
-│                            │
-│  Great job getting up!     │
-│  Your device is unlocked.  │
-│                            │
-│  💬 "Great job!" — Guardian│
-│                            │
-│                            │
-└────────────────────────────┘
-```
-
-#### 10. Child Result — Denied
-```
-┌────────────────────────────┐
-│                            │
-│         ❌                  │
-│                            │
-│   Verification Denied      │
-│                            │
-│  ┌──────────────────────┐  │
-│  │ Your guardian wants   │  │
-│  │ you to verify again.  │  │
-│  │                      │  │
-│  │ Reason: "Not up yet" │  │
-│  └──────────────────────┘  │
-│                            │
-│  [██ Verify Again ██████]  │
-│                            │
-└────────────────────────────┘
-```
+- **No tracking, no ads, no data sales**
+- **COPPA compliant:** guardian-only account creation, explicit consent, minimal collection
+- **GDPR/CCPA:** in-app deletion cascades entire family, nothing retained
+- **Privacy manifest:** 7 data types declared, NSPrivacyTracking: false
+- **Data encryption:** Firestore (in transit + at rest), iOS File Protection (local), Keychain (PIN)
+- **Age stored as number** (not date of birth), grouped into 4 age bands for content tailoring
 
 ---
 
-## Color Palette & Visual Language
+## Testing
 
-### Colors
-| Role | Color | Usage |
-|------|-------|-------|
-| Primary (Guardian) | `#007AFF` (System Blue) | Navigation, CTAs on guardian screens |
-| Alarm Active | `#FF3B30` (System Red) | Ringing state, urgent actions |
-| Success | `#34C759` (System Green) | Approved, verification passed |
-| Warning | `#FF9500` (System Orange) | Pending review, denial |
-| Child Calm | `#AF52DE` (System Purple) | Quiz, idle state |
-| Streak | `#FF9500` (Orange) | Fire emoji, streak badges |
-
-### Typography
-- **Large numbers** (alarm time, countdown): SF Rounded, 64pt
-- **Headings**: SF Pro Bold, title size
-- **Body**: SF Pro Regular, body size
-- **Monospace** (codes, diagnostics): SF Mono
-
-### Design Principles
-1. **Calm over urgent** — even alarms should feel firm, not panicky
-2. **Large and touchable** — minimum 56pt buttons, designed for bleary-eyed kids
-3. **Progress is visible** — streaks, quiz dots, countdown timers
-4. **Guardian language is warm** — "guardian" not "parent," encouragement not punishment
-5. **Honest about limitations** — we say "best-effort detection" not "tamper-proof"
+- **45 unit tests** (session determinism, reward engine, config merge, age bands, policy defaults)
+- **22 Firestore rules tests** (role isolation, field permissions, state machine, version guards)
+- **8 real-device test scenarios** in LAUNCH_CHECKLIST.md
 
 ---
 
-## Competitive Landscape
+## Pricing Model
 
-| Feature | Mom Alarm | Alarmy | Sleep Cycle | Stock iOS |
-|---------|:---------:|:------:|:-----------:|:---------:|
-| Cross-device control | ✅ | ❌ | ❌ | ❌ |
-| Guardian approval | ✅ | ❌ | ❌ | ❌ |
-| Verification required | ✅ | ✅ | ❌ | ❌ |
-| Voice alarm | ✅ | ❌ | ❌ | ❌ |
-| Streaks/rewards | ✅ | ❌ | ❌ | ❌ |
-| Family/multi-child | ✅ | ❌ | ❌ | ❌ |
-| Offline reliable | ✅ | ✅ | ✅ | ✅ |
-| Push to guardian | ✅ | ❌ | ❌ | ❌ |
-| Free to use | ✅ | Freemium | Freemium | ✅ |
+| Tier | Price | Includes |
+|------|-------|---------|
+| **Free** | $0 forever | 1 child, all verification methods, voice alarm, streaks, offline, all confirmation modes |
+| **Family** | $4.99/month | Up to 4 children, weekly wake-up summaries, tomorrow overrides, escalation system |
 
-**Our differentiation:** We're the only alarm app designed as a *two-device system* for families. Every competitor is single-device. That's the fundamental difference.
+The natural paywall is the 2nd child. First child gets the full experience — no artificial restrictions. Parents who see value with one child convert when adding siblings.
 
 ---
 
-## Business Model
+## What Ships vs. What's Deferred
 
-### Free Tier (1 Child)
-- Math/Quiz verification (all difficulties)
-- All confirmation policies (auto, strict, hybrid)
-- Voice alarm
-- Streaks and rewards
-- Push notifications
-- Offline reliability
-- Full diagnostics
+### Ships in v1.0
+All core flows, 4 verification methods, 3 confirmation policies, voice alarm, age-aware quiz, streaks/rewards, offline queue, push with action buttons, escalation (4 levels), account deletion cascade, privacy manifest, COPPA consent, App Check.
 
-### Step Counter Verification — .99 one-time
-- Unlock Motion/Steps verification method
-- Child must physically walk 30-100 steps to verify
-- The most effective way to get kids OUT of bed, not just awake in bed
-- One-time purchase, works forever, applies to all children
+### Deferred to v1.1+
+- QR code scanner (DataScannerViewController)
+- Increased volume escalation (AVAudioSession)
+- Parent call escalation (CallKit)
+- Sign in with Apple
+- Smart auto-escalation policy
+- Weekly summary push
+- Cloud Function unit tests
 
-### Family Plan (.99/month)
-- **Up to 4 children** with per-child everything:
-  - Individual alarms, schedules, and verification settings
-  - Per-child voice alarm recordings
-  - Per-child streaks, rewards, and stats
-  - Tomorrow overrides per child
-- Weekly summary reports
-- Achievement badges
-- Family leaderboard (kids compete on streaks)
-- Priority support
-
-### Family+ Plan (.99/month)
-- Everything in Family
-- Morning checklist (post wake-up routine builder)
-- Custom alarm sounds (nature, music box, funny)
-- PDF morning reports (great for co-parenting)
-- Early access to new features
-
-### Annual Plans (save ~50%)
-- Family: .99/year
-- Family+: .99/year
-
-### Paywall Strategy
-- **Quiz verification is always free** — proves the concept, hooks the user
-- **Steps (.99)** — impulse buy at the "choose verification method" screen. Once they pay , they're 5x more likely to subscribe.
-- **Add Child** — subscription paywall when free user taps "+" for child #2
-- **Never cripple** core alarm functionality. Free users get a complete, working alarm.
+### Deferred to v2.0+
+- Android companion app
+- ML photo verification
+- Adaptive difficulty engine
+- School/teacher integration
 
 ---
 
-## Technical Specifications
+## Submission Status
 
-### Requirements
-- iOS 17.0+
-- iPhone only (not iPad — alarm apps need to be on the bedside device)
-- Firebase project (Blaze plan for Cloud Functions)
-- APNS certificate for push notifications
-
-### Privacy
-- **No tracking of children** — no advertising SDKs, no third-party analytics on child screens
-- **Firebase Analytics** on guardian screens only (privacy-safe events: no PII, no messages, no photos)
-- **Voice clips** stored in family-scoped Firebase Storage (encrypted at rest)
-- **Session data** retained 90 days locally, 500 sessions server-side per child
-- **No data sold** to third parties, ever
-
-### Performance
-- App launch to alarm-ready: < 2 seconds
-- Alarm fire to session created: < 500ms
-- Push notification delivery: < 5 seconds (Firebase → APNS)
-- Offline → online convergence: < 10 seconds after reconnect
-
----
-
-## Roadmap
-
-### v1.0 — MVP (Current State)
-- ✅ Cross-device pairing
-- ✅ Alarm scheduling (repeating, weekly)
-- ✅ Math/quiz verification
-- ✅ Guardian approve/deny/escalate
-- ✅ Voice alarm
-- ✅ Rewards/streaks
-- ✅ Tomorrow overrides
-- ✅ Offline-first with queue convergence
-- ✅ Push notifications
-- ✅ Diagnostics + proof checks
-
-### v1.1 — Polish
-- Better onboarding flow (fewer steps)
-- Improved quiz difficulty scaling
-- Haptic feedback throughout
-- Widget for child's idle screen (next alarm countdown)
-
-### v1.2 — Engagement
-- Achievement badges (not just points)
-- Weekly summary for guardian
-- Customizable reward store items
-- Family leaderboard (multiple children)
-
-### v2.0 — Platform
-- Android app (same Firebase backend)
-- Web dashboard for guardian
-- Alexa/Google Home integration ("Alexa, did my kid wake up?")
-
-### Future
-- AI-powered wake-up difficulty (adapts to how fast the child solves)
-- Sleep tracking integration
-- School calendar integration (auto-adjust for holidays)
-- FamilyControls / Screen Time enforcement (requires Apple entitlement)
-
----
-
-## How to Share This App
-
-### For Friends to Try (TestFlight)
-1. Build and upload to TestFlight (see SETUP_GUIDE.md)
-2. Add friends as internal testers in App Store Connect
-3. They install via TestFlight link
-4. They need TWO devices: one as guardian, one as child
-
-### For Investors / Partners
-Share this document + the interactive demo at `demo.html` in the repo root.
-
-### For App Store Submission
-- App name: "Mom Alarm Clock"
-- Subtitle: "Get kids up. Stay informed."
-- Category: Utilities > Productivity
-- Age rating: 4+ (no objectionable content)
-- Privacy nutrition labels: see Privacy section above
-
----
-
-*Built with SwiftUI, Firebase, and a lot of early mornings.*
+| Item | Status |
+|------|--------|
+| Code | Ready (build passes, 45 tests pass) |
+| Privacy manifest | Complete (7 data types) |
+| Privacy policy | Written (PRIVACY_POLICY.md, needs hosting) |
+| App Store metadata | Written (APP_STORE_METADATA.md) |
+| Reviewer notes | Written (APP_REVIEW_NOTES.md) |
+| Screenshot plan | Written (SCREENSHOT_PLAN.md) |
+| Release checklist | Written (RELEASE_CHECKLIST.md, 7 phases) |
+| Firebase setup | Script ready (scripts/setup-firebase.sh) |
+| Apple enrollment | Pending (operational blocker) |
+| Entitlement requests | Pending (Critical Alerts, FamilyControls) |

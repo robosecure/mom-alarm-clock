@@ -1,91 +1,148 @@
-# Mom Alarm Clock — Release Checklist
+# Mom Alarm Clock — Final Release Checklist
 
-## Pre-Release (Before Archive)
+Last updated: 2026-04-17
 
-### Firebase Setup
-- [ ] GoogleService-Info.plist in ios/MomAlarmClock/
-- [ ] Firebase Auth: Email/Password + Anonymous enabled
-- [ ] Firestore database created (production mode)
-- [ ] `firebase deploy --only firestore:rules,firestore:indexes`
-- [ ] `firebase deploy --only storage`
-- [ ] `firebase deploy --only functions` (7 functions should deploy)
-- [ ] APNS .p8 key uploaded to Firebase Console > Cloud Messaging
+---
+
+## Phase 1: Accounts & Infrastructure
+
+### Apple Developer Program
+- [x] Enrolled in Apple Developer Program (Team ID: U474UU36TW)
+- [x] Team ID set in `ios/project.yml`
+- [x] Bundle ID registered: `com.momclock.MomAlarmClock`
+- [x] App created in App Store Connect
+- [ ] Sign Xcode into Apple ID (required for archiving — blocker)
+- [ ] Request Critical Alerts entitlement: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
+- [ ] Request Family Controls entitlement (if not auto-approved): https://developer.apple.com/contact/request/family-controls-distribution
+
+### Firebase Project
+- [x] Firebase project created (`mom-alarm-clock`, Blaze plan)
+- [x] GoogleService-Info.plist in place (real API key)
+- [x] Firebase Auth: Email/Password enabled
+- [x] Firebase Auth: Anonymous enabled
+- [ ] APNS .p8 key uploaded to Firebase Console > Cloud Messaging (needs Apple Developer portal access)
+
+### Firebase Deploy
+- [x] Firestore rules + indexes deployed
+- [x] Storage rules deployed
+- [x] 8 Cloud Functions deployed (Node 20): applyRewardOnVerified, cleanupOldSessions, cleanupOldTamperEvents, clearOverridesOnSessionComplete, notifyParentOnPendingReview, notifyParentOnTamperEvent, setReviewWindowDeadline, weeklySummary
 
 ### App Check
-- [ ] Firebase Console > App Check > register iOS app
-- [ ] App Attest selected as provider
-- [ ] Debug tokens registered for dev simulators
-- [ ] Enforcement: start in "Unenforced" (monitor mode)
+- [x] iOS app registered in Firebase Console > App Check
+- [x] App Attest selected as provider
+- [ ] Start in "Unenforced" (monitor mode) — enforce after beta stabilizes
 
-### Xcode
-- [ ] DEVELOPMENT_TEAM set in ios/project.yml (not TEAM_ID_HERE)
-- [ ] Bundle ID: com.momclock.MomAlarmClock
-- [ ] `xcodegen generate` runs cleanly
-- [ ] Build succeeds (Debug + Release)
-- [ ] All unit tests pass (32 tests, 0 failures)
-- [ ] No new warnings vs baseline
+---
 
-### Code Quality
-- [ ] No #if DEBUG fallbacks in Release auth paths
-- [ ] Firestore rules match Swift model field names (14 security elements verified)
-- [ ] Storage rules enforce guardian-only write, family-scoped read
-- [ ] Cloud Functions have re-entrant guards on all session-update triggers
+## Phase 2: Build & Sign
 
-## App Store Connect Setup (Before First Upload)
+- [x] `xcodegen generate` runs cleanly
+- [x] Debug build succeeds (zero errors)
+- [x] Release build succeeds (unsigned — full signing blocked on Xcode Apple ID sign-in)
+- [x] All 90 unit tests pass
+- [x] `aps-environment` is `production` in entitlements
+- [x] Bundle ID: `com.momclock.MomAlarmClock`
+- [x] Version: 1.0, Build: 1
 
+---
+
+## Phase 3: App Store Connect
+
+### App Listing
 - [ ] Create app in App Store Connect
-- [ ] Set primary language, category (Utilities), age rating (4+)
-- [ ] Upload screenshots (1320 x 2868 pixels, iPhone 6.9-inch)
-- [ ] Write description (see PROPOSALS.md P-016 for draft)
-- [ ] Set keywords (100 chars max, comma-separated)
-- [ ] Add privacy policy URL
-- [ ] Complete privacy nutrition labels
-- [ ] Verify PrivacyInfo.xcprivacy is included in the build
+- [ ] App name: "Mom Alarm Clock"
+- [ ] Subtitle: "Wake-up accountability for families"
+- [ ] Category: Lifestyle (primary), Utilities (secondary)
+- [ ] Age rating: 4+
+- [ ] Description: see APP_STORE_METADATA.md
+- [ ] Keywords: see APP_STORE_METADATA.md
+- [ ] Promotional text: see APP_STORE_METADATA.md
 
-## Archive + Upload
+### Privacy
+- [x] Privacy policy hosted: https://robosecure.github.io/mom-alarm-clock-legal/privacy.html
+- [ ] Privacy policy URL entered in App Store Connect (needs portal access)
+- [x] `FamilySettingsView.privacyPolicyURL` configured and live
+- [x] Privacy nutrition labels documented (see PRIVACY_SUBMISSION_REFERENCE.md)
+- [x] PrivacyInfo.xcprivacy included in build (7 data types declared)
 
-- [ ] Select "Any iOS Device (arm64)" as destination
+### Support
+- [x] Support URL: https://robosecure.github.io/mom-alarm-clock-legal/
+- [x] Support email: rmathews0707@gmail.com (TEMP — migrate before public launch)
+
+### Screenshots
+- [ ] 6-8 screenshots per required device size (see SCREENSHOT_PLAN.md)
+
+### Review Notes
+- [ ] App Review Notes pasted (see APP_REVIEW_NOTES.md)
+- [ ] Demo account credentials provided (if applicable)
+
+---
+
+## Phase 4: Archive & Upload
+
+- [ ] Select "Any iOS Device (arm64)" destination
 - [ ] Product > Archive
 - [ ] Distribute App > App Store Connect > Upload
 - [ ] Wait for processing (5-15 min)
+- [ ] Verify build appears in TestFlight
 
-## TestFlight
+---
 
-- [ ] App Store Connect > TestFlight > select build
-- [ ] Add internal testers
-- [ ] Install on 2 devices (guardian + child)
-
-## Post-Upload Verification
+## Phase 5: TestFlight Smoke Test
 
 ### Guardian Device
+- [ ] Install from TestFlight
 - [ ] Create account + note join code
-- [ ] Create alarm (1 min from now, Math, Require Approval)
-- [ ] Record a voice alarm clip
-- [ ] Diagnostics > Run Beta Proof Checks > all green
+- [ ] Create alarm for 2-3 minutes from now (Quiz, Trust Mode)
+- [ ] Record a voice alarm clip (optional)
+- [ ] Settings > Diagnostics > Reviewer/Tester Checklist > all green
 
 ### Child Device
+- [ ] Install from TestFlight
 - [ ] Enter join code + grant permissions
-- [ ] Alarm fires > verify > "Waiting for Guardian"
-- [ ] Voice clip plays on alarm fire
-- [ ] Diagnostics > check push + sync health
+- [ ] Alarm fires on time
+- [ ] Complete quiz verification
+- [ ] Session marked as verified
 
 ### Cross-Device
-- [ ] Guardian approves > child sees "Approved!"
-- [ ] Guardian denies > child sees reason + "Verify Again"
-- [ ] Offline: child airplane mode > verify > reconnect > converges
+- [ ] Guardian sees result in History
+- [ ] Test Strict Mode: alarm → verify → guardian approve → child sees result
+- [ ] Test deny: guardian deny → child sees reason + "Verify Again"
+- [ ] Test offline: child airplane mode → verify → reconnect → state converges
 
-## Production Enforcement (After Beta Stabilizes)
+---
 
-- [ ] App Check > Functions > set to "Enforced"
-- [ ] Wait 1 week, check metrics
-- [ ] App Check > Firestore > set to "Enforced"
-- [ ] Monitor for legitimate client rejections
-- [ ] Rollback: set back to "Unenforced" if issues arise
+## Phase 6: Submit for Review
 
-## Known Limitations (Document in App)
+- [ ] Select build in App Store Connect
+- [ ] Submit for review
+- [ ] Monitor for reviewer questions (check email daily)
 
-- Tamper detection is best-effort (foreground only for volume/timezone)
-- Device lock is visual only (FamilyControls requires Apple entitlement)
-- Push requires APNS certificate; shows fallback banner if disabled
-- Critical Alerts require separate Apple entitlement approval
-- Voice alarm plays in foreground; background is system notification sound
+---
+
+## Phase 7: Post-Approval
+
+### App Check Enforcement (staged)
+1. [ ] Functions > set to "Enforced" — wait 1 week
+2. [ ] Firestore > set to "Enforced" — wait 1 week
+3. [ ] Monitor for legitimate client rejections
+4. [ ] Rollback: set back to "Unenforced" if issues arise
+
+### Monitoring
+- [ ] Firebase Console > Crashlytics > monitor crash-free rate
+- [ ] Firebase Console > Analytics > verify events flowing
+- [ ] Check Cloud Functions logs for errors
+
+---
+
+## Quick Reference: What the App Does Without Entitlements
+
+| Without | Behavior |
+|---------|----------|
+| Critical Alerts | Alarms fire with standard sound (may be silenced by DND) |
+| FamilyControls | App lock escalation levels are skipped; reminders + notifications still work |
+| Push permission | Alarms fire but guardian doesn't receive pending review notifications |
+| Location permission | Geofence verification unavailable; quiz/motion/photo still work |
+| Microphone permission | Voice alarm recording unavailable; standard alarm sound plays |
+
+The app functions fully without Critical Alerts and FamilyControls. These are enhancement entitlements, not requirements.

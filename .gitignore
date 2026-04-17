@@ -26,5 +26,7 @@ Thumbs.db
 # Firebase emulator data
 .firebase/
 firebase-debug.log
+firestore-debug.log
+functions/firestore-debug.log
 # Token monitor cache
 scripts/.token_budget.json
