@@ -10,6 +10,7 @@ struct ChildPairingView: View {
     @State private var childName = ""
     @State private var isLoading = false
     @State private var error: String?
+    @State private var showValidationErrors = false
     @State private var isPaired = false
     @State private var permissionStep = 0
 
@@ -29,6 +30,10 @@ struct ChildPairingView: View {
                 TextField("Your Name", text: $childName)
                     .textContentType(.name)
                     .autocorrectionDisabled()
+                if let err = InputValidation.validateName(childName).errorMessage,
+                   !childName.isEmpty || showValidationErrors {
+                    Text(err).font(.caption).foregroundStyle(.red)
+                }
             } header: {
                 Text("What's your name?")
             }
@@ -39,6 +44,19 @@ struct ChildPairingView: View {
                     .multilineTextAlignment(.center)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
+                    .onChange(of: familyCode) { _, newValue in
+                        // Auto-format: uppercase, strip spaces, limit to 10 chars
+                        let cleaned = String(newValue.uppercased().filter { !$0.isWhitespace }.prefix(10))
+                        if cleaned != newValue { familyCode = cleaned }
+                        // Clear stale pair-attempt error when the user edits the code
+                        if error != nil { error = nil }
+                    }
+                if let err = InputValidation.validateJoinCode(familyCode).errorMessage,
+                   !familyCode.isEmpty || showValidationErrors {
+                    Text(err)
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
             } header: {
                 Text("Enter the code from your guardian's device")
             } footer: {
@@ -54,7 +72,11 @@ struct ChildPairingView: View {
 
             Section {
                 Button {
-                    Task { await pair() }
+                    if InputValidation.validateJoinCode(familyCode).isValid && InputValidation.validateName(childName).isValid {
+                        Task { await pair() }
+                    } else {
+                        withAnimation { showValidationErrors = true }
+                    }
                 } label: {
                     if isLoading {
                         ProgressView().frame(maxWidth: .infinity)
@@ -64,7 +86,7 @@ struct ChildPairingView: View {
                             .bold()
                     }
                 }
-                .disabled(familyCode.count < 10 || childName.isEmpty || isLoading)
+                .disabled(isLoading)
             }
         }
         .navigationTitle("Pair Device")
@@ -95,7 +117,7 @@ struct ChildPairingView: View {
                 ) {
                     // Request notification permission
                     let center = UNUserNotificationCenter.current()
-                    let granted = try? await center.requestAuthorization(options: [.alert, .sound, .badge, .criticalAlert])
+                    _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge, .criticalAlert])
                     permissionStep = 1
                 }
             case 1:

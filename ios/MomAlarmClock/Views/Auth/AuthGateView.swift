@@ -12,6 +12,8 @@ struct AuthGateView: View {
         Group {
             if auth.isLoading {
                 loadingView
+            } else if auth.awaitingEmailVerification {
+                EmailVerificationView()
             } else if !auth.isAuthenticated {
                 VStack(spacing: 0) {
                     if let error = auth.error {
@@ -52,9 +54,11 @@ struct AuthGateView: View {
 }
 
 /// Landing page for unauthenticated users. Choose parent or child flow.
+/// Remembers the last role used — auto-opens the sign-in form on return.
 struct AuthLandingView: View {
     @State private var showParentAuth = false
     @State private var showChildPairing = false
+    @AppStorage("lastSignedInRole") private var lastRole: String?
 
     var body: some View {
         VStack(spacing: 40) {
@@ -68,7 +72,7 @@ struct AuthLandingView: View {
                 Text("Mom Alarm Clock")
                     .font(.largeTitle.bold())
 
-                Text("Who is using this device?")
+                Text(lastRole != nil ? "Welcome back" : "Who is using this device?")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
@@ -129,6 +133,13 @@ struct AuthLandingView: View {
             .padding(.horizontal, 24)
 
             Spacer()
+        }
+        .onAppear {
+            // Auto-open the sign-in form for returning users
+            if let role = lastRole {
+                if role == "parent" { showParentAuth = true }
+                else if role == "child" { showChildPairing = true }
+            }
         }
         .sheet(isPresented: $showParentAuth) {
             NavigationStack {

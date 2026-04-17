@@ -1,4 +1,6 @@
 import SwiftUI
+import AuthenticationServices
+import CryptoKit
 
 /// Parent sign-up and sign-in form.
 /// Creates a Firebase Auth account (or local dev account) and a family with join code.
@@ -6,28 +8,94 @@ struct ParentAuthView: View {
     @Environment(AuthService.self) private var auth
     @Environment(\.dismiss) private var dismiss
 
-    @State private var isSignUp = true
+    /// Defaults to sign-in if the user has signed in before (returning user).
+    @State private var isSignUp = UserDefaults.standard.string(forKey: "lastSignedInRole") == nil
     @State private var email = ""
     @State private var password = ""
     @State private var displayName = ""
     @State private var isLoading = false
     @State private var error: String?
-    @State private var familyCode: String?
+    @State private var showValidationErrors = false
 
     var body: some View {
         Form {
             Section {
+                SignInWithAppleButton(.signIn) { request in
+                    let nonce = auth.prepareAppleSignIn()
+                    request.requestedScopes = [.fullName, .email]
+                    request.nonce = SHA256
+                        .hash(data: Data(nonce.utf8))
+                        .compactMap { String(format: "%02x", $0) }
+                        .joined()
+                } onCompletion: { result in
+                    Task {
+                        isLoading = true
+                        error = nil
+                        do {
+                            switch result {
+                            case .success(let authorization):
+                                try await auth.signInWithApple(authorization: authorization)
+                                // Auth state change triggers AuthGateView to switch to dashboard
+                            case .failure(let err):
+                                if (err as NSError).code != ASAuthorizationError.canceled.rawValue {
+                                    error = err.localizedDescription
+                                }
+                            }
+                        } catch {
+                            self.error = error.localizedDescription
+                        }
+                        isLoading = false
+                    }
+                }
+                .signInWithAppleButtonStyle(.white)
+                .frame(height: 50)
+                .cornerRadius(12)
+            } header: {
+                Text("Quick Start")
+            } footer: {
+                Text("One tap to create your guardian account. No password needed.")
+            }
+
+            Section {
                 if isSignUp {
-                    TextField("Your Name", text: $displayName)
+                    TextField("First Name", text: $displayName)
                         .textContentType(.name)
                         .autocorrectionDisabled()
+                    if let err = InputValidation.validateName(displayName).errorMessage,
+                       !displayName.isEmpty || showValidationErrors {
+                        Text(err).font(.caption).foregroundStyle(.red)
+                    }
                 }
                 TextField("Email", text: $email)
                     .textContentType(.emailAddress)
                     .keyboardType(.emailAddress)
                     .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                if let err = InputValidation.validateEmail(email).errorMessage,
+                   !email.isEmpty || showValidationErrors {
+                    Text(err).font(.caption).foregroundStyle(.red)
+                }
                 SecureField("Password", text: $password)
                     .textContentType(isSignUp ? .newPassword : .password)
+                if isSignUp && !password.isEmpty {
+                    // Show strength indicator while typing
+                    HStack(spacing: 4) {
+                        Text("Strength:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(InputValidation.passwordStrength(password).label)
+                            .font(.caption.bold())
+                            .foregroundStyle(strengthColor)
+                    }
+                    // Show specific requirement errors below strength
+                    if let err = InputValidation.validatePassword(password).errorMessage {
+                        Text(err).font(.caption).foregroundStyle(.red)
+                    }
+                }
+                if isSignUp && password.isEmpty && showValidationErrors {
+                    Text("Password is required.")
+                        .font(.caption).foregroundStyle(.red)
+                }
             } header: {
                 Text(isSignUp ? "Create Guardian Account" : "Sign In")
             }
@@ -39,35 +107,13 @@ struct ParentAuthView: View {
                 }
             }
 
-            if let familyCode {
-                Section {
-                    VStack(spacing: 8) {
-                        Text("Family Code")
-                            .font(.headline)
-                        Text(familyCode)
-                            .font(.system(size: 32, weight: .bold, design: .monospaced))
-                            .tracking(4)
-                        Button {
-                            UIPasteboard.general.string = familyCode
-                        } label: {
-                            Label("Copy Code", systemImage: "doc.on.doc")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-                        .padding(.top, 4)
-                        Text("Share this code with your child to pair their device. It expires in 24 hours.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                }
-            }
-
             Section {
                 Button {
-                    Task { await submit() }
+                    if isFormValid {
+                        Task { await submit() }
+                    } else {
+                        withAnimation { showValidationErrors = true }
+                    }
                 } label: {
                     if isLoading {
                         ProgressView()
@@ -78,36 +124,55 @@ struct ParentAuthView: View {
                             .bold()
                     }
                 }
-                .disabled(isLoading || !isFormValid)
-
-                if familyCode != nil {
-                    Button("Go to Dashboard") {
-                        dismiss()
-                    }
-                    .frame(maxWidth: .infinity)
-                    .bold()
-                }
+                .disabled(isLoading)
             }
 
             Section {
                 Button(isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up") {
                     isSignUp.toggle()
                     error = nil
+                    // Reset validation state so the other mode starts clean
+                    showValidationErrors = false
                 }
                 .font(.subheadline)
             }
         }
         .navigationTitle(isSignUp ? "Guardian Setup" : "Guardian Sign In")
         .navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
+            }
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil, from: nil, for: nil
+                    )
+                }
             }
         }
     }
 
     private var isFormValid: Bool {
-        !email.isEmpty && !password.isEmpty && (!isSignUp || !displayName.isEmpty)
+        if isSignUp {
+            return InputValidation.validateName(displayName).isValid
+                && InputValidation.validateEmail(email).isValid
+                && InputValidation.validatePassword(password).isValid
+        } else {
+            // Sign-in: just need non-empty email + password (server validates)
+            return !email.isEmpty && !password.isEmpty
+        }
+    }
+
+    private var strengthColor: Color {
+        switch InputValidation.passwordStrength(password) {
+        case .weak: .red
+        case .medium: .orange
+        case .strong: .green
+        }
     }
 
     private func submit() async {
@@ -117,11 +182,10 @@ struct ParentAuthView: View {
         do {
             if isSignUp {
                 try await auth.signUpAsParent(email: email, password: password, displayName: displayName)
-                // The join code was generated during family creation
-                familyCode = auth._lastJoinCode
+                // Auth state change triggers AuthGateView to switch to dashboard.
+                // Join code is shown later when the guardian adds a child via AddChildView.
             } else {
                 try await auth.signInAsParent(email: email, password: password)
-                dismiss()
             }
         } catch {
             self.error = error.localizedDescription
