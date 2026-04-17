@@ -178,6 +178,63 @@ Both require Apple Developer Portal web login with the user's Apple ID. Deferred
 - `core10_00_role_picker.png`, `core10_H1_after_10_relaunches.png` — evidence.
 - This section appended to `SESSION_SUMMARY_2026-04-17.md`.
 
+---
+
+## Autonomous + Claude Code pass 3 (2026-04-17 afternoon)
+
+Second Claude Code pass handed off: commit the overhaul, scan for bugs in it, re-verify, add XCUITests, update this summary.
+
+### 1. Commits pushed
+
+9 commits land the uncommitted overhaul:
+
+| Hash | Subject |
+|------|---------|
+| 2849532 | C77-ASSETS: brand system — app icon, launch logo, color assets |
+| f3f2a0c | C78-AUTH-UX: email verification flow, signup polish, pairing UX |
+| 672fe51 | C79-PARENT-UX: dashboard, reward store, setup wizard, alarm controls polish |
+| f8e4a92 | C80-CHILD-UX: celebration overlay, child settings, verification polish |
+| a0387b4 | C81-MODELS-SERVICES: age-band, rewards, input validation, service polish |
+| 598fc99 | C82-TESTS: grow CoreLogicTests (+399) covering rewards, validation, sync |
+| 361b8a6 | C83-DOCS: launch prep docs, handoff notes, evidence screenshots, scripts |
+| 6c9c712 | C84-FIREBASE: add verify-email function, rules, config updates |
+| (new)   | C85-UITESTS: XCUITest scaffolding for Core 10 scenarios |
+
+Working tree clean, nothing pushed to origin yet (user can push when ready).
+
+### 2. Bug fixes on top of overhaul
+
+Spot-checked three items from the prior review, all verified real:
+
+- **PhotoVerificationView.swift:submitPhoto** — state flips (`isComplete`, `isSubmitting`) moved to AFTER `await vm.completeVerification(...)` so the UI doesn't declare "Photo Submitted" before the ViewModel has actually persisted. Previously the completion screen could appear before sync happened; now submission is blocking from the user's perspective.
+- **EmailVerificationView.swift:cachedEmail** — `Auth.auth().currentUser?.email` was re-read on every render (Firebase SDK hit per SwiftUI body evaluation). Now cached in `@State private var cachedEmail: String?` and set in `onAppear`.
+- **EmailVerificationView.swift:resendResetTask** — the 5-second resend-debounce Task was orphaned; if the view was dismissed mid-sleep or re-presented, stale timers raced with fresh state. Now stored as `@State private var resendResetTask: Task<Void, Never>?`, cancelled in `onDisappear` and before starting a new one.
+
+Did NOT "fix" `@State private var vm = SetupWizardViewModel()` — as noted in the handoff, `@State` on an `@Observable` reference type IS the correct pattern for iOS 17+.
+
+### 3. Test results
+
+- Unit: **90/90 pass** (0.058s runtime, `run_tests.sh` exit=0)
+- UI: **10 tests, 3 pass + 7 skipped** — H1 (relaunch loop), H2 (role picker renders), E1 (child pairing sheet opens) all green; A1/A3/B1/B3/C1/C3/D3 XCTSkip'd with specific TODOs for auth fixtures, accessibility IDs, or simctl automation.
+- Build warnings: **0 code warnings** (AppIntents metadata notes only; same as prior pass).
+
+### 4. Swift warning count
+
+- Start of pass: 0 (overhaul was already clean)
+- After bug fixes + new UI target: 0 (verified post-commit)
+
+### 5. Still blocked (unchanged from pass 2)
+
+- **Distribution cert** — only "Apple Development" on this machine, no "Apple Distribution". Requires Xcode GUI to verify the right Apple ID is signed into Team U474UU36TW and create the cert.
+- **Provisioning profile** for `com.momclock.MomAlarmClock` — none exist locally; Xcode needs to download after cert is in place.
+- **APNs .p8** — requires developer.apple.com web login.
+- **Critical Alerts entitlement approval** — requires Apple form submission with justification from `ENTITLEMENT_JUSTIFICATIONS.md`.
+- **First TestFlight build** — gated on the above.
+
+### 6. New in this pass
+
+- `ios/MomAlarmClockUITests/CoreScenarioUITests.swift` — XCUITest scaffolding for all 10 core scenarios. 3 implemented and passing; 7 XCTSkip'd with explicit TODOs explaining what fixture each one needs. UI target added to `project.yml` and wired into the scheme — `./run_tests.sh` now runs both unit and UI tests.
+
 ### Resume prompt for tomorrow
 
 > Read `CLAUDE_CODE_HANDOFF_2026-04-17_B.md`. Then:
