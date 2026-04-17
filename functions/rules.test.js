@@ -439,3 +439,28 @@ test("22: unauthenticated user cannot read anything", async () => {
   await assertFails(db.doc("users/anyone").get());
   await assertFails(db.doc("familyCodes/ANY").get());
 });
+
+test("23: hybrid retroaction blocked when reviewWindowEndsAt missing", async () => {
+  await seedUser("parent1", "parent", "fam1");
+  await seedFamily("fam1");
+  // Session is verified but reviewWindowEndsAt was never set (Cloud Function failed)
+  await seedSession("fam1", "sess-no-window", {
+    state: "verified",
+    childProfileID: "cp1",
+    version: 1,
+    lastUpdated: new Date(),
+  });
+
+  const db = testEnv.authenticatedContext("parent1").firestore();
+
+  // Parent tries to retroactively deny — should be BLOCKED because reviewWindowEndsAt is missing
+  await assertFails(
+    db.doc("families/fam1/sessions/sess-no-window").update({
+      state: "failed",
+      parentAction: { denied: { reason: "retroactive deny" } },
+      version: 2,
+      lastUpdated: new Date(),
+    })
+  );
+});
+

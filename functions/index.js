@@ -1,4 +1,5 @@
 const { onDocumentUpdated, onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
@@ -98,6 +99,22 @@ async function recordCleanupMetrics(familyID, collection, deletedCount) {
   }
 }
 
+// ─── Error Handling Helper ────────────────────────
+
+/**
+ * Wraps a Cloud Function handler with structured error logging.
+ * Logs function name, event params, and error message (no sensitive data).
+ */
+function logError(functionName, params, error) {
+  console.error(JSON.stringify({
+    function: functionName,
+    familyID: params.familyID || "unknown",
+    sessionID: params.sessionID || params.eventID || "unknown",
+    error: error.message || String(error),
+    timestamp: new Date().toISOString(),
+  }));
+}
+
 // ─── Set Review Window Deadline (Server-Managed) ────
 
 exports.setReviewWindowDeadline = onDocumentUpdated(
@@ -132,15 +149,17 @@ exports.setReviewWindowDeadline = onDocumentUpdated(
       .collection("sessions")
       .doc(event.params.sessionID);
 
-    await sessionRef.update({
-      reviewWindowEndsAt: deadline,
-      serverVerifiedAt: FieldValue.serverTimestamp(),
-      serverReviewWindowSetBy: "cloudFunction",
-    });
-
-    console.log(
-      `Review window set: session ${event.params.sessionID}, ${windowMinutes}min`
-    );
+    try {
+      await sessionRef.update({
+        reviewWindowEndsAt: deadline,
+        serverVerifiedAt: FieldValue.serverTimestamp(),
+        serverReviewWindowSetBy: "cloudFunction",
+        version: FieldValue.increment(1),
+      });
+      console.log(`Review window set: session ${event.params.sessionID}, ${windowMinutes}min`);
+    } catch (err) {
+      logError("setReviewWindowDeadline", event.params, err);
+    }
   }
 );
 
@@ -231,7 +250,7 @@ exports.notifyParentOnTamperEvent = onDocumentCreated(
       apns: {
         payload: {
           aps: {
-            sound: severity === "critical" ? "alarm_sound.caf" : "default",
+            sound: "default",
             badge: 1,
           },
         },
@@ -305,10 +324,14 @@ exports.clearOverridesOnSessionComplete = onDocumentUpdated(
       return;
     }
 
-    await childRef.update({ nextMorningOverrides: null });
-    console.log(
-      `Cleared nextMorningOverrides for child ${childProfileID} after session ${event.params.sessionID} completed`
-    );
+    try {
+      await childRef.update({ nextMorningOverrides: null });
+      console.log(
+        `Cleared nextMorningOverrides for child ${childProfileID} after session ${event.params.sessionID} completed`
+      );
+    } catch (err) {
+      logError("clearOverridesOnSessionComplete", event.params, err);
+    }
   }
 );
 
@@ -405,26 +428,35 @@ exports.applyRewardOnVerified = onDocumentUpdated(
 
     const newPoints = Math.max(0, (stats.rewardPoints || 0) + pointsDelta);
 
-    // Atomic batch: session audit trail + child stats
-    const batch = db.batch();
-    batch.update(sessionRef, {
-      rewardServerApplied: true,
-      rewardPointsDelta: pointsDelta,
-      rewardReasonCodes: reasonCodes,
-      rewardAppliedAt: FieldValue.serverTimestamp(),
-      rewardRubricVersion: 1,
-    });
-    batch.update(childRef, {
-      "stats.rewardPoints": newPoints,
-      "stats.currentStreak": currentStreak,
-      "stats.bestStreak": bestStreak,
-      "stats.onTimeCount": FieldValue.increment(wasOnTime ? 1 : 0),
-    });
-    await batch.commit();
+    // Transaction: re-check rewardServerApplied inside transaction to prevent race condition
+    // where two concurrent triggers both pass the outer idempotency check.
+    try {
+      await db.runTransaction(async (txn) => {
+        const sessionSnap = await txn.get(sessionRef);
+        if (!sessionSnap.exists) return;
+        if (sessionSnap.data().rewardServerApplied === true) return; // Already applied
 
-    console.log(
-      `Reward v1: session ${event.params.sessionID}, +${pointsDelta}pts, streak=${currentStreak}, codes=[${reasonCodes}]`
-    );
+        txn.update(sessionRef, {
+          rewardServerApplied: true,
+          rewardPointsDelta: pointsDelta,
+          rewardReasonCodes: reasonCodes,
+          rewardAppliedAt: FieldValue.serverTimestamp(),
+          rewardRubricVersion: 1,
+        });
+        txn.update(childRef, {
+          "stats.rewardPoints": newPoints,
+          "stats.currentStreak": currentStreak,
+          "stats.bestStreak": bestStreak,
+          "stats.onTimeCount": FieldValue.increment(wasOnTime ? 1 : 0),
+        });
+      });
+
+      console.log(
+        `Reward v1: session ${event.params.sessionID}, +${pointsDelta}pts, streak=${currentStreak}, codes=[${reasonCodes}]`
+      );
+    } catch (err) {
+      logError("applyRewardOnVerified", event.params, err);
+    }
   }
 );
 
@@ -443,42 +475,46 @@ exports.cleanupOldSessions = onDocumentCreated(
       .doc(event.params.familyID)
       .collection("sessions");
 
-    // Get the Nth session (the cap boundary) to use as cursor
-    const boundarySnap = await sessionsRef
-      .where("childProfileID", "==", childProfileID)
-      .orderBy("alarmFiredAt", "desc")
-      .limit(1)
-      .offset(MAX_SESSIONS_PER_CHILD - 1)
-      .get();
+    try {
+      // Get the Nth session (the cap boundary) to use as cursor
+      const boundarySnap = await sessionsRef
+        .where("childProfileID", "==", childProfileID)
+        .orderBy("alarmFiredAt", "desc")
+        .limit(1)
+        .offset(MAX_SESSIONS_PER_CHILD - 1)
+        .get();
 
-    if (boundarySnap.empty) return; // Under cap
+      if (boundarySnap.empty) return; // Under cap
 
-    const boundaryDoc = boundarySnap.docs[0];
-    const boundaryTime = boundaryDoc.data().alarmFiredAt;
+      const boundaryDoc = boundarySnap.docs[0];
+      const boundaryTime = boundaryDoc.data().alarmFiredAt;
 
-    // Delete everything older than the boundary (startAfter cursor)
-    const overflow = await sessionsRef
-      .where("childProfileID", "==", childProfileID)
-      .orderBy("alarmFiredAt", "desc")
-      .startAfter(boundaryTime)
-      .limit(50)
-      .get();
+      // Delete everything older than the boundary (startAfter cursor)
+      const overflow = await sessionsRef
+        .where("childProfileID", "==", childProfileID)
+        .orderBy("alarmFiredAt", "desc")
+        .startAfter(boundaryTime)
+        .limit(50)
+        .get();
 
-    if (overflow.empty) return;
+      if (overflow.empty) return;
 
-    const batch = db.batch();
-    overflow.docs.forEach((doc) => batch.delete(doc.ref));
-    await batch.commit();
+      const batch = db.batch();
+      overflow.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
 
-    await recordCleanupMetrics(
-      event.params.familyID,
-      "sessions",
-      overflow.size
-    );
+      await recordCleanupMetrics(
+        event.params.familyID,
+        "sessions",
+        overflow.size
+      );
 
-    console.log(
-      `Retention: deleted ${overflow.size} old sessions for child ${childProfileID}`
-    );
+      console.log(
+        `Retention: deleted ${overflow.size} old sessions for child ${childProfileID}`
+      );
+    } catch (err) {
+      logError("cleanupOldSessions", event.params, err);
+    }
   }
 );
 
@@ -497,39 +533,148 @@ exports.cleanupOldTamperEvents = onDocumentCreated(
       .doc(event.params.familyID)
       .collection("tamperEvents");
 
-    const boundarySnap = await tamperRef
-      .where("childProfileID", "==", childProfileID)
-      .orderBy("timestamp", "desc")
-      .limit(1)
-      .offset(MAX_TAMPER_EVENTS_PER_CHILD - 1)
-      .get();
+    try {
+      const boundarySnap = await tamperRef
+        .where("childProfileID", "==", childProfileID)
+        .orderBy("timestamp", "desc")
+        .limit(1)
+        .offset(MAX_TAMPER_EVENTS_PER_CHILD - 1)
+        .get();
 
-    if (boundarySnap.empty) return;
+      if (boundarySnap.empty) return;
 
-    const boundaryDoc = boundarySnap.docs[0];
-    const boundaryTime = boundaryDoc.data().timestamp;
+      const boundaryDoc = boundarySnap.docs[0];
+      const boundaryTime = boundaryDoc.data().timestamp;
 
-    const overflow = await tamperRef
-      .where("childProfileID", "==", childProfileID)
-      .orderBy("timestamp", "desc")
-      .startAfter(boundaryTime)
-      .limit(50)
-      .get();
+      const overflow = await tamperRef
+        .where("childProfileID", "==", childProfileID)
+        .orderBy("timestamp", "desc")
+        .startAfter(boundaryTime)
+        .limit(50)
+        .get();
 
-    if (overflow.empty) return;
+      if (overflow.empty) return;
 
-    const batch = db.batch();
-    overflow.docs.forEach((doc) => batch.delete(doc.ref));
-    await batch.commit();
+      const batch = db.batch();
+      overflow.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
 
-    await recordCleanupMetrics(
-      event.params.familyID,
-      "tamperEvents",
-      overflow.size
-    );
+      await recordCleanupMetrics(
+        event.params.familyID,
+        "tamperEvents",
+        overflow.size
+      );
 
-    console.log(
-      `Retention: deleted ${overflow.size} old tamper events for child ${childProfileID}`
-    );
+      console.log(
+        `Retention: deleted ${overflow.size} old tamper events for child ${childProfileID}`
+      );
+    } catch (err) {
+      logError("cleanupOldTamperEvents", event.params, err);
+    }
+  }
+);
+
+// ─── Weekly Family Summary Push (Retention) ─────────
+
+/**
+ * Runs every Sunday at 6 PM (family timezone approximated to US/Eastern).
+ * For each family with at least one child, sends a one-line summary to the guardian:
+ *   "Emma was on time 5/7 days this week. 12-day streak!"
+ * This directly addresses the "silent success" churn problem:
+ * good mornings produce no notifications, so the parent forgets the app exists.
+ */
+exports.weeklySummary = onSchedule(
+  { schedule: "every sunday 18:00", timeZone: "America/New_York" },
+  async () => {
+    const db = getFirestore();
+
+    try {
+      const familiesSnap = await db.collection("families").get();
+
+      for (const familyDoc of familiesSnap.docs) {
+        const familyID = familyDoc.id;
+        const parent = await getParentToken(familyID);
+        if (!parent) continue;
+
+        // Get all children in this family
+        const childrenSnap = await db
+          .collection("families")
+          .doc(familyID)
+          .collection("children")
+          .get();
+
+        if (childrenSnap.empty) continue;
+
+        // Get sessions from the past 7 days
+        const sevenDaysAgo = Timestamp.fromMillis(
+          Date.now() - 7 * 24 * 60 * 60 * 1000
+        );
+
+        const lines = [];
+
+        for (const childDoc of childrenSnap.docs) {
+          const child = childDoc.data();
+          const childName = child.name || "Child";
+          const stats = child.stats || {};
+
+          const sessionsSnap = await db
+            .collection("families")
+            .doc(familyID)
+            .collection("sessions")
+            .where("childProfileID", "==", childDoc.id)
+            .where("alarmFiredAt", ">=", sevenDaysAgo)
+            .get();
+
+          const total = sessionsSnap.size;
+          let onTime = 0;
+          sessionsSnap.docs.forEach((s) => {
+            const data = s.data();
+            if (data.state === "verified") onTime++;
+          });
+
+          const streak = stats.currentStreak || 0;
+          if (total > 0) {
+            let line = `${childName}: on time ${onTime}/${total}`;
+            if (streak > 0) line += ` · ${streak}-day streak`;
+            lines.push(line);
+          }
+        }
+
+        if (lines.length === 0) continue;
+
+        const body =
+          lines.length === 1
+            ? lines[0]
+            : lines.join("\n");
+
+        const message = {
+          token: parent.token,
+          notification: {
+            title: "Weekly Wake-Up Summary",
+            body,
+          },
+          data: {
+            type: "weeklySummary",
+            familyID,
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound: "default",
+              },
+            },
+          },
+        };
+
+        await sendPushAndLog(message, parent.parentDocId, familyID, {
+          type: "weeklySummary",
+          dedupKey: `weekly:${familyID}:${new Date().toISOString().slice(0, 10)}`,
+        });
+      }
+
+      console.log(`Weekly summary: processed ${familiesSnap.size} families`);
+    } catch (err) {
+      console.error("weeklySummary error:", err.message);
+    }
   }
 );

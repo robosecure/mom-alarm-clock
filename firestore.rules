@@ -159,9 +159,11 @@ service cloud.firestore {
       // Hybrid window enforcement: deny/escalate from verified state
       // only allowed while request.time <= reviewWindowEndsAt (set by Cloud Function)
       let isHybridRetroaction = (oldState == 'verified' && newState in ['failed', 'verifying']);
+      // Fail closed: if reviewWindowEndsAt is missing, block retroaction.
+      // The Cloud Function always sets this field on verified transitions.
       let windowOk = !isHybridRetroaction
-                     || !('reviewWindowEndsAt' in resource.data)
-                     || request.time <= resource.data.reviewWindowEndsAt;
+                     || (('reviewWindowEndsAt' in resource.data)
+                         && request.time <= resource.data.reviewWindowEndsAt);
 
       let validParentTransition =
         (oldState == 'pendingParentReview' && newState in ['verified', 'verifying', 'failed']) ||
