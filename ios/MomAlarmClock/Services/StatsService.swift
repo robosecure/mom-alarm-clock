@@ -43,7 +43,11 @@ enum StatsService {
             let sessionDay = calendar.startOfDay(for: session.alarmFiredAt)
             if sessionDay == expectedDate {
                 streak += 1
-                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
+                guard let nextDate = calendar.date(byAdding: .day, value: -1, to: expectedDate) else {
+                    // Calendar math edge case — stop walking backwards rather than crash
+                    break
+                }
+                expectedDate = nextDate
             } else if sessionDay < expectedDate {
                 break
             }
@@ -69,7 +73,12 @@ enum StatsService {
             let day = calendar.startOfDay(for: session.alarmFiredAt)
             if day == lastDay { continue } // same day
 
-            let nextExpected = calendar.date(byAdding: .day, value: 1, to: lastDay)!
+            guard let nextExpected = calendar.date(byAdding: .day, value: 1, to: lastDay) else {
+                // Edge case: calendar overflow. Restart the current streak at this day.
+                current = 1
+                lastDay = day
+                continue
+            }
             if day == nextExpected {
                 current += 1
                 best = max(best, current)

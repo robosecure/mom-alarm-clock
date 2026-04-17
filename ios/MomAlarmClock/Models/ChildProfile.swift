@@ -8,8 +8,11 @@ struct ChildProfile: Codable, Identifiable, Sendable, Equatable {
     /// Display name for the child.
     var name: String
 
-    /// Age — used to adjust quiz difficulty and reward thresholds.
+    /// Age — used to derive age band for content tailoring.
     var age: Int
+
+    /// Privacy-safe age grouping derived from age. Used to tailor quiz difficulty and wording.
+    var ageBand: AgeBand { AgeBand(age: age) }
 
     /// URL to the child's avatar image.
     var avatarURL: URL?
@@ -38,6 +41,9 @@ struct ChildProfile: Codable, Identifiable, Sendable, Equatable {
 
     /// Voice alarm metadata. Guardian records a clip that plays when the child's alarm fires.
     var voiceAlarm: VoiceAlarmMetadata?
+
+    /// Guardian-configurable reward list. Empty on first access — defaults loaded on demand.
+    var rewards: [Reward] = []
 
     /// When this profile was created.
     var createdAt: Date = Date()
@@ -116,6 +122,6 @@ extension ChildProfile {
     /// Generates a 10-character alphanumeric pairing code.
     static func generatePairingCode() -> String {
         let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789" // Omit confusing chars: I, O, 0, 1
-        return String((0..<10).map { _ in chars.randomElement()! })
+        return String((0..<10).map { _ in chars.randomElement() ?? Character("A") })
     }
 }

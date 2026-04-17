@@ -149,6 +149,8 @@ extension MorningSession {
         var maxAttempts: Int
         var timerSeconds: Int
         var calmMode: Bool
+        var quizQuestionCount: Int
+        var encouragementStyle: String
 
         init(from config: EffectiveVerificationConfig) {
             self.method = config.method.rawValue
@@ -156,6 +158,8 @@ extension MorningSession {
             self.maxAttempts = config.maxAttempts
             self.timerSeconds = config.timerSeconds
             self.calmMode = config.calmMode
+            self.quizQuestionCount = config.quizQuestionCount
+            self.encouragementStyle = config.encouragementStyle.rawValue
         }
     }
 }

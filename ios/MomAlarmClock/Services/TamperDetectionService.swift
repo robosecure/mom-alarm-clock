@@ -17,6 +17,7 @@ import Network
 /// Parent-side detections (inferred by HeartbeatService):
 /// - Device powered off / app force quit: detected via missing heartbeats
 @Observable
+@MainActor
 final class TamperDetectionService {
     static let shared = TamperDetectionService()
 
@@ -29,6 +30,11 @@ final class TamperDetectionService {
     private var timezoneObserver: NSObjectProtocol?
     private var lastKnownVolume: Float = 1.0
     private var childProfileID: UUID?
+
+    // NOTE: A defensive deinit was considered but a @MainActor class cannot touch
+    // actor-isolated state from nonisolated deinit under Swift 6. The shared
+    // singleton never deinits in practice, and stopMonitoring() is called
+    // explicitly in ChildViewModel.finishSession(). See DEFERRED.md for rationale.
 
     // MARK: - Start / Stop
 
@@ -123,15 +129,14 @@ final class TamperDetectionService {
         let monitor = NWPathMonitor()
         self.networkMonitor = monitor
         monitor.pathUpdateHandler = { [weak self] path in
-            guard let self, self.isMonitoring else { return }
-            if path.status == .unsatisfied {
-                Task { @MainActor in
-                    self.reportEvent(
-                        type: .networkLost,
-                        detail: "Network connectivity lost during active alarm session.",
-                        severity: .medium
-                    )
-                }
+            guard let self, path.status == .unsatisfied else { return }
+            Task { @MainActor in
+                guard self.isMonitoring else { return }
+                self.reportEvent(
+                    type: .networkLost,
+                    detail: "Network connectivity lost during active alarm session.",
+                    severity: .medium
+                )
             }
         }
         monitor.start(queue: DispatchQueue(label: "com.momclock.tamper.network"))
@@ -142,17 +147,23 @@ final class TamperDetectionService {
     /// Detects when the system timezone is changed during an active session.
     /// A child might change the timezone to make the alarm fire at a different time.
     private func startTimezoneChangeDetector() {
+        // Capture identifier synchronously on the posting thread so the value
+        // reflects the timezone at the moment of the change, not whenever the
+        // hop-to-MainActor Task runs.
         timezoneObserver = NotificationCenter.default.addObserver(
             forName: .NSSystemTimeZoneDidChange,
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self, self.isMonitoring else { return }
-            self.reportEvent(
-                type: .timeZoneChanged,
-                detail: "System timezone was changed to \(TimeZone.current.identifier) during active alarm session.",
-                severity: .high
-            )
+            let tzID = TimeZone.current.identifier
+            Task { @MainActor [weak self] in
+                guard let self, self.isMonitoring else { return }
+                self.reportEvent(
+                    type: .timeZoneChanged,
+                    detail: "System timezone was changed to \(tzID) during active alarm session.",
+                    severity: .high
+                )
+            }
         }
     }
 

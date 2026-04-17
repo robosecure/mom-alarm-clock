@@ -16,6 +16,7 @@ import DeviceActivity
 ///
 /// For V1 we use `.individual` authorization since pairing is handled via CloudKit, not Family Sharing.
 @Observable
+@MainActor
 final class FamilyControlsService {
     static let shared = FamilyControlsService()
 
@@ -85,6 +86,10 @@ final class FamilyControlsService {
     /// Schedules a DeviceActivity monitoring window for the morning alarm period.
     /// The DeviceActivityMonitor extension receives callbacks when the window starts/ends.
     func scheduleMonitoring(alarmTime: AlarmSchedule.AlarmTime, durationMinutes: Int = 60) throws {
+        guard isAuthorized else {
+            print("[FamilyControls] Monitoring skipped — not authorized")
+            return
+        }
         let center = DeviceActivityCenter()
 
         let startComponents = DateComponents(hour: alarmTime.hour, minute: alarmTime.minute)

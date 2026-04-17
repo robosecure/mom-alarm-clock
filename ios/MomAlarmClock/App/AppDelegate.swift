@@ -30,26 +30,45 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
            let plist = NSDictionary(contentsOfFile: path),
            let apiKey = plist["API_KEY"] as? String,
+           !apiKey.isEmpty,
+           apiKey != "PLACEHOLDER",
            !apiKey.hasPrefix("YOUR_") {
-            FirebaseApp.configure()
+            if FirebaseApp.app() == nil {
+                FirebaseApp.configure()
+            }
             print("[Firebase] Configured from GoogleService-Info.plist")
         } else {
             print("[Firebase] Not configured — using local-only mode")
         }
 
         UNUserNotificationCenter.current().delegate = self
-        Messaging.messaging().delegate = self
         AlarmService.registerNotificationCategories()
         registerBackgroundTasks()
         requestNotificationPermissions()
 
-        // Register for remote notifications (required for FCM on iOS)
-        application.registerForRemoteNotifications()
+        // FCM requires a valid Firebase config
+        if FirebaseApp.app() != nil {
+            Messaging.messaging().delegate = self
+            application.registerForRemoteNotifications()
+        }
 
         // Reschedule all alarms from local persistence on every launch.
+        // Also wire HeartbeatService if this is a child device so the BG task has config.
         Task {
             await AlarmService.shared.rescheduleAllAlarms()
             await LocalStore.shared.pruneOldSessions()
+
+            // Wire HeartbeatService for child devices so offline detection works.
+            if let authState = await LocalStore.shared.authState(),
+               authState.role == .child,
+               let profile = await LocalStore.shared.childProfile() {
+                let sync = SyncServiceFactory.create()
+                await HeartbeatService.shared.configure(
+                    syncService: sync,
+                    familyID: authState.familyID,
+                    childID: profile.id
+                )
+            }
         }
 
         return true
@@ -66,6 +85,16 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
                 print("[AppDelegate] Notification auth error: \(error.localizedDescription)")
             }
             print("[AppDelegate] Notification auth granted: \(granted)")
+            // Publish result so banners / setup wizard can react
+            Task { @MainActor in
+                await BetaDiagnostics.shared.refreshPushState()
+                if !granted {
+                    NotificationCenter.default.post(
+                        name: .notificationPermissionDenied,
+                        object: nil
+                    )
+                }
+            }
         }
     }
 
@@ -88,7 +117,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     // MARK: - UNUserNotificationCenterDelegate
 
     /// Show notification even when app is in foreground — essential for alarm UX.
-    func userNotificationCenter(
+    nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
@@ -106,7 +135,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     }
 
     /// Handle notification tap — route to the correct alarm/verification screen.
-    func userNotificationCenter(
+    nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
@@ -145,12 +174,13 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     // MARK: - APNS Token
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        guard FirebaseApp.app() != nil else { return }
         Messaging.messaging().apnsToken = deviceToken
     }
 
     // MARK: - FCM Token
 
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    nonisolated func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken, FirebaseApp.app() != nil else { return }
         print("[FCM] Token: \(token.prefix(20))...")
         Task { @MainActor in BetaDiagnostics.shared.recordTokenRegistration(token) }
@@ -172,4 +202,5 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 extension Notification.Name {
     static let alarmNotificationTapped = Notification.Name("alarmNotificationTapped")
     static let guardianNotificationAction = Notification.Name("guardianNotificationAction")
+    static let notificationPermissionDenied = Notification.Name("notificationPermissionDenied")
 }

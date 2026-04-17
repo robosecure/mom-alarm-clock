@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseAuth
 import FirebaseCore
+import FamilyControls
 
 /// Developer diagnostics screen for troubleshooting sync, auth, alarm, and push state.
 struct DiagnosticsView: View {
@@ -14,14 +15,16 @@ struct DiagnosticsView: View {
     @State private var cachedScheduleCount = 0
     @State private var nextFireDate: Date?
     @State private var notificationPermissionGranted = false
+    @State private var childrenPaired: [String] = []
+    @State private var voiceAlarmCached = false
 
     var body: some View {
         List {
             Section("Auth") {
-                row("User ID", auth.currentUser?.userID ?? "None")
+                row("User ID", String(auth.currentUser?.userID.prefix(8) ?? "None") + "...")
                 row("Role", auth.currentUser?.role.rawValue ?? "None")
-                row("Family ID", auth.currentUser?.familyID ?? "None")
-                row("Firebase UID", Auth.auth().currentUser?.uid ?? "No Firebase user")
+                row("Family ID", String(auth.currentUser?.familyID.prefix(8) ?? "None") + "...")
+                row("Firebase UID", String((Auth.auth().currentUser?.uid ?? "None").prefix(8)) + "...")
                 row("Firebase Configured", FirebaseApp.app() != nil ? "Yes" : "No (local mode)")
                 row("Guardian PIN Set", auth.hasParentPIN ? "Yes" : "No")
             }
@@ -34,7 +37,7 @@ struct DiagnosticsView: View {
 
             Section("Push Notifications") {
                 readinessRow("Permission Granted", BetaDiagnostics.shared.pushPermissionGranted)
-                row("FCM Token", BetaDiagnostics.shared.fcmToken ?? "Not registered")
+                row("FCM Token", BetaDiagnostics.shared.fcmToken != nil ? String(BetaDiagnostics.shared.fcmToken!.prefix(12)) + "..." : "Not registered")
                 row("Token Registered", BetaDiagnostics.shared.fcmTokenRegisteredAt?.formatted(date: .omitted, time: .standard) ?? "Never")
                 row("Last Push Received", BetaDiagnostics.shared.lastPushReceivedAt?.formatted(date: .omitted, time: .standard) ?? "Never")
                 row("Last Push Type", BetaDiagnostics.shared.lastPushType ?? "N/A")
@@ -74,17 +77,40 @@ struct DiagnosticsView: View {
                 readinessRow("Notification Permission", notificationPermissionGranted)
             }
 
-            Section("Launch Readiness") {
+            Section("Entitlements") {
+                readinessRow("Family Controls", FamilyControlsService.shared.isAuthorized)
+                if !FamilyControlsService.shared.isAuthorized {
+                    Text("App lock escalation is unavailable. Alarm, notification, and verification features work normally.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                readinessRow("Notification Permission", notificationPermissionGranted)
+                if !notificationPermissionGranted {
+                    Text("Alarms will fire but may be silent. Enable notifications in Settings.")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            }
+
+            Section {
+                readinessRow("Guardian Account", auth.isAuthenticated && auth.currentUser?.role == .parent)
+                readinessRow("Child Paired", !childrenPaired.isEmpty)
+                readinessRow("Alarm Configured", pendingNotifications > 0 || cachedScheduleCount > 0)
+                readinessRow("Notifications Enabled", notificationPermissionGranted)
+                readinessRow("Family Controls", FamilyControlsService.shared.isAuthorized)
+                readinessRow("Voice Alarm Cached", voiceAlarmCached)
+                readinessRow("Network Connected", NetworkMonitor.shared.isConnected)
+                readinessRow("Sync Queue Empty", queuedActions == 0)
+            } header: {
+                Text("Reviewer / Tester Checklist")
+            } footer: {
+                Text("All items should be green for a complete test. Family Controls and Voice Alarm are optional features.")
+            }
+
+            Section("Infrastructure") {
                 readinessRow("Firebase Configured", FirebaseApp.app() != nil)
                 readinessRow("App Check", BetaDiagnostics.shared.appCheckEnabled)
-                readinessRow("Auth Valid", auth.isAuthenticated && auth.currentUser != nil)
-                readinessRow("Role Set", auth.currentUser?.role != nil)
-                readinessRow("Family ID Set", auth.currentUser?.familyID != nil)
-                readinessRow("Push Enabled", BetaDiagnostics.shared.pushPermissionGranted)
                 readinessRow("FCM Token", BetaDiagnostics.shared.fcmToken != nil)
-                readinessRow("Network Connected", NetworkMonitor.shared.isConnected)
-                readinessRow("Queue Empty", queuedActions == 0)
-                readinessRow("Alarms Scheduled", pendingNotifications > 0)
             }
 
             #if DEBUG
@@ -198,6 +224,13 @@ struct DiagnosticsView: View {
 
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         notificationPermissionGranted = settings.authorizationStatus == .authorized
+
+        // Tester checklist data
+        let profile = await LocalStore.shared.childProfile()
+        childrenPaired = profile != nil ? [profile!.name] : []
+        if let childID = profile?.id {
+            voiceAlarmCached = await VoiceAlarmCacheService.shared.hasCachedFile(childID: childID)
+        }
     }
 
     private func exportDiagnostics() async {

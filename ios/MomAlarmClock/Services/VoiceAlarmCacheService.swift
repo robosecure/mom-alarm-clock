@@ -7,6 +7,7 @@ import FirebaseCore
 actor VoiceAlarmCacheService {
     static let shared = VoiceAlarmCacheService()
 
+    // FileManager lives on the actor — all accesses go through actor-isolated methods.
     private let fileManager = FileManager.default
 
     /// Status for diagnostics.
@@ -17,7 +18,11 @@ actor VoiceAlarmCacheService {
     // MARK: - Cache Directory
 
     private var cacheDirectory: URL {
-        let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            let dir = fileManager.temporaryDirectory.appendingPathComponent("VoiceAlarmCache", isDirectory: true)
+            try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
+            return dir
+        }
         let dir = docs.appendingPathComponent("VoiceAlarmCache", isDirectory: true)
         try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir

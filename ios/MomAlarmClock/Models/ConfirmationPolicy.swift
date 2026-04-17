@@ -12,8 +12,9 @@ enum ConfirmationPolicy: Codable, Sendable, Equatable {
     /// Session auto-completes, but parent has a window (in minutes) to retroactively flag or escalate.
     case hybrid(windowMinutes: Int)
 
-    /// Default policy for new alarms.
-    static let `default`: ConfirmationPolicy = .hybrid(windowMinutes: 30)
+    /// Default policy for new alarms — low-friction: child verifies, alarm clears, guardian
+    /// is only pulled in when something goes wrong. Strict/hybrid available in Advanced settings.
+    static let `default`: ConfirmationPolicy = .autoAcknowledge
 
     /// Human-readable name for UI display.
     var displayName: String {
@@ -21,20 +22,20 @@ enum ConfirmationPolicy: Codable, Sendable, Equatable {
         case .autoAcknowledge:
             "Trust Mode"
         case .requireParentApproval:
-            "Approval Required"
+            "Strict Mode"
         case .hybrid(let minutes):
-            "Auto + \(minutes)min Review"
+            "Review Window (\(minutes)min)"
         }
     }
 
     var description: String {
         switch self {
         case .autoAcknowledge:
-            "Alarm clears when your child verifies. You get notified but don't need to act."
+            "Your child verifies and the alarm clears. You're only notified when something needs attention."
         case .requireParentApproval:
-            "Your child waits until you approve. Best for building the habit."
+            "Your child waits for your approval every morning. Use if you want direct involvement."
         case .hybrid(let minutes):
-            "Clears automatically, but you can review and deny within \(minutes) minutes."
+            "Clears automatically, but you can review and override within \(minutes) minutes."
         }
     }
 }

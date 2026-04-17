@@ -25,6 +25,15 @@ actor HeartbeatService {
 
     init() {}
 
+    /// Wires the service so background heartbeats can run.
+    /// Call on app launch when the child profile loads, and after successful child pairing.
+    func configure(syncService: any SyncService, familyID: String, childID: UUID) {
+        self.syncService = syncService
+        self.familyID = familyID
+        self.childID = childID
+        print("[Heartbeat] Configured for child \(childID.uuidString.prefix(8))... in family \(familyID.prefix(8))...")
+    }
+
     // MARK: - Background Refresh
 
     /// Called by AppDelegate when the BGAppRefreshTask fires.
@@ -70,11 +79,9 @@ actor HeartbeatService {
         }
 
         guard let syncService, let familyID, let childID else {
-            // Try to load from local store
-            if let authState = await LocalStore.shared.authState() {
-                self.familyID = authState.familyID
-            }
-            print("[Heartbeat] Missing sync config.")
+            // Normal state when this is a parent device or the child profile hasn't loaded yet.
+            // AppDelegate + ChildViewModel.loadData() both call configure() when appropriate.
+            print("[Heartbeat] Skipping — not configured (likely parent device or child profile not loaded yet).")
             return
         }
 

@@ -46,12 +46,29 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
     }
 
     func joinFamily(code: String, userID: String, displayName: String, role: AuthState.UserRole) async throws -> String {
-        guard let familyID = await storage.getCode(code.uppercased()) else {
+        // Try the in-memory code store first (same process)
+        if let familyID = await storage.getCode(code.uppercased()) {
+            let state = AuthState(userID: userID, familyID: familyID, role: role, displayName: displayName)
+            await storage.setUser(userID, state: state)
+            try await store.saveAuthState(state)
+            return familyID
+        }
+
+        // Local dev fallback: codes are in-memory per-process, so a second simulator
+        // can't see them. Accept a properly formatted 10-char code and create a local family.
+        // This enables testing the pairing flow without Firebase.
+        let trimmed = code.trimmingCharacters(in: .whitespaces).uppercased()
+        let allowed = CharacterSet(charactersIn: "ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
+        guard trimmed.count == 10, trimmed.unicodeScalars.allSatisfy({ allowed.contains($0) }) else {
             throw SyncError.invalidJoinCode
         }
+
+        let familyID = "local-\(trimmed.prefix(8))"
+        await storage.ensureFamily(familyID)
         let state = AuthState(userID: userID, familyID: familyID, role: role, displayName: displayName)
         await storage.setUser(userID, state: state)
         try await store.saveAuthState(state)
+        print("[LocalSync] Dev fallback: joined family \(familyID) with code \(trimmed.prefix(4))...")
         return familyID
     }
 
@@ -64,11 +81,25 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
 
     func saveChildProfile(_ profile: ChildProfile, familyID: String) async throws {
         await storage.upsertChild(profile, familyID: familyID)
+        // Persist to disk so children survive app relaunch
+        let allChildren = await storage.family(familyID).children
+        try await store.saveChildProfiles(allChildren)
         notify("children-\(familyID)")
     }
 
     func fetchChildProfiles(familyID: String) async throws -> [ChildProfile] {
-        await storage.family(familyID).children
+        // Hydrate from disk if in-memory is empty (app was relaunched)
+        let inMemory = await storage.family(familyID).children
+        if inMemory.isEmpty {
+            let fromDisk = await store.childProfiles()
+            if !fromDisk.isEmpty {
+                for child in fromDisk {
+                    await storage.upsertChild(child, familyID: familyID)
+                }
+                return fromDisk
+            }
+        }
+        return inMemory
     }
 
     func observeChildProfiles(familyID: String) -> AsyncStream<[ChildProfile]> {
@@ -95,7 +126,18 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
     }
 
     func fetchAlarmSchedules(familyID: String, childID: UUID) async throws -> [AlarmSchedule] {
-        await storage.family(familyID).alarms.filter { $0.childProfileID == childID }
+        // Hydrate from disk if in-memory is empty
+        let inMemory = await storage.family(familyID).alarms
+        if inMemory.isEmpty {
+            let fromDisk = await store.alarmSchedules()
+            if !fromDisk.isEmpty {
+                for alarm in fromDisk {
+                    await storage.upsertAlarm(alarm, familyID: familyID)
+                }
+                return fromDisk.filter { $0.childProfileID == childID }
+            }
+        }
+        return inMemory.filter { $0.childProfileID == childID }
     }
 
     func observeAlarmSchedules(familyID: String, childID: UUID) -> AsyncStream<[AlarmSchedule]> {
@@ -176,7 +218,7 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
 
     private func generateJoinCode() -> String {
         let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-        return String((0..<6).map { _ in chars.randomElement()! })
+        return String((0..<10).map { _ in chars.randomElement() ?? Character("A") })
     }
 
     private func notify(_ name: String) {
@@ -234,25 +276,31 @@ extension LocalSyncService.Storage {
 
     func upsertChild(_ profile: ChildProfile, familyID: String) {
         ensureFamily(familyID)
-        if let idx = families[familyID]!.children.firstIndex(where: { $0.id == profile.id }) {
-            families[familyID]!.children[idx] = profile
+        guard var family = families[familyID] else { return }
+        if let idx = family.children.firstIndex(where: { $0.id == profile.id }) {
+            family.children[idx] = profile
         } else {
-            families[familyID]!.children.append(profile)
+            family.children.append(profile)
         }
+        families[familyID] = family
     }
 
     func setChildren(_ children: [ChildProfile], familyID: String) {
         ensureFamily(familyID)
-        families[familyID]!.children = children
+        guard var family = families[familyID] else { return }
+        family.children = children
+        families[familyID] = family
     }
 
     func upsertAlarm(_ schedule: AlarmSchedule, familyID: String) {
         ensureFamily(familyID)
-        if let idx = families[familyID]!.alarms.firstIndex(where: { $0.id == schedule.id }) {
-            families[familyID]!.alarms[idx] = schedule
+        guard var family = families[familyID] else { return }
+        if let idx = family.alarms.firstIndex(where: { $0.id == schedule.id }) {
+            family.alarms[idx] = schedule
         } else {
-            families[familyID]!.alarms.append(schedule)
+            family.alarms.append(schedule)
         }
+        families[familyID] = family
     }
 
     func removeAlarm(_ id: UUID, familyID: String) {
@@ -261,15 +309,19 @@ extension LocalSyncService.Storage {
 
     func upsertSession(_ session: MorningSession, familyID: String) {
         ensureFamily(familyID)
-        if let idx = families[familyID]!.sessions.firstIndex(where: { $0.id == session.id }) {
-            families[familyID]!.sessions[idx] = session
+        guard var family = families[familyID] else { return }
+        if let idx = family.sessions.firstIndex(where: { $0.id == session.id }) {
+            family.sessions[idx] = session
         } else {
-            families[familyID]!.sessions.append(session)
+            family.sessions.append(session)
         }
+        families[familyID] = family
     }
 
     func appendTamperEvent(_ event: TamperEvent, familyID: String) {
         ensureFamily(familyID)
-        families[familyID]!.tamperEvents.append(event)
+        guard var family = families[familyID] else { return }
+        family.tamperEvents.append(event)
+        families[familyID] = family
     }
 }

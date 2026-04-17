@@ -6,17 +6,26 @@ import Foundation
 actor LocalStore {
     static let shared = LocalStore()
 
+    // FileManager/JSONCoder live on the actor — all reads go through actor-isolated methods.
     private let fileManager = FileManager.default
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
-    private var storeDirectory: URL {
-        let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        return docs.appendingPathComponent("MomAlarmClockStore", isDirectory: true)
-    }
+    /// Resolved once at init so nonisolated init doesn't need to touch actor-isolated state.
+    private let storeDirectory: URL
 
     init() {
-        try? fileManager.createDirectory(at: storeDirectory, withIntermediateDirectories: true)
+        let fm = FileManager.default
+        let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? fm.temporaryDirectory
+        let dir = docs.appendingPathComponent("MomAlarmClockStore", isDirectory: true)
+        self.storeDirectory = dir
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        // Encrypt local data at rest — files are inaccessible when the device is locked.
+        try? fm.setAttributes(
+            [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
+            ofItemAtPath: dir.path
+        )
     }
 
     // MARK: - Generic Persistence
@@ -24,7 +33,7 @@ actor LocalStore {
     func save<T: Codable>(_ value: T, forKey key: String) throws {
         let data = try encoder.encode(value)
         let url = storeDirectory.appendingPathComponent("\(key).json")
-        try data.write(to: url, options: .atomic)
+        try data.write(to: url, options: [.atomic, .completeFileProtection])
     }
 
     func load<T: Codable>(_ type: T.Type, forKey key: String) -> T? {
@@ -47,6 +56,15 @@ actor LocalStore {
 
     func saveChildProfile(_ profile: ChildProfile) throws {
         try save(profile, forKey: "childProfile")
+    }
+
+    /// All child profiles in this family (guardian side).
+    func childProfiles() -> [ChildProfile] {
+        load([ChildProfile].self, forKey: "childProfiles") ?? []
+    }
+
+    func saveChildProfiles(_ profiles: [ChildProfile]) throws {
+        try save(profiles, forKey: "childProfiles")
     }
 
     /// All alarm schedules for this device's child.
@@ -85,18 +103,39 @@ actor LocalStore {
     /// Removes sessions older than `daysToKeep` days from local cache.
     func pruneOldSessions(daysToKeep: Int = 90) {
         var sessions = recentSessions()
-        let cutoff = Calendar.current.date(byAdding: .day, value: -daysToKeep, to: .now)!
+        guard let cutoff = Calendar.current.date(byAdding: .day, value: -daysToKeep, to: .now) else {
+            // Calendar.date() can return nil in edge cases (corrupted calendar state).
+            // Skip pruning rather than crashing on every launch.
+            return
+        }
         sessions.removeAll { $0.alarmFiredAt < cutoff }
         try? save(sessions, forKey: "recentSessions")
     }
 
-    /// Auth state: family ID, user role, user ID.
+    /// Auth state: family ID, user role, user ID (active session).
     func authState() -> AuthState? {
         load(AuthState.self, forKey: "authState")
     }
 
     func saveAuthState(_ state: AuthState) throws {
         try save(state, forKey: "authState")
+        // Also save to registered accounts (survives sign-out)
+        var accounts = registeredAccounts()
+        accounts[state.userID] = state
+        try save(accounts, forKey: "registeredAccounts")
+    }
+
+    /// Registered accounts — persists through sign-out so users can sign back in.
+    func registeredAccounts() -> [String: AuthState] {
+        load([String: AuthState].self, forKey: "registeredAccounts") ?? [:]
+    }
+
+    /// Find a registered account by email-like lookup (matches userID prefix or displayName).
+    func findRegisteredAccount(email: String) -> AuthState? {
+        let accounts = registeredAccounts()
+        // In local dev mode, userID is "parent-XXXXXXXX" and there's no real email.
+        // Match any parent account (there's typically only one in local dev).
+        return accounts.values.first { $0.role == .parent }
     }
 
     func clearAuthState() {

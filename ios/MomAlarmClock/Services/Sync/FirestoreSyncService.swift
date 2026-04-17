@@ -26,6 +26,14 @@ final class FirestoreSyncService: SyncService, @unchecked Sendable {
         ]
         try await familyRef.setData(familyData)
 
+        // Store user record FIRST so security rules can validate role
+        // (familyCodes create rule calls getUserData() which needs this doc)
+        try await db.collection("users").document(ownerUserID).setData([
+            "familyID": familyRef.documentID,
+            "role": "parent",
+            "displayName": displayName
+        ])
+
         // Store join code with expiry (24 hours) and creator tracking
         let expiresAt = Date().addingTimeInterval(24 * 60 * 60)
         try await db.collection("familyCodes").document(code).setData([
@@ -33,13 +41,6 @@ final class FirestoreSyncService: SyncService, @unchecked Sendable {
             "createdAt": FieldValue.serverTimestamp(),
             "createdBy": ownerUserID,
             "expiresAt": Timestamp(date: expiresAt)
-        ])
-
-        // Store user record
-        try await db.collection("users").document(ownerUserID).setData([
-            "familyID": familyRef.documentID,
-            "role": "parent",
-            "displayName": displayName
         ])
 
         return (familyRef.documentID, code)
@@ -253,14 +254,23 @@ final class FirestoreSyncService: SyncService, @unchecked Sendable {
 
     private func generateJoinCode() -> String {
         let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-        return String((0..<10).map { _ in chars.randomElement()! })
+        return String((0..<10).map { _ in chars.randomElement() ?? Character("A") })
     }
 
     /// Generic helper: turns a Firestore query into an AsyncStream via snapshot listener.
+    /// Logs errors but keeps the stream alive with empty results so UI doesn't hang.
     private func collectionStream<T: Decodable>(_ query: Query) -> AsyncStream<[T]> {
         AsyncStream { continuation in
             let listener = query.addSnapshotListener { snapshot, error in
-                guard let snapshot else { return }
+                if let error {
+                    print("[FirestoreSync] Listener error: \(error.localizedDescription)")
+                    continuation.yield([])
+                    return
+                }
+                guard let snapshot else {
+                    continuation.yield([])
+                    return
+                }
                 let items = snapshot.documents.compactMap { try? $0.data(as: T.self) }
                 continuation.yield(items)
             }

@@ -86,7 +86,9 @@ final class BetaDiagnostics {
 
     // MARK: - Diagnostics Export
 
-    /// Generates a privacy-safe JSON blob for support. No secrets, tokens, or PII.
+    /// Generates a privacy-safe JSON blob for support.
+    /// No secrets, tokens, email addresses, join codes, message bodies, or precise identifiers.
+    /// IDs are truncated to 8 characters. Device name is redacted.
     func exportDiagnostics(auth: AuthService) async -> String {
         await refreshPushState()
         await refreshAppCheckState()
@@ -94,10 +96,12 @@ final class BetaDiagnostics {
         let alarmCount = await UNUserNotificationCenter.current().pendingNotificationRequests().count
 
         let dict: [String: Any] = [
+            "_header": "Mom Alarm Clock — Privacy-Safe Diagnostics",
+            "_notice": "This export contains no emails, passwords, tokens, join codes, or message content. IDs are truncated. Safe to share with support.",
             "appVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?",
             "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?",
             "role": auth.currentUser?.role.rawValue ?? "none",
-            "familyID": auth.currentUser?.familyID ?? "none",
+            "familyID": String(auth.currentUser?.familyID.prefix(8) ?? "none"),
             "firebaseConfigured": FirebaseApp.app() != nil,
             "appCheckEnabled": appCheckEnabled,
             "appCheckProvider": appCheckProvider,
@@ -113,18 +117,18 @@ final class BetaDiagnostics {
             "lastDrainRulesRejected": NetworkMonitor.shared.lastDrainRulesRejected,
             "lastDrainAuthExpired": NetworkMonitor.shared.lastDrainAuthExpired,
             "lastDrainTransient": NetworkMonitor.shared.lastDrainTransient,
-            "rejectedSessionIDs": NetworkMonitor.shared.rejectedSessionIDs,
+            "rejectedSessionCount": NetworkMonitor.shared.rejectedSessionIDs.count,
             "scheduledAlarms": alarmCount,
             "deviceModel": UIDevice.current.model,
-            "deviceName": UIDevice.current.name,
             "iOS": UIDevice.current.systemVersion,
             "timezone": TimeZone.current.identifier,
-            "activeSessionID": await LocalStore.shared.activeSession()?.id.uuidString ?? "none",
+            "hasActiveSession": await LocalStore.shared.activeSession() != nil,
             "lastAlarmFiredAt": lastAlarmDidFireAt?.ISO8601Format() ?? "never",
             "lastAlarmSource": lastAlarmSource ?? "none",
             "lastVerificationMethod": lastVerificationMethod ?? "none",
             "lastVerificationPassed": lastVerificationPassed as Any,
             "cachedAlarmSchedules": await LocalStore.shared.alarmSchedules().count,
+            "familyControlsAuthorized": FamilyControlsService.shared.isAuthorized,
             "exportedAt": Date().ISO8601Format(),
         ]
 
@@ -156,6 +160,7 @@ final class BetaDiagnostics {
         case tamperDetected(type: String)
         case streakMilestone(days: Int)
         case rewardRedeemed(points: Int)
+        case queueWriteFailed
 
         var name: String {
             switch self {
@@ -170,6 +175,7 @@ final class BetaDiagnostics {
             case .tamperDetected: "tamper_detected"
             case .streakMilestone: "streak_milestone"
             case .rewardRedeemed: "reward_redeemed"
+            case .queueWriteFailed: "queue_write_failed"
             }
         }
 
@@ -197,6 +203,8 @@ final class BetaDiagnostics {
                 return ["days": days]
             case .rewardRedeemed(let points):
                 return ["points": points]
+            case .queueWriteFailed:
+                return [:]
             }
         }
     }

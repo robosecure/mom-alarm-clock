@@ -18,13 +18,24 @@ struct EscalationProfile: Codable, Sendable, Equatable {
     }
 
     /// Actions that can be applied at each escalation level.
+    ///
+    /// Launch-ready actions: gentleReminder, parentNotified, appLockPartial, appLockFull.
+    /// Deferred (kept in enum for forward-compat): increasedVolume, parentCallTriggered.
     enum Action: String, Codable, Sendable, CaseIterable {
-        case gentleReminder      // Soft chime, no consequences
-        case increasedVolume     // Louder alarm sound
-        case parentNotified      // Push notification to parent device
+        case gentleReminder      // Informational — alarm is already ringing; no additional action
+        case increasedVolume     // Deferred: needs audio session escalation
+        case parentNotified      // Push notification to guardian device
         case appLockPartial      // Block entertainment apps (games, social)
         case appLockFull         // Block everything except phone & emergency
-        case parentCallTriggered // Auto-dial parent's phone
+        case parentCallTriggered // Deferred: needs CallKit integration
+
+        /// Whether this action is implemented and safe to use for launch.
+        var isLaunchReady: Bool {
+            switch self {
+            case .gentleReminder, .parentNotified, .appLockPartial, .appLockFull: true
+            case .increasedVolume, .parentCallTriggered: false
+            }
+        }
 
         var displayName: String {
             switch self {
@@ -49,14 +60,13 @@ struct EscalationProfile: Codable, Sendable, Equatable {
         }
     }
 
-    /// Default escalation profile: gentle -> loud -> notify parent -> lock apps -> full lock.
+    /// Default escalation profile for launch. Only uses implemented actions.
+    /// Deferred actions (increasedVolume, parentCallTriggered) excluded until implemented.
     static let `default` = EscalationProfile(levels: [
         Level(minutesAfterAlarm: 0,  action: .gentleReminder),
-        Level(minutesAfterAlarm: 5,  action: .increasedVolume),
         Level(minutesAfterAlarm: 10, action: .parentNotified),
-        Level(minutesAfterAlarm: 15, action: .appLockPartial),
-        Level(minutesAfterAlarm: 25, action: .appLockFull),
-        Level(minutesAfterAlarm: 30, action: .parentCallTriggered),
+        Level(minutesAfterAlarm: 20, action: .appLockPartial),
+        Level(minutesAfterAlarm: 30, action: .appLockFull),
     ])
 
     /// Returns the current escalation level for a given number of minutes since the alarm fired.

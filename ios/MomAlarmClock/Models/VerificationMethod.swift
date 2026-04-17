@@ -41,6 +41,15 @@ enum VerificationMethod: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// Whether this method is fully implemented for launch.
+    /// QR: placeholder scanner, no real camera. Geofence: no map picker for target location.
+    var isAvailableForLaunch: Bool {
+        switch self {
+        case .qr, .geofence: false
+        default: true
+        }
+    }
+
     /// Whether this method always requires parent review regardless of confirmation policy.
     /// Photo verification is never auto-approved — the parent must confirm.
     var alwaysRequiresParentReview: Bool {
@@ -51,11 +60,13 @@ enum VerificationMethod: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 
     /// Methods available at each tier. Higher tiers unlock all lower-tier methods.
+    /// Filters out methods not ready for launch (e.g., QR code placeholder).
     static func available(at tier: VerificationTier) -> [VerificationMethod] {
-        switch tier {
+        let all: [VerificationMethod] = switch tier {
         case .easy:   [.motion, .quiz]
-        case .medium: [.motion, .quiz, .qr, .photo]
-        case .hard:   [.motion, .quiz, .qr, .photo, .geofence]
+        case .medium: [.motion, .quiz, .photo]
+        case .hard:   [.motion, .quiz, .photo, .geofence]
         }
+        return all.filter(\.isAvailableForLaunch)
     }
 }
