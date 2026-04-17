@@ -112,12 +112,27 @@ targets:
     dependencies:
       - target: MomAlarmClock
 
+  MomAlarmClockUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: MomAlarmClockUITests
+        type: group
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_TARGET_NAME: MomAlarmClock
+    dependencies:
+      - target: MomAlarmClock
+
 schemes:
   MomAlarmClock:
     build:
       targets:
         MomAlarmClock: all
         MomAlarmClockTests: [test]
+        MomAlarmClockUITests: [test]
     test:
       targets:
         - MomAlarmClockTests
+        - MomAlarmClockUITests
