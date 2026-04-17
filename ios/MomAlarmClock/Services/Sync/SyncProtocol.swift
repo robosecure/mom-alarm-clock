@@ -20,6 +20,10 @@ protocol SyncService: Sendable {
     func fetchChildProfiles(familyID: String) async throws -> [ChildProfile]
     func observeChildProfiles(familyID: String) -> AsyncStream<[ChildProfile]>
 
+    /// Deletes a child profile document. Server-side Cloud Function
+    /// `cleanupOnChildDelete` cascades to alarms/sessions/tamperEvents.
+    func deleteChildProfile(_ childID: UUID, familyID: String) async throws
+
     // MARK: - Alarm Schedules
 
     func saveAlarmSchedule(_ schedule: AlarmSchedule, familyID: String) async throws

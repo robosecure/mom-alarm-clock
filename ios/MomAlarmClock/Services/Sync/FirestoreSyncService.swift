@@ -108,6 +108,14 @@ final class FirestoreSyncService: SyncService, @unchecked Sendable {
         collectionStream(familyDoc(familyID).collection("children").order(by: "createdAt"))
     }
 
+    /// Deletes the child profile doc. Server-side `cleanupOnChildDelete` cascades
+    /// alarms/sessions/tamperEvents. We only touch the child doc here — doing
+    /// client-side batch cascades is racy with a child device still draining queue.
+    func deleteChildProfile(_ childID: UUID, familyID: String) async throws {
+        try await familyDoc(familyID).collection("children")
+            .document(childID.uuidString).delete()
+    }
+
     // MARK: - Alarm Schedules
 
     func saveAlarmSchedule(_ schedule: AlarmSchedule, familyID: String) async throws {

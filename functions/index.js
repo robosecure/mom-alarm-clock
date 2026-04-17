@@ -1,4 +1,4 @@
-const { onDocumentUpdated, onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentUpdated, onDocumentCreated, onDocumentDeleted } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
@@ -678,3 +678,89 @@ exports.weeklySummary = onSchedule(
     }
   }
 );
+
+// ─── Child Removal Cascade [D-006] ──────────────────
+//
+// When a guardian removes a child (deletes /families/{fid}/children/{cid}),
+// the client doesn't (and shouldn't) batch-delete related docs — too racy
+// with an offline child device still draining its queue. Instead, this
+// function runs server-side and cascades:
+//   - alarms where childProfileID == cid
+//   - sessions where childProfileID == cid
+//   - tamperEvents where childProfileID == cid
+//   - voice alarm Storage blob (best effort; only attempted if path recorded)
+//
+// Idempotent: re-running on an already-cleaned child is a no-op.
+// Paginated: deletes 200 docs per batch, loops until empty.
+
+exports.cleanupOnChildDelete = onDocumentDeleted(
+  "families/{familyID}/children/{childID}",
+  async (event) => {
+    const { familyID, childID } = event.params;
+    const db = getFirestore();
+    const famRef = db.collection("families").doc(familyID);
+
+    const collections = ["alarms", "sessions", "tamperEvents"];
+    const totals = {};
+
+    try {
+      for (const col of collections) {
+        totals[col] = await deleteMatching(famRef.collection(col), childID);
+      }
+
+      // Best-effort Storage cleanup for the voice alarm.
+      // The ChildProfile had voiceAlarm.storagePath; deleted doc's data() still accessible.
+      const deletedData = event.data && event.data.data ? event.data.data() : null;
+      const voicePath = deletedData && deletedData.voiceAlarm && deletedData.voiceAlarm.storagePath;
+      if (voicePath) {
+        try {
+          const { getStorage } = require("firebase-admin/storage");
+          await getStorage().bucket().file(voicePath).delete();
+          totals.voiceAlarm = 1;
+        } catch (e) {
+          // Not fatal — log and keep going.
+          console.warn(
+            `cleanupOnChildDelete: voice blob not deleted (${voicePath}): ${e.code || e.message}`
+          );
+          totals.voiceAlarm = 0;
+        }
+      }
+
+      // Record metrics like other cleanup functions do.
+      for (const col of collections) {
+        if (totals[col] > 0) {
+          await recordCleanupMetrics(familyID, col, totals[col]);
+        }
+      }
+
+      console.log(
+        `cleanupOnChildDelete: family=${familyID} child=${childID} ` +
+          `alarms=${totals.alarms} sessions=${totals.sessions} ` +
+          `tamperEvents=${totals.tamperEvents} voice=${totals.voiceAlarm || 0}`
+      );
+    } catch (err) {
+      logError("cleanupOnChildDelete", { familyID, childID }, err);
+    }
+  }
+);
+
+/**
+ * Deletes all docs in `collectionRef` where `childProfileID == childID`, 200 at a time.
+ * Returns the total count deleted.
+ */
+async function deleteMatching(collectionRef, childID) {
+  let total = 0;
+  while (true) {
+    const snap = await collectionRef
+      .where("childProfileID", "==", childID)
+      .limit(200)
+      .get();
+    if (snap.empty) break;
+    const batch = collectionRef.firestore.batch();
+    snap.docs.forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+    total += snap.size;
+    if (snap.size < 200) break; // short read → done
+  }
+  return total;
+}

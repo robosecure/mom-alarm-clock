@@ -13,6 +13,12 @@ struct MomAlarmClockApp: App {
     @State private var childVM: ChildViewModel
 
     init() {
+        // DEBUG-only: seed LocalStore from launch args BEFORE services read it.
+        // No-op in Release builds and when -ui-fixture is not passed.
+        #if DEBUG
+        UITestFixture.seedIfRequested()
+        #endif
+
         // CRITICAL: Configure Firebase BEFORE creating the sync service.
         // SwiftUI App.init() runs before AppDelegate.didFinishLaunchingWithOptions,
         // so we must configure Firebase here to ensure SyncServiceFactory picks up

@@ -38,6 +38,7 @@
 		49715FB278A294317027419E /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A0F4D01A8B5B78AE8FFDA2 /* Network.framework */; };
 		4C4583CE3606C1BE55BDDE04 /* SetupWizardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10486BE4F328CAF09410DDE /* SetupWizardViewModel.swift */; };
 		509FEFFF8821D0270B1F1AFC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */; };
+		52BB6CB4AABDDD65CB9D9B16 /* UITestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F35C450C3CD7E077A89E71 /* UITestFixture.swift */; };
 		5379E2BF5E141A083C9064CD /* Collection+Safe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C45DDE80F671326534BCC /* Collection+Safe.swift */; };
 		554326839BC9B6A2B55C1D5F /* ChildSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29795882E62699C0886AF3F /* ChildSettingsView.swift */; };
 		56164D24E0006B1EDC843299 /* RewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283C66F9E534B3F72E5DA53F /* RewardEngine.swift */; };
@@ -139,6 +140,7 @@
 		434B9E50E0445A70EB548D7D /* Reward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reward.swift; sourceTree = "<group>"; };
 		4438D62CA3DB78DB04298002 /* EmailVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationView.swift; sourceTree = "<group>"; };
 		51BD1C2297F666355D8B906D /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		52F35C450C3CD7E077A89E71 /* UITestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestFixture.swift; sourceTree = "<group>"; };
 		54CDA81AC76143994B9283B4 /* TamperDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TamperDetectionService.swift; sourceTree = "<group>"; };
 		57098A1C920B00DDF94219D4 /* SyncProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProtocol.swift; sourceTree = "<group>"; };
 		59743C1B2F947C3D9A2D40EA /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 			children = (
 				69601E335B515C3776FAA4E8 /* AppDelegate.swift */,
 				36BBFEEC7032ABA18D072041 /* MomAlarmClockApp.swift */,
+				52F35C450C3CD7E077A89E71 /* UITestFixture.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -656,6 +659,7 @@
 				7C383A09AC8330D0C4F014B1 /* TamperConsequence.swift in Sources */,
 				2D1DF8043F316AD0D9707DB3 /* TamperDetectionService.swift in Sources */,
 				9BFB57CA2B9761B24F3997D8 /* TamperEvent.swift in Sources */,
+				52BB6CB4AABDDD65CB9D9B16 /* UITestFixture.swift in Sources */,
 				7E9DA03DA96EB7E1306428BD /* VerificationMethod.swift in Sources */,
 				217F6A618C66D271547E7BB8 /* VerificationResult.swift in Sources */,
 				1AF54AFAF5D30D429BFA9029 /* VerificationReviewView.swift in Sources */,

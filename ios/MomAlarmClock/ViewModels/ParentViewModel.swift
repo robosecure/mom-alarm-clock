@@ -150,16 +150,25 @@ final class ParentViewModel {
     }
 
     /// Removes a child profile. Guardian-only.
-    /// NOTE: Firestore cascade delete is deferred — see DEFERRED.md [D-006].
+    /// Deletes the child doc from Firestore; server-side `cleanupOnChildDelete`
+    /// Cloud Function cascades alarms, sessions, tamperEvents, and the voice alarm blob.
+    /// Related fix: DEFERRED.md [D-006].
     func removeChild(_ childID: UUID) async {
-        guard familyID != nil else { return }
-        // Remove from local state
+        guard let familyID else { return }
+        // Optimistic local removal for UI responsiveness
         children.removeAll { $0.id == childID }
+        alarmSchedules.removeAll { $0.childProfileID == childID }
         if selectedChildID == childID {
             selectedChildID = children.first?.id
         }
-        // Full Firestore cascade delete (alarms, sessions, tamperEvents) is deferred
-        // to a server-side Cloud Function. See DEFERRED.md [D-006].
+        // Server cascade (Cloud Function cleanupOnChildDelete handles the rest).
+        do {
+            try await syncService.deleteChildProfile(childID, familyID: familyID)
+        } catch {
+            errorMessage = "Failed to remove child: \(error.localizedDescription)"
+            // Refresh from source of truth so UI doesn't stay out of sync.
+            await loadAllData()
+        }
     }
 
     // MARK: - Alarm Management

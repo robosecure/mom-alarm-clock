@@ -15,8 +15,8 @@
 | 7 | Firestore indexes deployed | **DEPLOY** | `firebase deploy --only firestore:indexes` (3 composite indexes defined) |
 | 8 | Cloud Functions deployed | **DEPLOY** | `cd functions && npm install && firebase deploy --only functions` (7 functions) |
 | 9 | Firebase Storage rules deployed | **DEPLOY** | `firebase deploy --only storage` |
-| 10 | APNS key uploaded to Firebase | **MANUAL** | Firebase Console > Project Settings > Cloud Messaging > APNs Authentication Key |
-| 11 | Push notifications capability | OK | Entitlements has `aps-environment: development` — **change to `production` for release** |
+| 10 | APNS key uploaded to Firebase | **MANUAL** | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 for click-by-click steps |
+| 11 | Push notifications capability | OK | Entitlements set to `aps-environment: production` (verified by pre-archive-check) |
 | 12 | App Check configured | OK | MomAppCheckProviderFactory uses App Attest (release) / Debug (dev) |
 | 13 | Privacy policy URL live | **MANUAL** | Host privacy policy, add URL to App Store Connect |
 | 14 | Support contact ready | **MANUAL** | Add support email to App Store Connect listing |
@@ -321,10 +321,11 @@ This triggers on the child's **first-ever approved verification**.
 |---|---------|-----|
 | 1 | GoogleService-Info.plist missing | Download from Firebase Console |
 | 2 | DEVELOPMENT_TEAM is placeholder | Set real Apple Team ID in project.yml |
-| 3 | aps-environment is `development` | Change to `production` for App Store builds |
+| 3 | ~~aps-environment is `development`~~ | ~~Change to production~~ (DONE — verified by pre-archive-check.sh) |
 | 4 | Firebase backend not deployed | Run deploy commands above |
 | 5 | Firebase Auth providers not enabled | Enable Email/Password + Anonymous in Firebase Console |
-| 6 | APNS key not uploaded | Upload .p8 key to Firebase Console > Cloud Messaging |
+| 6 | APNS key not uploaded | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 |
+| 7 | Critical Alerts entitlement not requested | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 2 |
 
 ---
 

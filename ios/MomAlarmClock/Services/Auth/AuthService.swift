@@ -40,6 +40,17 @@ final class AuthService {
         isLoading = true
         defer { isLoading = false }
 
+        #if DEBUG
+        // UI-test / screenshot fixture path: if -ui-fixture was passed, UITestFixture
+        // has already written AuthState to LocalStore. Honor that without asking Firebase.
+        if ProcessInfo.processInfo.arguments.contains("-ui-fixture"),
+           let seeded = await localStore.authState() {
+            currentUser = seeded
+            isAuthenticated = true
+            return
+        }
+        #endif
+
         if isFirebaseAvailable, let firebaseUser = Auth.auth().currentUser {
             // Firebase user exists — validate their role in Firestore
             do {

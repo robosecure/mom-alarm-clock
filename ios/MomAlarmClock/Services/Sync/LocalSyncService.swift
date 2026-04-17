@@ -108,6 +108,18 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
         }
     }
 
+    func deleteChildProfile(_ childID: UUID, familyID: String) async throws {
+        await storage.removeChild(childID, familyID: familyID)
+        // Persist the updated list
+        let remainingChildren = await storage.family(familyID).children
+        try await store.saveChildProfiles(remainingChildren)
+        // Also persist the cascaded alarm list so local alarms don't orphan either
+        let remainingAlarms = await storage.family(familyID).alarms
+        try await store.saveAlarmSchedules(remainingAlarms)
+        notify("children-\(familyID)")
+        notify("alarms-\(familyID)")
+    }
+
     // MARK: - Alarm Schedules
 
     func saveAlarmSchedule(_ schedule: AlarmSchedule, familyID: String) async throws {
@@ -305,6 +317,15 @@ extension LocalSyncService.Storage {
 
     func removeAlarm(_ id: UUID, familyID: String) {
         families[familyID]?.alarms.removeAll { $0.id == id }
+    }
+
+    func removeChild(_ id: UUID, familyID: String) {
+        families[familyID]?.children.removeAll { $0.id == id }
+        // Local-side cascade: mirror the server Cloud Function behavior
+        // so the single-device/offline path doesn't leak orphans either.
+        families[familyID]?.alarms.removeAll { $0.childProfileID == id }
+        families[familyID]?.sessions.removeAll { $0.childProfileID == id }
+        families[familyID]?.tamperEvents.removeAll { $0.childProfileID == id }
     }
 
     func upsertSession(_ session: MorningSession, familyID: String) {
