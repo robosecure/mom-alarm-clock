@@ -6,21 +6,21 @@
 
 | # | Item | Status | Action Required |
 |---|------|--------|-----------------|
-| 1 | GoogleService-Info.plist in correct target | **MISSING** | Download from Firebase Console > Project Settings > iOS app, place in `ios/MomAlarmClock/` |
-| 2 | DEVELOPMENT_TEAM set correctly | **PLACEHOLDER** | Replace `TEAM_ID_HERE` in `project.yml:17` with your Apple Developer Team ID |
-| 3 | Bundle identifier for release | OK | `com.momclock.MomAlarmClock` — verify this matches Firebase and App Store Connect |
-| 4 | Firebase Auth: Email/Password | **MANUAL** | Enable in Firebase Console > Authentication > Sign-in method |
-| 5 | Firebase Auth: Anonymous | **MANUAL** | Enable in Firebase Console > Authentication > Sign-in method |
-| 6 | Firestore rules deployed | **DEPLOY** | `firebase deploy --only firestore:rules` |
-| 7 | Firestore indexes deployed | **DEPLOY** | `firebase deploy --only firestore:indexes` (3 composite indexes defined) |
-| 8 | Cloud Functions deployed | **DEPLOY** | `cd functions && npm install && firebase deploy --only functions` (7 functions) |
-| 9 | Firebase Storage rules deployed | **DEPLOY** | `firebase deploy --only storage` |
-| 10 | APNS key uploaded to Firebase | **MANUAL** | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 for click-by-click steps |
-| 11 | Push notifications capability | OK | Entitlements set to `aps-environment: production` (verified by pre-archive-check) |
-| 12 | App Check configured | OK | MomAppCheckProviderFactory uses App Attest (release) / Debug (dev) |
-| 13 | Privacy policy URL live | **MANUAL** | Host privacy policy, add URL to App Store Connect |
-| 14 | Support contact ready | **MANUAL** | Add support email to App Store Connect listing |
-| 15 | Account deletion flow visible and working | OK | Settings > Delete Account — deletes Firebase Auth user + Firestore doc + local state |
+| 1 | GoogleService-Info.plist in correct target | **DONE** | In repo at `ios/MomAlarmClock/GoogleService-Info.plist`, verified by pre-archive-check (API_KEY valid, BUNDLE_ID matches) |
+| 2 | DEVELOPMENT_TEAM set correctly | **DONE** | project.yml: `U474UU36TW` |
+| 3 | Bundle identifier for release | **DONE** | `com.momclock.MomAlarmClock` — matches Firebase GoogleService-Info + project.yml |
+| 4 | Firebase Auth: Email/Password | **DONE** | Verified 2026-04-17 via Identity Toolkit probe (HTTP 200, idToken returned) |
+| 5 | Firebase Auth: Anonymous | **DONE** | Verified 2026-04-17 via Identity Toolkit probe (HTTP 200, anonymous idToken returned) |
+| 6 | Firestore rules deployed | **DONE** | Released 2026-04-17 via `firebase deploy` |
+| 7 | Firestore indexes deployed | **DONE** | Released 2026-04-17 |
+| 8 | Cloud Functions deployed | **DONE** | 9 functions live (incl. cleanupOnChildDelete) — verified via `firebase functions:list` |
+| 9 | Firebase Storage rules deployed | **DONE** | Released 2026-04-17 |
+| 10 | APNS key uploaded to Firebase | **USER** | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 — requires developer.apple.com sign-in |
+| 11 | Push notifications capability | **DONE** | `aps-environment: production` — verified by pre-archive-check |
+| 12 | App Check configured | **DONE** | MomAppCheckProviderFactory: App Attest (release) / Debug (dev) |
+| 13 | Privacy policy URL live | **USER** | Host privacy policy, add URL to App Store Connect |
+| 14 | Support contact ready | **USER** | Add support email to App Store Connect listing |
+| 15 | Account deletion flow visible and working | **DONE** | Settings > Delete Account — deletes Firebase Auth user + Firestore doc + local state |
 
 ### Pre-deploy commands
 
@@ -317,15 +317,18 @@ This triggers on the child's **first-ever approved verification**.
 
 ## Critical Blockers (Must Fix Before TestFlight)
 
-| # | Blocker | Fix |
-|---|---------|-----|
-| 1 | GoogleService-Info.plist missing | Download from Firebase Console |
-| 2 | DEVELOPMENT_TEAM is placeholder | Set real Apple Team ID in project.yml |
+| # | Blocker | Status |
+|---|---------|--------|
+| 1 | ~~GoogleService-Info.plist missing~~ | ~~Download from Firebase Console~~ (DONE — present at `ios/MomAlarmClock/GoogleService-Info.plist`) |
+| 2 | ~~DEVELOPMENT_TEAM is placeholder~~ | ~~Set real Apple Team ID~~ (DONE — `U474UU36TW` in project.yml) |
 | 3 | ~~aps-environment is `development`~~ | ~~Change to production~~ (DONE — verified by pre-archive-check.sh) |
-| 4 | Firebase backend not deployed | Run deploy commands above |
-| 5 | Firebase Auth providers not enabled | Enable Email/Password + Anonymous in Firebase Console |
-| 6 | APNS key not uploaded | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 |
-| 7 | Critical Alerts entitlement not requested | See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 2 |
+| 4 | ~~Firebase backend not deployed~~ | ~~Run deploy commands~~ (DONE 2026-04-17 — rules, indexes, storage, 9 functions live) |
+| 5 | ~~Firebase Auth providers not enabled~~ | ~~Enable Email/Password + Anonymous~~ (DONE — verified via Identity Toolkit probes) |
+| 6 | APNS key not uploaded | **USER** — See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 1 |
+| 7 | Critical Alerts entitlement not requested | **USER** — See `APNS_AND_ENTITLEMENTS_PLAYBOOK.md` Part 2 |
+| 8 | Apple Distribution certificate + provisioning profile | **USER** — Xcode → Signing & Capabilities → let Xcode manage signing (requires Apple Developer Program active on the account) |
+| 9 | App Store Connect app record not created | **USER** — https://appstoreconnect.apple.com/apps → + → New App → pick bundle `com.momclock.MomAlarmClock` |
+| 10 | Privacy policy URL | **USER** — host the privacy text somewhere public, paste URL into App Store Connect |
 
 ---
 
