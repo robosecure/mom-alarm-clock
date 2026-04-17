@@ -17,8 +17,8 @@ struct NextMorningSettingsView: View {
         Form {
             Section("Verification Method") {
                 Picker("Method", selection: $method) {
-                    Text("Math Quiz").tag(VerificationMethod.quiz)
-                    Text("Step Counter").tag(VerificationMethod.motion)
+                    Text("Wake-Up Quiz").tag(VerificationMethod.quiz)
+                    Text("Motion / Steps").tag(VerificationMethod.motion)
                 }
             }
 

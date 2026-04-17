@@ -85,6 +85,18 @@ struct HistoryView: View {
                         .foregroundStyle(.orange)
                 }
 
+                if session.verificationAttempts > 1 {
+                    Text("Verification attempts: \(session.verificationAttempts)")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+
+                if session.tamperCount > 0 {
+                    Label("\(session.tamperCount) tamper event\(session.tamperCount > 1 ? "s" : "")", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+
                 if let action = session.parentAction {
                     Text(parentActionLabel(action))
                         .font(.caption)

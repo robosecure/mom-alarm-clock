@@ -6,6 +6,7 @@ import UserNotifications
 struct SetupWizardView: View {
     @Environment(ParentViewModel.self) private var parentVM
     @State private var vm = SetupWizardViewModel()
+    @State private var wizardAlarmDate = Calendar.current.date(from: DateComponents(hour: 7, minute: 0)) ?? .now
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -22,8 +23,6 @@ struct SetupWizardView: View {
                 welcomeStep.tag(SetupWizardViewModel.ParentStep.welcome)
                 createChildStep.tag(SetupWizardViewModel.ParentStep.createChild)
                 configureAlarmStep.tag(SetupWizardViewModel.ParentStep.configureAlarm)
-                verificationStep.tag(SetupWizardViewModel.ParentStep.chooseVerification)
-                escalationStep.tag(SetupWizardViewModel.ParentStep.setEscalation)
                 pairDeviceStep.tag(SetupWizardViewModel.ParentStep.pairDevice)
                 testAlarmStep.tag(SetupWizardViewModel.ParentStep.testAlarm)
                 completeStep.tag(SetupWizardViewModel.ParentStep.complete)
@@ -45,7 +44,7 @@ struct SetupWizardView: View {
             Text("Let's Set Up Your Child's Alarm")
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
-            Text("We'll help you add your child, set their alarm, and pair their device. It only takes a minute.")
+            Text("Add your child, set their wake-up time, and pair their device. It takes under 2 minutes.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -68,6 +67,12 @@ struct SetupWizardView: View {
             Stepper("Age: \(vm.childAge)", value: $vm.childAge, in: 4...18)
                 .padding(.horizontal)
 
+            Text("By adding a child, you confirm you are their parent or legal guardian and consent to the collection of their data as described in our Privacy Policy.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
             Spacer()
             nextButton(disabled: vm.childName.isEmpty) {
                 Task {
@@ -85,100 +90,33 @@ struct SetupWizardView: View {
             Text("Set Wake-Up Time")
                 .font(.title2.bold())
 
-            HStack {
-                Picker("Hour", selection: $vm.alarmHour) {
-                    ForEach(4..<12, id: \.self) { h in
-                        Text("\(h):00 AM").tag(h)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 150)
+            DatePicker("Wake-up time", selection: $wizardAlarmDate, displayedComponents: .hourAndMinute)
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .frame(height: 150)
 
-                Picker("Minute", selection: $vm.alarmMinute) {
-                    ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { m in
-                        Text(String(format: ":%02d", m)).tag(m)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 100)
+            // Defaults summary
+            VStack(spacing: 8) {
+                Label("Weekdays (Mon–Fri)", systemImage: "calendar")
+                Label("Quiz verification", systemImage: "brain.head.profile")
+                Label("Auto-completes when verified", systemImage: "checkmark.circle")
             }
-            .frame(height: 150)
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
 
-            Spacer()
-            nextButton { vm.completeParentStep(.configureAlarm) }
-        }
-        .padding()
-    }
-
-    private var verificationStep: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            Text("How Should They Verify?")
-                .font(.title2.bold())
-
-            ForEach(VerificationMethod.allCases) { method in
-                Button {
-                    vm.selectedVerification = method
-                } label: {
-                    HStack {
-                        Image(systemName: method.systemImage)
-                            .frame(width: 32)
-                        VStack(alignment: .leading) {
-                            Text(method.displayName).font(.subheadline.bold())
-                            Text(method.description).font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        if vm.selectedVerification == method {
-                            Image(systemName: "checkmark.circle.fill").foregroundStyle(.blue)
-                        }
-                    }
-                    .padding()
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                }
-                .buttonStyle(.plain)
-            }
-
-            Spacer()
-            nextButton { vm.completeParentStep(.chooseVerification) }
-        }
-        .padding()
-    }
-
-    private var escalationStep: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            Text("Escalation Rules")
-                .font(.title2.bold())
-
-            Text("If your child doesn't get up, the app will gradually increase consequences:")
-                .foregroundStyle(.secondary)
+            Text("You can customize verification, difficulty, and snooze rules later in alarm settings.")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(EscalationProfile.default.levels) { level in
-                    HStack(spacing: 12) {
-                        Text("+\(level.minutesAfterAlarm) min")
-                            .font(.caption.monospacedDigit())
-                            .frame(width: 60, alignment: .leading)
-                            .foregroundStyle(.orange)
-                        Image(systemName: level.action.systemImage)
-                            .frame(width: 24)
-                            .foregroundStyle(.red)
-                        Text(level.action.displayName)
-                            .font(.subheadline)
-                    }
-                }
-            }
-            .padding()
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            Text("You can customize these later in alarm settings.")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-
             Spacer()
-            nextButton { vm.completeParentStep(.setEscalation) }
+            nextButton {
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: wizardAlarmDate)
+                vm.alarmHour = comps.hour ?? 7
+                vm.alarmMinute = comps.minute ?? 0
+                vm.completeParentStep(.configureAlarm)
+            }
         }
         .padding()
     }
@@ -213,7 +151,7 @@ struct SetupWizardView: View {
             Image(systemName: "bell.and.waves.left.and.right")
                 .font(.system(size: 64))
                 .foregroundStyle(.blue)
-                .symbolEffect(.bounce, options: .repeating)
+                .symbolEffect(.pulse, options: .repeating)
 
             Text("Test the Alarm")
                 .font(.title2.bold())
@@ -253,7 +191,7 @@ struct SetupWizardView: View {
                 .foregroundStyle(.green)
             Text("All Set!")
                 .font(.title.bold())
-            Text("The alarm will fire at the configured time. You'll receive notifications about your child's progress.")
+            Text("The alarm will fire at the configured time. Your child verifies, and the alarm clears based on your confirmation policy. By default, you'll only be notified if something needs your attention.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Spacer()

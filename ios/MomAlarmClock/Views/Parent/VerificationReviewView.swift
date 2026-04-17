@@ -299,7 +299,7 @@ struct VerificationReviewView: View {
                         Task {
                             await vm.escalateSession(session.id, reason: escalateReason)
                             showEscalateSheet = false
-                            actionReceipt = "Escalated. Streak reset, -25 points, harder verification tomorrow."
+                            actionReceipt = "Escalated. Streak may reset, points adjusted, difficulty increased for the next attempt."
                         }
                     }
                     .bold()

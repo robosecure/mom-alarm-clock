@@ -51,6 +51,7 @@ struct ParentDashboardView: View {
                         FamilySettingsView()
                     } label: {
                         Image(systemName: "gearshape.fill")
+                            .accessibilityLabel("Settings")
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -59,12 +60,14 @@ struct ParentDashboardView: View {
                             HistoryView()
                         } label: {
                             Image(systemName: "clock.arrow.circlepath")
+                                .accessibilityLabel("History")
                         }
                         #if DEBUG
                         NavigationLink {
                             DiagnosticsView()
                         } label: {
                             Image(systemName: "wrench.and.screwdriver")
+                                .accessibilityLabel("Diagnostics")
                         }
                         #endif
                     }
@@ -90,6 +93,14 @@ struct ParentDashboardView: View {
             }
             .sheet(isPresented: $showMessageSheet) {
                 messageComposerSheet
+            }
+            .sheet(isPresented: $showAddChild) {
+                NavigationStack { AddChildView() }
+            }
+            .sheet(isPresented: $showChildEditor) {
+                if let child = vm.selectedChild {
+                    NavigationStack { ChildProfileEditorView(child: child) }
+                }
             }
         }
     }
@@ -198,14 +209,6 @@ struct ParentDashboardView: View {
                     }
                     .buttonStyle(.plain)
                 }
-            }
-        }
-        .sheet(isPresented: $showAddChild) {
-            NavigationStack { AddChildView() }
-        }
-        .sheet(isPresented: $showChildEditor) {
-            if let child = vm.selectedChild {
-                NavigationStack { ChildProfileEditorView(child: child) }
             }
         }
     }

@@ -174,10 +174,13 @@ struct VoiceAlarmRecorderView: View {
             recordingDuration = 0
 
             timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-                if let recorder, recorder.isRecording {
-                    recordingDuration = recorder.currentTime
-                } else {
-                    stopRecording()
+                // Timer fires on main runloop; assumeIsolated satisfies Swift 6 strict concurrency.
+                MainActor.assumeIsolated {
+                    if let recorder, recorder.isRecording {
+                        recordingDuration = recorder.currentTime
+                    } else {
+                        stopRecording()
+                    }
                 }
             }
         } catch {

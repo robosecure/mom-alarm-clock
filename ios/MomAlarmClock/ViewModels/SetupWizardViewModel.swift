@@ -11,8 +11,6 @@ final class SetupWizardViewModel {
         case welcome
         case createChild
         case configureAlarm
-        case chooseVerification
-        case setEscalation
         case pairDevice
         case testAlarm
         case complete
@@ -21,27 +19,23 @@ final class SetupWizardViewModel {
 
         var title: String {
             switch self {
-            case .welcome:            "Welcome"
-            case .createChild:        "Add Your Child"
-            case .configureAlarm:     "Set Alarm Time"
-            case .chooseVerification: "Verification Method"
-            case .setEscalation:      "If They Don't Get Up"
-            case .pairDevice:         "Pair Child's Device"
-            case .testAlarm:          "Test Alarm"
-            case .complete:           "All Set!"
+            case .welcome:        "Welcome"
+            case .createChild:    "Add Your Child"
+            case .configureAlarm: "Set Alarm Time"
+            case .pairDevice:     "Pair Child's Device"
+            case .testAlarm:      "Test Alarm"
+            case .complete:       "All Set!"
             }
         }
 
         var description: String {
             switch self {
-            case .welcome:            "Learn how Mom Alarm Clock keeps your family on schedule."
-            case .createChild:        "Enter your child's name and age."
-            case .configureAlarm:     "Set the wake-up time and which days the alarm is active."
-            case .chooseVerification: "Pick how your child proves they're out of bed."
-            case .setEscalation:      "Configure what happens if they don't get up on time."
-            case .pairDevice:         "Enter the pairing code on your child's device."
-            case .testAlarm:          "Send a test alarm to make sure everything works."
-            case .complete:           "You're ready to go. The alarm will fire tomorrow morning."
+            case .welcome:        "Learn how Mom Alarm Clock keeps your family on schedule."
+            case .createChild:    "Enter your child's name and age."
+            case .configureAlarm: "Set the wake-up time and which days the alarm is active."
+            case .pairDevice:     "Enter the pairing code on your child's device."
+            case .testAlarm:      "Send a test alarm to make sure everything works."
+            case .complete:       "You're ready to go. The alarm will fire tomorrow morning."
             }
         }
     }
@@ -92,7 +86,7 @@ final class SetupWizardViewModel {
     var childName: String = ""
     var childAge: Int = 10
     var pairingCode: String = ""
-    var selectedVerification: VerificationMethod = .qr
+    var selectedVerification: VerificationMethod = .quiz
     var alarmHour: Int = 7
     var alarmMinute: Int = 0
     var selectedDays: Set<Int> = [2, 3, 4, 5, 6] // Mon-Fri

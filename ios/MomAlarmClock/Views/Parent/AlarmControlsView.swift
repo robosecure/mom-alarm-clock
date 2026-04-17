@@ -10,8 +10,7 @@ struct AlarmControlsView: View {
     var existingSchedule: AlarmSchedule?
 
     @State private var label = "School Days"
-    @State private var hour = 7
-    @State private var minute = 0
+    @State private var alarmDate = Calendar.current.date(from: DateComponents(hour: 7, minute: 0)) ?? .now
     @State private var selectedDays: Set<Int> = [2, 3, 4, 5, 6] // Mon-Fri
     @State private var primaryVerification: VerificationMethod = .quiz // Most popular default
     @State private var fallbackVerification: VerificationMethod? = .motion // Fallback if quiz fails
@@ -31,19 +30,11 @@ struct AlarmControlsView: View {
             Section("Alarm") {
                 TextField("Label", text: $label)
 
-                HStack {
-                    Picker("Hour", selection: $hour) {
-                        ForEach(0..<24, id: \.self) { h in
-                            Text(String(format: "%d %@", h % 12 == 0 ? 12 : h % 12, h < 12 ? "AM" : "PM"))
-                                .tag(h)
-                        }
-                    }
-                    Picker("Minute", selection: $minute) {
-                        ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { m in
-                            Text(String(format: ":%02d", m)).tag(m)
-                        }
-                    }
-                }
+                DatePicker("Time", selection: $alarmDate, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .labelsHidden()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 120)
             }
 
             Section("Active Days") {
@@ -57,7 +48,7 @@ struct AlarmControlsView: View {
 
             Section("How They Prove They're Up") {
                 Picker("Primary Method", selection: $primaryVerification) {
-                    ForEach(VerificationMethod.allCases) { method in
+                    ForEach(VerificationMethod.allCases.filter(\.isAvailableForLaunch)) { method in
                         Label(method.displayName, systemImage: method.systemImage)
                             .tag(method)
                     }
@@ -65,71 +56,90 @@ struct AlarmControlsView: View {
 
                 Picker("Fallback Method", selection: $fallbackVerification) {
                     Text("None").tag(nil as VerificationMethod?)
-                    ForEach(VerificationMethod.allCases) { method in
+                    ForEach(VerificationMethod.allCases.filter(\.isAvailableForLaunch)) { method in
                         Label(method.displayName, systemImage: method.systemImage)
                             .tag(method as VerificationMethod?)
                     }
                 }
             }
 
-            Section("Difficulty") {
-                Picker("Tier", selection: $verificationTier) {
-                    ForEach(VerificationTier.allCases) { tier in
-                        Text(tier.displayName).tag(tier)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(verificationTier.description)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("After Verification") {
+            Section {
                 Button {
                     confirmationPolicy = .autoAcknowledge
                 } label: {
-                    policyRow(.autoAcknowledge)
+                    policyRow(.autoAcknowledge, recommended: true)
                 }
                 .buttonStyle(.plain)
 
-                Button {
-                    confirmationPolicy = .requireParentApproval
-                } label: {
-                    policyRow(.requireParentApproval)
-                }
-                .buttonStyle(.plain)
+                DisclosureGroup("Other options") {
+                    Button {
+                        confirmationPolicy = .requireParentApproval
+                    } label: {
+                        policyRow(.requireParentApproval)
+                    }
+                    .buttonStyle(.plain)
 
-                Button {
-                    confirmationPolicy = .hybrid(windowMinutes: 30)
-                } label: {
-                    policyRow(.hybrid(windowMinutes: 30))
+                    Button {
+                        confirmationPolicy = .hybrid(windowMinutes: 30)
+                    } label: {
+                        policyRow(.hybrid(windowMinutes: 30))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+            } header: {
+                Text("After Verification")
+            } footer: {
+                Text("Most families use Trust Mode. You'll only hear from us when something needs attention.")
             }
 
-            Section("Snooze") {
-                Toggle("Allow Snooze", isOn: $snoozeAllowed)
+            Section {
+                DisclosureGroup("Difficulty") {
+                    Picker("Tier", selection: $verificationTier) {
+                        ForEach(VerificationTier.allCases) { tier in
+                            Text(tier.displayName).tag(tier)
+                        }
+                    }
+                    .pickerStyle(.segmented)
 
-                if snoozeAllowed {
-                    Stepper("Max Snoozes: \(maxSnoozes)", value: $maxSnoozes, in: 1...5)
-                    Stepper("Duration: \(snoozeDuration) min", value: $snoozeDuration, in: 1...15)
+                    Text("Automatically set based on your child's age. Override here if needed.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-            }
 
-            Section("If They Don't Get Up") {
-                Toggle("Use Default Reminders", isOn: $useDefaultEscalation)
-                if useDefaultEscalation {
-                    ForEach(EscalationProfile.default.levels) { level in
-                        HStack {
-                            Text("+\(level.minutesAfterAlarm) min")
-                                .font(.caption.monospacedDigit())
-                                .frame(width: 60, alignment: .leading)
-                            Text(level.action.displayName)
-                                .font(.subheadline)
+                DisclosureGroup("Snooze") {
+                    Toggle("Allow Snooze", isOn: $snoozeAllowed)
+
+                    if snoozeAllowed {
+                        Stepper("Max Snoozes: \(maxSnoozes)", value: $maxSnoozes, in: 1...5)
+                        Stepper("Duration: \(snoozeDuration) min", value: $snoozeDuration, in: 1...15)
+                    }
+                }
+
+                DisclosureGroup("If They Don't Get Up") {
+                    Toggle("Use Default Reminders", isOn: $useDefaultEscalation)
+                    if useDefaultEscalation {
+                        ForEach(EscalationProfile.default.levels) { level in
+                            HStack {
+                                Text("+\(level.minutesAfterAlarm) min")
+                                    .font(.caption.monospacedDigit())
+                                    .frame(width: 60, alignment: .leading)
+                                Image(systemName: level.action.systemImage)
+                                    .frame(width: 20)
+                                    .foregroundStyle(level.action.isLaunchReady ? .primary : .tertiary)
+                                Text(level.action.displayName)
+                                    .font(.subheadline)
+                                    .foregroundStyle(level.action.isLaunchReady ? .primary : .tertiary)
+                            }
+                        }
+                        if !FamilyControlsService.shared.isAuthorized {
+                            Label("App lock requires Screen Time permission on the child's device. Other escalation steps work without it.", systemImage: "info.circle")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
+            } header: {
+                Text("Advanced")
             }
 
             Section {
@@ -174,8 +184,7 @@ struct AlarmControlsView: View {
     private func loadExisting() {
         guard let s = existingSchedule else { return }
         label = s.label
-        hour = s.alarmTime.hour
-        minute = s.alarmTime.minute
+        alarmDate = Calendar.current.date(from: DateComponents(hour: s.alarmTime.hour, minute: s.alarmTime.minute)) ?? .now
         selectedDays = s.activeDays
         primaryVerification = s.primaryVerification
         fallbackVerification = s.fallbackVerification
@@ -189,8 +198,9 @@ struct AlarmControlsView: View {
     private func saveAlarm() async {
         guard let childID = vm.selectedChildID else { return }
 
+        let components = Calendar.current.dateComponents([.hour, .minute], from: alarmDate)
         var schedule = AlarmSchedule(
-            alarmTime: AlarmSchedule.AlarmTime(hour: hour, minute: minute),
+            alarmTime: AlarmSchedule.AlarmTime(hour: components.hour ?? 7, minute: components.minute ?? 0),
             activeDays: selectedDays,
             primaryVerification: primaryVerification,
             fallbackVerification: fallbackVerification,
@@ -215,12 +225,22 @@ struct AlarmControlsView: View {
         dismiss()
     }
 
-    private func policyRow(_ policy: ConfirmationPolicy) -> some View {
+    private func policyRow(_ policy: ConfirmationPolicy, recommended: Bool = false) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(policy.displayName)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
+                HStack(spacing: 6) {
+                    Text(policy.displayName)
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                    if recommended {
+                        Text("Recommended")
+                            .font(.caption2.bold())
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(.blue, in: Capsule())
+                    }
+                }
                 Text(policy.description)
                     .font(.caption)
                     .foregroundStyle(.secondary)

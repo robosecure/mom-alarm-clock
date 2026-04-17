@@ -3,6 +3,7 @@ import SwiftUI
 
 /// Primary view model for the parent-mode UI.
 /// Manages children, alarms, two-way confirmation actions, and real-time session observation.
+@MainActor
 @Observable
 final class ParentViewModel {
     // MARK: - Dependencies
@@ -80,7 +81,7 @@ final class ParentViewModel {
 
     func loadChildData(_ childID: UUID) async throws {
         guard let familyID else { return }
-        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: .now)!
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: .now) ?? .distantPast
 
         async let schedules = syncService.fetchAlarmSchedules(familyID: familyID, childID: childID)
         async let sessions = syncService.fetchSessions(familyID: familyID, childID: childID, since: thirtyDaysAgo)
@@ -134,16 +135,31 @@ final class ParentViewModel {
         }
     }
 
+    /// Updates the child's configurable reward list.
+    func updateChildRewards(childID: UUID, rewards: [Reward]) async {
+        guard var child = children.first(where: { $0.id == childID }), let familyID else { return }
+        child.rewards = rewards
+        do {
+            try await syncService.saveChildProfile(child, familyID: familyID)
+            if let idx = children.firstIndex(where: { $0.id == childID }) {
+                children[idx] = child
+            }
+        } catch {
+            errorMessage = "Failed to save rewards: \(error.localizedDescription)"
+        }
+    }
+
     /// Removes a child profile. Guardian-only.
+    /// NOTE: Firestore cascade delete is deferred — see DEFERRED.md [D-006].
     func removeChild(_ childID: UUID) async {
-        guard let familyID else { return }
+        guard familyID != nil else { return }
         // Remove from local state
         children.removeAll { $0.id == childID }
         if selectedChildID == childID {
             selectedChildID = children.first?.id
         }
-        // Note: Firestore deletion requires deleteChildProfile on SyncService
-        // For now, we remove locally. Full delete can be added to SyncService.
+        // Full Firestore cascade delete (alarms, sessions, tamperEvents) is deferred
+        // to a server-side Cloud Function. See DEFERRED.md [D-006].
     }
 
     // MARK: - Alarm Management
@@ -342,10 +358,11 @@ final class ParentViewModel {
     }
 
     /// Skips an alarm until the end of tomorrow (one-day skip for sick days, holidays).
+    /// Sets skipUntil to start-of-day + 2 days, so the alarm is skipped for the rest of today and all of tomorrow.
     func skipAlarmTomorrow(_ scheduleID: UUID) async {
         guard var schedule = alarmSchedules.first(where: { $0.id == scheduleID }) else { return }
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 2, to: Calendar.current.startOfDay(for: .now))!
-        schedule.skipUntil = tomorrow
+        let skipUntil = Calendar.current.date(byAdding: .day, value: 2, to: Calendar.current.startOfDay(for: .now)) ?? .now
+        schedule.skipUntil = skipUntil
         schedule.lastModified = Date()
         await saveAlarmSchedule(schedule)
     }
