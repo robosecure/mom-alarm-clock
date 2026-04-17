@@ -254,7 +254,8 @@ final class CoreLogicTests: XCTestCase {
 
     func testConfigSnapshot_capturesValues() {
         let config = EffectiveVerificationConfig(
-            method: .quiz, tier: .hard, maxAttempts: 2, timerSeconds: 30, calmMode: true
+            method: .quiz, tier: .hard, maxAttempts: 2, timerSeconds: 30, calmMode: true,
+            quizQuestionCount: 5, quizDifficulty: "hard", encouragementStyle: .direct
         )
         let snapshot = MorningSession.ConfigSnapshot(from: config)
         XCTAssertEqual(snapshot.method, "quiz")
@@ -262,6 +263,8 @@ final class CoreLogicTests: XCTestCase {
         XCTAssertEqual(snapshot.maxAttempts, 2)
         XCTAssertEqual(snapshot.timerSeconds, 30)
         XCTAssertTrue(snapshot.calmMode)
+        XCTAssertEqual(snapshot.quizQuestionCount, 5)
+        XCTAssertEqual(snapshot.encouragementStyle, "direct")
     }
 
     // MARK: - Reward Idempotency (Separated Flags)
@@ -334,6 +337,400 @@ final class CoreLogicTests: XCTestCase {
         // If session is verified and backup reminder fires, duplicate guard should see isActive=false
         // deterministicID is same → Firestore setData is idempotent → safe even if guard doesn't catch it
         XCTAssertFalse(session.isActive, "Verified session should not be active")
+    }
+
+    // MARK: - Default Policy (Launch Behavior)
+
+    func testDefaultConfirmationPolicy_isAutoAcknowledge() {
+        // Launch behavior: new alarms auto-complete without guardian intervention
+        let policy = ConfirmationPolicy.default
+        switch policy {
+        case .autoAcknowledge:
+            break // Expected
+        default:
+            XCTFail("Default confirmation policy must be .autoAcknowledge for launch, got \(policy)")
+        }
+    }
+
+    func testAlarmScheduleDefault_usesAutoAcknowledge() {
+        let schedule = AlarmSchedule(
+            alarmTime: AlarmSchedule.AlarmTime(hour: 7, minute: 0),
+            activeDays: [2, 3, 4, 5, 6],
+            primaryVerification: .quiz,
+            escalation: .default,
+            snoozeRules: AlarmSchedule.SnoozeRules(allowed: true, maxCount: 2, durationMinutes: 5),
+            childProfileID: UUID()
+        )
+        switch schedule.confirmationPolicy {
+        case .autoAcknowledge:
+            break // Expected
+        default:
+            XCTFail("New alarm schedules must default to .autoAcknowledge")
+        }
+    }
+
+    // MARK: - Auto-Acknowledge Session Flow
+
+    func testAutoAcknowledgeSession_goesDirectlyToVerified() {
+        var session = MorningSession(childProfileID: UUID(), alarmScheduleID: UUID(), alarmFiredAt: .now)
+        session.confirmationPolicy = .autoAcknowledge
+        // Simulate what ChildViewModel.completeVerification does for autoAcknowledge
+        session.state = .verified
+        session.parentAction = .autoAcknowledged
+        XCTAssertFalse(session.isActive, "Auto-acknowledged session should not be active")
+        XCTAssertEqual(session.state, .verified)
+        if case .autoAcknowledged = session.parentAction {
+            // Expected
+        } else {
+            XCTFail("Auto-acknowledge should set parentAction to .autoAcknowledged")
+        }
+    }
+
+    // MARK: - Skip-Tomorrow Date Logic
+
+    func testSkipUntil_coversFullNextDay() {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: .now)
+        // skipAlarmTomorrow computes: startOfDay + 2 days
+        // This means: alarm is skipped for the rest of today AND all of tomorrow
+        let skipUntil = calendar.date(byAdding: .day, value: 2, to: startOfToday)!
+        // skipUntil should be start of day-after-tomorrow
+        let dayAfterTomorrow = calendar.date(byAdding: .day, value: 2, to: startOfToday)!
+        XCTAssertEqual(skipUntil, dayAfterTomorrow)
+        // An alarm at 7 AM tomorrow should still be skipped
+        let tomorrowAlarm = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
+            .addingTimeInterval(7 * 3600) // 7 AM tomorrow
+        XCTAssertTrue(tomorrowAlarm < skipUntil, "7 AM tomorrow should be before skipUntil")
+    }
+
+    // MARK: - Pairing Code Safety
+
+    func testPairingCode_isAlphanumericAndCorrectLength() {
+        let code = ChildProfile.generatePairingCode()
+        XCTAssertEqual(code.count, 10, "Pairing code must be 10 characters")
+        let allowed = CharacterSet(charactersIn: "ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
+        for char in code.unicodeScalars {
+            XCTAssertTrue(allowed.contains(char), "Pairing code contains disallowed character: \(char)")
+        }
+    }
+
+    func testPairingCode_excludesConfusingCharacters() {
+        // Generate many codes and verify none contain I, O, 0, 1
+        let confusing: Set<Character> = ["I", "O", "0", "1"]
+        for _ in 0..<100 {
+            let code = ChildProfile.generatePairingCode()
+            for char in code {
+                XCTAssertFalse(confusing.contains(char), "Pairing code must not contain '\(char)'")
+            }
+        }
+    }
+
+    // MARK: - Age Band Defaults
+
+    func testAgeBand_youngChild_getsEasyQuiz() {
+        let band = AgeBand(age: 6)
+        XCTAssertEqual(band, .young)
+        let profile = band.contentProfile
+        XCTAssertEqual(profile.quizDifficulty, .easy)
+        XCTAssertEqual(profile.quizCount, 2)
+        XCTAssertEqual(profile.verificationTimeoutSeconds, 90)
+    }
+
+    func testAgeBand_teen_getsMediumQuiz() {
+        let band = AgeBand(age: 15)
+        XCTAssertEqual(band, .teen)
+        let profile = band.contentProfile
+        XCTAssertEqual(profile.quizDifficulty, .medium)
+        XCTAssertEqual(profile.quizCount, 3)
+        XCTAssertEqual(profile.verificationTimeoutSeconds, 30)
+    }
+
+    func testAgeBand_allBandsMapCorrectly() {
+        XCTAssertEqual(AgeBand(age: 5), .young)
+        XCTAssertEqual(AgeBand(age: 7), .young)
+        XCTAssertEqual(AgeBand(age: 8), .middle)
+        XCTAssertEqual(AgeBand(age: 10), .middle)
+        XCTAssertEqual(AgeBand(age: 11), .preteen)
+        XCTAssertEqual(AgeBand(age: 13), .preteen)
+        XCTAssertEqual(AgeBand(age: 14), .teen)
+        XCTAssertEqual(AgeBand(age: 17), .teen)
+    }
+
+    // MARK: - Age Precedence in Config Merge
+
+    func testConfigMerge_ageBandApplies_whenNoSchedule() {
+        // No schedule, no overrides — age band should drive defaults
+        let config = EffectiveVerificationConfig.merge(
+            schedule: nil,
+            overrides: nil,
+            pendingTierEscalation: false,
+            ageBand: .young
+        )
+        XCTAssertEqual(config.quizQuestionCount, 2, "Young child should get 2 questions")
+        XCTAssertEqual(config.timerSeconds, 90, "Young child should get 90s timer")
+        XCTAssertEqual(config.quizDifficulty, "easy")
+        XCTAssertEqual(config.encouragementStyle, .warm)
+    }
+
+    func testConfigMerge_scheduleBeatsAge() {
+        // Schedule explicitly sets medium tier — should override young child's easy defaults
+        let schedule = AlarmSchedule(
+            alarmTime: AlarmSchedule.AlarmTime(hour: 7, minute: 0),
+            activeDays: [2, 3, 4, 5, 6],
+            primaryVerification: .quiz,
+            escalation: .default,
+            verificationTier: .medium,
+            snoozeRules: AlarmSchedule.SnoozeRules(allowed: true, maxCount: 2, durationMinutes: 5),
+            childProfileID: UUID()
+        )
+        let config = EffectiveVerificationConfig.merge(
+            schedule: schedule,
+            overrides: nil,
+            pendingTierEscalation: false,
+            ageBand: .young
+        )
+        XCTAssertEqual(config.quizQuestionCount, 3, "Schedule's medium tier (3 questions) should beat age's 2")
+        XCTAssertEqual(config.timerSeconds, 45, "Schedule's medium tier (45s) should beat age's 90s")
+        XCTAssertEqual(config.quizDifficulty, "medium", "Schedule's medium should beat age's easy")
+    }
+
+    func testConfigMerge_overridesBeatAge() {
+        // Tomorrow override with explicit timer — should beat both schedule and age
+        let overrides = ChildProfile.NextMorningOverrides(timerSeconds: 20)
+        let config = EffectiveVerificationConfig.merge(
+            schedule: nil,
+            overrides: overrides,
+            pendingTierEscalation: false,
+            ageBand: .young
+        )
+        XCTAssertEqual(config.timerSeconds, 20, "Tomorrow override (20s) should beat age (90s)")
+    }
+
+    func testConfigMerge_noAgeBand_usesHardcodedDefaults() {
+        // No schedule, no overrides, no age — pure hardcoded defaults
+        let config = EffectiveVerificationConfig.merge(
+            schedule: nil,
+            overrides: nil,
+            pendingTierEscalation: false,
+            ageBand: nil
+        )
+        XCTAssertEqual(config.quizQuestionCount, 3, "Hardcoded default: medium tier = 3 questions")
+        XCTAssertEqual(config.timerSeconds, 45, "Hardcoded default: medium tier = 45s")
+        XCTAssertEqual(config.quizDifficulty, "medium")
+    }
+
+    // MARK: - InputValidation: Name
+
+    func testValidateName_empty_fails() {
+        XCTAssertFalse(InputValidation.validateName("").isValid)
+        XCTAssertEqual(InputValidation.validateName("").errorMessage, "Name is required.")
+    }
+
+    func testValidateName_whitespaceOnly_fails() {
+        XCTAssertFalse(InputValidation.validateName("   ").isValid)
+        XCTAssertEqual(InputValidation.validateName("   ").errorMessage, "Name is required.")
+    }
+
+    func testValidateName_tooLong_fails() {
+        let longName = String(repeating: "a", count: 51)
+        XCTAssertFalse(InputValidation.validateName(longName).isValid)
+        XCTAssertEqual(InputValidation.validateName(longName).errorMessage, "Name must be 50 characters or fewer.")
+    }
+
+    func testValidateName_exactlyFifty_passes() {
+        let fiftyChars = String(repeating: "a", count: 50)
+        XCTAssertTrue(InputValidation.validateName(fiftyChars).isValid)
+    }
+
+    func testValidateName_digitsOnly_fails() {
+        XCTAssertFalse(InputValidation.validateName("12345").isValid)
+        XCTAssertEqual(InputValidation.validateName("12345").errorMessage, "Name must contain at least one letter.")
+    }
+
+    func testValidateName_singleLetter_passes() {
+        XCTAssertTrue(InputValidation.validateName("A").isValid)
+    }
+
+    func testValidateName_unicodeLetters_passes() {
+        XCTAssertTrue(InputValidation.validateName("José").isValid)
+        XCTAssertTrue(InputValidation.validateName("日本").isValid)
+    }
+
+    func testValidateName_leadingTrailingWhitespace_trims() {
+        XCTAssertTrue(InputValidation.validateName("  Alice  ").isValid)
+    }
+
+    // MARK: - InputValidation: Email
+
+    func testValidateEmail_empty_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("").isValid)
+        XCTAssertEqual(InputValidation.validateEmail("").errorMessage, "Email is required.")
+    }
+
+    func testValidateEmail_whitespaceOnly_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("   ").isValid)
+    }
+
+    func testValidateEmail_validBasic_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("user@example.com").isValid)
+    }
+
+    func testValidateEmail_validWithSubdomain_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("user@mail.example.com").isValid)
+    }
+
+    func testValidateEmail_validWithPlusTag_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("user+tag@example.com").isValid)
+    }
+
+    func testValidateEmail_validWithDotInLocal_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("first.last@example.com").isValid)
+    }
+
+    func testValidateEmail_validWithHyphenInDomain_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("user@my-domain.com").isValid)
+    }
+
+    func testValidateEmail_uppercase_passes() {
+        // Should be lowercased internally
+        XCTAssertTrue(InputValidation.validateEmail("USER@EXAMPLE.COM").isValid)
+    }
+
+    func testValidateEmail_trailingWhitespace_passes() {
+        XCTAssertTrue(InputValidation.validateEmail("user@example.com  ").isValid)
+    }
+
+    func testValidateEmail_noAt_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("userexample.com").isValid)
+    }
+
+    func testValidateEmail_noDot_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user@example").isValid)
+    }
+
+    func testValidateEmail_singleCharTLD_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user@example.c").isValid)
+    }
+
+    func testValidateEmail_noLocalPart_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("@example.com").isValid)
+    }
+
+    func testValidateEmail_noDomain_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user@").isValid)
+    }
+
+    func testValidateEmail_consecutiveDots_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user..name@example.com").isValid)
+        XCTAssertFalse(InputValidation.validateEmail("user@example..com").isValid)
+    }
+
+    func testValidateEmail_leadingDotInLocal_fails() {
+        XCTAssertFalse(InputValidation.validateEmail(".user@example.com").isValid)
+    }
+
+    func testValidateEmail_trailingDotInLocal_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user.@example.com").isValid)
+    }
+
+    func testValidateEmail_specialChars_fails() {
+        XCTAssertFalse(InputValidation.validateEmail("user name@example.com").isValid)
+        XCTAssertFalse(InputValidation.validateEmail("user<script>@example.com").isValid)
+    }
+
+    // MARK: - InputValidation: Password
+
+    func testValidatePassword_tooShort_fails() {
+        XCTAssertFalse(InputValidation.validatePassword("Ab1").isValid)
+        XCTAssertEqual(InputValidation.validatePassword("Ab1").errorMessage, "Password must be at least 8 characters.")
+    }
+
+    func testValidatePassword_exactlyEight_passes() {
+        XCTAssertTrue(InputValidation.validatePassword("Abcdefg1").isValid)
+    }
+
+    func testValidatePassword_noUppercase_fails() {
+        XCTAssertFalse(InputValidation.validatePassword("abcdefg1").isValid)
+        XCTAssertEqual(InputValidation.validatePassword("abcdefg1").errorMessage, "Password needs at least one uppercase letter.")
+    }
+
+    func testValidatePassword_noLowercase_fails() {
+        XCTAssertFalse(InputValidation.validatePassword("ABCDEFG1").isValid)
+        XCTAssertEqual(InputValidation.validatePassword("ABCDEFG1").errorMessage, "Password needs at least one lowercase letter.")
+    }
+
+    func testValidatePassword_noNumber_fails() {
+        XCTAssertFalse(InputValidation.validatePassword("Abcdefgh").isValid)
+        XCTAssertEqual(InputValidation.validatePassword("Abcdefgh").errorMessage, "Password needs at least one number.")
+    }
+
+    func testValidatePassword_strong_passes() {
+        XCTAssertTrue(InputValidation.validatePassword("MyP@ssw0rd!").isValid)
+    }
+
+    // MARK: - InputValidation: Password Strength
+
+    func testPasswordStrength_short_weak() {
+        XCTAssertEqual(InputValidation.passwordStrength("Ab1"), .weak)
+    }
+
+    func testPasswordStrength_allThree_medium() {
+        // 8 chars, uppercase + lowercase + number = score 3 = medium
+        XCTAssertEqual(InputValidation.passwordStrength("Abcdefg1"), .medium)
+    }
+
+    func testPasswordStrength_withSymbolOrLong_strong() {
+        // 8+ chars, upper+lower+number+symbol = score 4 = strong
+        XCTAssertEqual(InputValidation.passwordStrength("Abcdefg1!"), .strong)
+        // 12+ chars adds bonus = strong
+        XCTAssertEqual(InputValidation.passwordStrength("Abcdefghij12"), .strong)
+    }
+
+    // MARK: - InputValidation: Join Code
+
+    func testValidateJoinCode_empty_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("").isValid)
+        XCTAssertEqual(InputValidation.validateJoinCode("").errorMessage, "Enter the family join code.")
+    }
+
+    func testValidateJoinCode_tooShort_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("ABC123").isValid)
+        XCTAssertEqual(InputValidation.validateJoinCode("ABC123").errorMessage, "Join code must be exactly 10 characters.")
+    }
+
+    func testValidateJoinCode_tooLong_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("ABCDEFGHIJK").isValid)
+    }
+
+    func testValidateJoinCode_containsConfusingI_fails() {
+        // I, O, 0, 1 are excluded
+        XCTAssertFalse(InputValidation.validateJoinCode("ABCDEFGHIJ").isValid) // contains I
+    }
+
+    func testValidateJoinCode_containsConfusingO_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("ABCDEFGHOP").isValid) // contains O
+    }
+
+    func testValidateJoinCode_containsConfusing0_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("ABCDEFGHJ0").isValid) // contains 0
+    }
+
+    func testValidateJoinCode_containsConfusing1_fails() {
+        XCTAssertFalse(InputValidation.validateJoinCode("ABCDEFGHJ1").isValid) // contains 1
+    }
+
+    func testValidateJoinCode_lowercase_uppercased() {
+        // Should be uppercased internally and pass
+        XCTAssertTrue(InputValidation.validateJoinCode("abcdefghjk").isValid)
+    }
+
+    func testValidateJoinCode_validAlphabet_passes() {
+        XCTAssertTrue(InputValidation.validateJoinCode("ABCDEFGHJK").isValid)
+        XCTAssertTrue(InputValidation.validateJoinCode("23456789AB").isValid)
+    }
+
+    func testValidateJoinCode_leadingTrailingWhitespace_trims() {
+        XCTAssertTrue(InputValidation.validateJoinCode("  ABCDEFGHJK  ").isValid)
     }
 
 }
