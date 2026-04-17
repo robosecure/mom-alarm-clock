@@ -4,10 +4,23 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
-	<key>com.apple.developer.family-controls</key>
-	<true/>
+	<!-- TODO: Restore after Apple approves Critical Alerts entitlement.
+	     Requested via developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
+	     Approval typically takes 1-3 weeks. Code degrades gracefully: UNNotificationSound.defaultCritical
+	     and .critical interruptionLevel are silently ignored without the entitlement — alarms still fire,
+	     they just respect Silent Mode / DND. Justification in ENTITLEMENT_JUSTIFICATIONS.md §1.
 	<key>com.apple.developer.usernotifications.critical-alerts</key>
 	<true/>
+	-->
+	<!-- TODO: Restore after Apple approves Family Controls (Distribution) entitlement.
+	     Family Controls (Development) alone cannot ship via TestFlight/App Store — need the
+	     Distribution variant approved. Code degrades gracefully: FamilyControlsService.isAuthorized
+	     guards every shield call, so the 20-min/30-min app-lock escalations silently no-op.
+	     DiagnosticsView surfaces "App lock escalation unavailable" to the user. Justification in
+	     ENTITLEMENT_JUSTIFICATIONS.md §2.
+	<key>com.apple.developer.family-controls</key>
+	<true/>
+	-->
 	<key>com.apple.developer.applesignin</key>
 	<array>
 		<string>Default</string>

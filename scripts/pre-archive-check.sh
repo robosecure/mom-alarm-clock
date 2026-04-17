@@ -67,18 +67,39 @@ else
   fail "aps-environment missing or unreadable in $ENTITLEMENTS"
 fi
 
-# ─── 2. Critical alerts + family controls still declared ──
-# plutil -extract uses dots as path separators and the entitlement key names
-# THEMSELVES contain dots — so we verify by grepping the XML directly.
-echo "[2/10] Entitlements: critical-alerts + family-controls"
+# ─── 2. Critical alerts + family controls declared OR pending-approval ────
+# The entitlement keys themselves contain dots, so plutil -extract (which treats
+# dots as path separators) doesn't work. We also need to distinguish ACTIVE
+# <key> declarations from ones sitting inside a pending-approval XML comment.
+# Python strips comments cleanly, so we use that.
+#
+# V1 NOTE: Both entitlements are temporarily commented out in MomAlarmClock.entitlements
+# while we wait for Apple to approve the Critical Alerts request and Family Controls
+# (Distribution) request. When approval arrives and the <!-- ... --> wrappers are
+# deleted, these checks auto-upgrade from warn to pass.
+echo "[2/10] Entitlements: critical-alerts + family-controls (active or pending-approval stub)"
 for key in \
   "com.apple.developer.usernotifications.critical-alerts" \
   "com.apple.developer.family-controls"
 do
-  if grep -q "<key>$key</key>" "$ENTITLEMENTS" 2>/dev/null; then
-    pass "$key declared"
+  active=$(python3 -c "
+import re, sys
+try:
+    with open('$ENTITLEMENTS') as f:
+        content = f.read()
+except Exception as e:
+    sys.stderr.write(str(e)); sys.exit(2)
+stripped = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
+print('yes' if '<key>$key</key>' in stripped else 'no')
+" 2>/dev/null)
+  raw_present=$(grep -q "<key>$key</key>" "$ENTITLEMENTS" 2>/dev/null && echo yes || echo no)
+
+  if [ "$active" = "yes" ]; then
+    pass "$key declared (active)"
+  elif [ "$raw_present" = "yes" ]; then
+    warn "$key commented out pending Apple approval — V1 archive-unblock path. Uncomment when approved."
   else
-    fail "$key missing — was removed? Re-enable before archive."
+    fail "$key missing from entitlements file entirely — even the TODO comment is gone?"
   fi
 done
 

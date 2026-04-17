@@ -173,13 +173,13 @@
 		A283A20EF0124AE0C1670204 /* ParentAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentAction.swift; sourceTree = "<group>"; };
 		ABE40595E33E07A70F7C547A /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
 		AFF34BB6724B63DEA34A4229 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B1AF451D9DB36A995CAC3F74 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B29795882E62699C0886AF3F /* ChildSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSettingsView.swift; sourceTree = "<group>"; };
 		B3CA39542BE08DF4107C9701 /* VoiceAlarmRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmRecorderView.swift; sourceTree = "<group>"; };
 		B58C45DDE80F671326534BCC /* Collection+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Safe.swift"; sourceTree = "<group>"; };
 		B6AEDA0E620035648FDE462C /* CoreScenarioUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreScenarioUITests.swift; sourceTree = "<group>"; };
 		BA34D6E0A573788189B65ED9 /* MorningSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningSession.swift; sourceTree = "<group>"; };
-		BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MomAlarmClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCDD34E80DE32238409DBFF1 /* Mom Alarm Clock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mom Alarm Clock.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1B5E70198F06E7B317331FD /* HeartbeatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartbeatService.swift; sourceTree = "<group>"; };
 		C2D8DB23042826040F530D8E /* SyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncServiceFactory.swift; sourceTree = "<group>"; };
 		C2DCA05ACDEF7EFF28446C0C /* VoiceAlarmCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlarmCacheService.swift; sourceTree = "<group>"; };
@@ -360,7 +360,7 @@
 		7AFB1F03F62368040E51CB3D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */,
+				BCDD34E80DE32238409DBFF1 /* Mom Alarm Clock.app */,
 				8F6D240109F1EAF845169A7B /* MomAlarmClockTests.xctest */,
 				3E18AD99C53DBBF98635F153 /* MomAlarmClockUITests.xctest */,
 			);
@@ -499,7 +499,7 @@
 				94BDAB50F11896BD9A8A9DF5 /* FirebaseStorage */,
 			);
 			productName = MomAlarmClock;
-			productReference = BCDD34E80DE32238409DBFF1 /* MomAlarmClock.app */;
+			productReference = BCDD34E80DE32238409DBFF1 /* Mom Alarm Clock.app */;
 			productType = "com.apple.product-type.application";
 		};
 		54F49B4F59602769C3711F53 /* MomAlarmClockTests */ = {
@@ -547,9 +547,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					498134E544759DAC2614BA97 = {
-						DevelopmentTeam = U474UU36TW;
-					};
 					54F49B4F59602769C3711F53 = {
 						DevelopmentTeam = U474UU36TW;
 					};
@@ -857,6 +854,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MomAlarmClock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = U474UU36TW;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
