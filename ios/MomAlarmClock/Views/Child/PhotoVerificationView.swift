@@ -114,9 +114,9 @@ struct PhotoVerificationView: View {
                 photoReference: photoRef,
                 deviceTimestamp: Date()
             )
+            await vm.completeVerification(method: .photo, result: result)
             isComplete = true
             isSubmitting = false
-            await vm.completeVerification(method: .photo, result: result)
         }
     }
 }

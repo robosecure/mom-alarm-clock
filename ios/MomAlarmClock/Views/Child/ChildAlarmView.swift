@@ -43,6 +43,16 @@ struct ChildAlarmView: View {
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        ChildSettingsView()
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
             .onReceive(timer) { currentTime = $0 }
             .onReceive(NotificationCenter.default.publisher(for: .alarmNotificationTapped)) { notif in
                 if let alarmID = notif.userInfo?["alarmID"] as? String,
@@ -62,6 +72,9 @@ struct ChildAlarmView: View {
             }
             .overlay(alignment: .top) {
                 VStack(spacing: 4) {
+                    if !BetaDiagnostics.shared.pushPermissionGranted {
+                        bannerView("⚠ Notifications are off — your alarm may not ring!", color: .red)
+                    }
                     if !NetworkMonitor.shared.isConnected {
                         bannerView("Offline: actions will sync when online", color: .gray)
                     }
@@ -80,6 +93,7 @@ struct ChildAlarmView: View {
                 }
                 .padding(.top, 4)
             }
+            .task { await BetaDiagnostics.shared.refreshPushState() }
         }
     }
 
@@ -120,7 +134,7 @@ struct ChildAlarmView: View {
                 .foregroundStyle(.red)
                 .symbolEffect(.pulse, options: .repeating)
 
-            Text("Wake Up!")
+            Text("Good morning!")
                 .font(.largeTitle.bold())
 
             Text(morningMotivation)
@@ -276,12 +290,55 @@ struct ChildAlarmView: View {
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
             } else {
+                // Welcome / no alarm state
                 Text("No Alarm Set")
-                    .font(.title)
+                    .font(.title2.bold())
                     .foregroundStyle(.secondary)
-                Text("Waiting for your guardian to set an alarm.")
+
+                Text("Your guardian hasn't set an alarm yet. Once they do, it will show up here automatically.")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+
+                // How it works overview
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("How It Works")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 10) {
+                        Image(systemName: "alarm.fill")
+                            .foregroundStyle(.orange)
+                            .frame(width: 24)
+                        Text("Your alarm will ring at the time your guardian sets")
+                            .font(.caption)
+                    }
+                    HStack(spacing: 10) {
+                        Image(systemName: "brain.head.profile")
+                            .foregroundStyle(.purple)
+                            .frame(width: 24)
+                        Text("Solve a quick quiz or complete a task to prove you're up")
+                            .font(.caption)
+                    }
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .frame(width: 24)
+                        Text("Earn points and build your streak every morning")
+                            .font(.caption)
+                    }
+                    HStack(spacing: 10) {
+                        Image(systemName: "flame.fill")
+                            .foregroundStyle(.red)
+                            .frame(width: 24)
+                        Text("Don't break the streak — bonus points at 3, 7, and 14 days!")
+                            .font(.caption)
+                    }
+                }
+                .padding()
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal, 20)
             }
 
             Spacer()

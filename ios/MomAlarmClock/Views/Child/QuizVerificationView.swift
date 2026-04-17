@@ -123,21 +123,26 @@ struct QuizVerificationView: View {
         timeRemaining = limit
         questionTimer?.invalidate()
         questionTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            let elapsed = Int(Date.now.timeIntervalSince(questionStartTime))
-            timeRemaining = max(0, limit - elapsed)
-            if timeRemaining == 0 {
-                // Time expired — mark as wrong and advance
-                questionTimer?.invalidate()
-                let q = vm.quizQuestions[safe: vm.quizCurrentIndex]
-                feedback = "Time's up! Answer was \(q?.correctAnswer ?? 0)"
-                feedbackColor = .orange
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    totalAnswerTime += Double(limit)
-                    vm.quizCurrentIndex += 1
-                    userAnswer = ""
-                    feedback = nil
-                    if vm.quizCurrentIndex < vm.quizQuestions.count {
-                        startQuestionTimer()
+            // Timer fires on main runloop; assumeIsolated satisfies Swift 6 strict concurrency.
+            MainActor.assumeIsolated {
+                let elapsed = Int(Date.now.timeIntervalSince(questionStartTime))
+                timeRemaining = max(0, limit - elapsed)
+                if timeRemaining == 0 {
+                    // Time expired — mark as wrong and advance
+                    questionTimer?.invalidate()
+                    let q = vm.quizQuestions[safe: vm.quizCurrentIndex]
+                    feedback = "Time's up! Answer was \(q?.correctAnswer ?? 0)"
+                    feedbackColor = .orange
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        MainActor.assumeIsolated {
+                            totalAnswerTime += Double(limit)
+                            vm.quizCurrentIndex += 1
+                            userAnswer = ""
+                            feedback = nil
+                            if vm.quizCurrentIndex < vm.quizQuestions.count {
+                                startQuestionTimer()
+                            }
+                        }
                     }
                 }
             }

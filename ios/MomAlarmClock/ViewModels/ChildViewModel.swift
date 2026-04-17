@@ -3,6 +3,7 @@ import SwiftUI
 
 /// Primary view model for the child-mode UI.
 /// Manages alarm state, verification flow, two-way confirmation, and escalation.
+@MainActor
 @Observable
 final class ChildViewModel {
     // MARK: - Dependencies
@@ -99,7 +100,17 @@ final class ChildViewModel {
             // Find this child's profile (matched by userID stored in auth)
             profile = profiles.first
 
-            if let childID = profile?.id {
+            if let childID = profile?.id, let profileToPersist = profile {
+                // Cache profile locally so AppDelegate can wire HeartbeatService on next launch
+                try? await localStore.saveChildProfile(profileToPersist)
+
+                // Wire HeartbeatService now so offline detection starts working immediately
+                await HeartbeatService.shared.configure(
+                    syncService: syncService,
+                    familyID: authState.familyID,
+                    childID: childID
+                )
+
                 alarmSchedules = try await syncService.fetchAlarmSchedules(familyID: authState.familyID, childID: childID)
 
                 // Persist locally for offline alarm firing
@@ -168,14 +179,21 @@ final class ChildViewModel {
         // Start tamper detection
         TamperDetectionService.shared.startMonitoring(childProfileID: profile.id)
 
-        // Sync to backend
+        // Sync to backend; if that fails, persist to offline queue
         do {
             try await syncService.saveSession(session, familyID: familyID)
         } catch {
-            try? await localStore.appendToQueue(QueuedAction(
-                actionType: .saveSession,
-                payload: try JSONEncoder().encode(session)
-            ))
+            do {
+                let payload = try JSONEncoder().encode(session)
+                try await localStore.appendToQueue(QueuedAction(
+                    actionType: .saveSession,
+                    payload: payload
+                ))
+            } catch {
+                print("[ChildVM] ⚠️ Offline queue write failed: \(error.localizedDescription)")
+                syncConflictMessage = "Couldn't save the alarm locally. Check storage and try again."
+                BetaDiagnostics.log(.queueWriteFailed)
+            }
         }
 
         await MainActor.run { BetaDiagnostics.shared.recordAlarmFired(source: "notification") }
@@ -216,11 +234,12 @@ final class ChildViewModel {
         guard var session = activeSession else { return }
         let schedule = alarmSchedules.first { $0.id == session.alarmScheduleID }
 
-        // Merge schedule defaults + guardian overrides into effective config
+        // Merge schedule defaults + guardian overrides + age band into effective config
         let config = EffectiveVerificationConfig.merge(
             schedule: schedule,
             overrides: profile?.nextMorningOverrides,
-            pendingTierEscalation: profile?.pendingTierEscalation ?? false
+            pendingTierEscalation: profile?.pendingTierEscalation ?? false,
+            ageBand: profile?.ageBand
         )
         effectiveConfig = config
 
@@ -302,7 +321,11 @@ final class ChildViewModel {
             applyReward(session: &session)
             finishSession()
 
-        case .requireParentApproval, _ where requiresParentReview:
+        case .requireParentApproval:
+            session.state = .pendingParentReview
+            isAwaitingParentReview = true
+
+        case _ where requiresParentReview:
             session.state = .pendingParentReview
             isAwaitingParentReview = true
 
@@ -324,10 +347,17 @@ final class ChildViewModel {
         do {
             try await syncService.saveSession(session, familyID: familyID)
         } catch {
-            try? await localStore.appendToQueue(QueuedAction(
-                actionType: .saveSession,
-                payload: (try? JSONEncoder().encode(session)) ?? Data()
-            ))
+            do {
+                let payload = try JSONEncoder().encode(session)
+                try await localStore.appendToQueue(QueuedAction(
+                    actionType: .saveSession,
+                    payload: payload
+                ))
+            } catch {
+                print("[ChildVM] ⚠️ Offline queue write failed (verification): \(error.localizedDescription)")
+                syncConflictMessage = "Verification saved locally but couldn't queue for sync."
+                BetaDiagnostics.log(.queueWriteFailed)
+            }
         }
 
         // If awaiting parent, observe for their action
@@ -434,18 +464,28 @@ final class ChildViewModel {
         guard let level = currentEscalationLevel else { return }
 
         switch level.action {
+        case .gentleReminder:
+            break // Informational only — alarm is already ringing
+
+        case .parentNotified:
+            break // Cloud Function sends push when tamper/session state changes
+
         case .appLockPartial where !isDeviceLocked:
             FamilyControlsService.shared.applyPartialShield()
             isDeviceLocked = true
             session.isDeviceLocked = true
+
         case .appLockFull:
             FamilyControlsService.shared.applyFullShield()
             isDeviceLocked = true
             session.isDeviceLocked = true
-        case .parentNotified:
-            break // Sync handles notification
+
+        case .increasedVolume, .parentCallTriggered:
+            // Deferred: not implemented for launch. Log for diagnostics.
+            print("[Escalation] Action '\(level.action.rawValue)' is not yet implemented")
+
         default:
-            break
+            break // appLockPartial when already locked
         }
 
         session.currentEscalationStep = alarmSchedules

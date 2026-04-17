@@ -4,6 +4,8 @@ import SwiftUI
 /// Displays a waiting state and updates in real-time when the parent acts.
 struct PendingReviewView: View {
     @Environment(ChildViewModel.self) private var vm
+    @AppStorage("hasSeenFirstCelebration") private var hasSeenFirstCelebration = false
+    @State private var showCelebration = false
 
     var body: some View {
         VStack(spacing: 32) {
@@ -20,6 +22,27 @@ struct PendingReviewView: View {
         .padding()
         .navigationTitle("Verification Submitted")
         .navigationBarTitleDisplayMode(.inline)
+        .overlay {
+            if showCelebration {
+                CelebrationOverlay()
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: vm.activeSession?.parentAction) { _, action in
+            guard let action, action.isApproval else { return }
+            // Celebrate on: first-ever verification OR streak milestone (3/7/14/30 days)
+            let streak = vm.profile?.stats.currentStreak ?? 0
+            let isMilestone = streak == 3 || streak == 7 || streak == 14 || streak == 30
+            let shouldCelebrate = !hasSeenFirstCelebration || isMilestone
+            guard shouldCelebrate else { return }
+            hasSeenFirstCelebration = true
+            withAnimation { showCelebration = true }
+            Task {
+                try? await Task.sleep(for: .seconds(4))
+                withAnimation { showCelebration = false }
+            }
+        }
     }
 
     // MARK: - Waiting
@@ -39,7 +62,7 @@ struct PendingReviewView: View {
                 .font(.title2.bold())
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Your verification has been submitted. Your guardian will review it shortly.")
+            Text("Your verification has been submitted. Waiting for your guardian to review.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -78,7 +101,7 @@ struct PendingReviewView: View {
                 .foregroundStyle(action.isApproval ? .green : .red)
                 .sensoryFeedback(action.isApproval ? .success : .warning, trigger: action.displayName)
 
-            Text(action.isApproval ? "Approved!" : "Verification Denied")
+            Text(action.isApproval ? "You did it!" : "Try again")
                 .font(.title.bold())
                 .accessibilityAddTraits(.isHeader)
 
