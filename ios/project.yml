@@ -59,14 +59,10 @@ targets:
           UIColorName: LaunchBackground
           UIImageName: LaunchLogo
           UIImageRespectsSafeAreaInsets: true
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: MomAlarmClock.entitlements
       properties:
-
-        com.apple.developer.family-controls: true
-        com.apple.developer.usernotifications.critical-alerts: true
-        com.apple.developer.applesignin:
-          - Default
         aps-environment: production
     dependencies:
       - sdk: SwiftUI.framework
@@ -81,7 +77,6 @@ targets:
       - sdk: DeviceActivity.framework
       - sdk: Network.framework
       - sdk: CryptoKit.framework
-      - sdk: AuthenticationServices.framework
       - sdk: Combine.framework
       - package: FirebaseSDK
         product: FirebaseAuth
