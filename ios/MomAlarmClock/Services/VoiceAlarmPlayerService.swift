@@ -18,7 +18,7 @@ final class VoiceAlarmPlayerService {
         let hasCached = await VoiceAlarmCacheService.shared.hasCachedFile(childID: childID)
 
         guard hasCached else {
-            print("[VoiceAlarm] No cached clip for child \(childID) — using default sound")
+            DebugLog.log("[VoiceAlarm] No cached clip for child \(childID) — using default sound")
             return false
         }
 
@@ -32,7 +32,7 @@ final class VoiceAlarmPlayerService {
             player?.play()
             isPlaying = true
 
-            print("[VoiceAlarm] Playing cached clip for child \(childID)")
+            DebugLog.log("[VoiceAlarm] Playing cached clip for child \(childID)")
 
             // Auto-stop tracking when done
             Task {
@@ -41,7 +41,7 @@ final class VoiceAlarmPlayerService {
             }
             return true
         } catch {
-            print("[VoiceAlarm] Playback failed: \(error.localizedDescription)")
+            DebugLog.log("[VoiceAlarm] Playback failed: \(error.localizedDescription)")
             return false
         }
     }

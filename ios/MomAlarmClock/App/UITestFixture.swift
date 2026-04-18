@@ -51,10 +51,10 @@ enum UITestFixture {
         case "rewardStore":
             seedRewardStore()
         default:
-            print("[UITestFixture] Unknown fixture: \(fixture)")
+            DebugLog.log("[UITestFixture] Unknown fixture: \(fixture)")
         }
 
-        print("[UITestFixture] Seeded fixture: \(fixture)")
+        DebugLog.log("[UITestFixture] Seeded fixture: \(fixture)")
     }
 
     // MARK: - Store Access
@@ -86,7 +86,7 @@ enum UITestFixture {
             let url = storeDirectory.appendingPathComponent("\(key).json")
             try data.write(to: url, options: [.atomic])
         } catch {
-            print("[UITestFixture] Failed to write \(key): \(error)")
+            DebugLog.log("[UITestFixture] Failed to write \(key): \(error)")
         }
     }
 

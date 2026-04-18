@@ -18,7 +18,23 @@ struct MotionVerificationView: View {
                 .font(.title.bold())
                 .accessibilityAddTraits(.isHeader)
 
-            if let progress = vm.motionProgress {
+            if let progress = vm.motionProgress, progress.unavailable {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.orange)
+                    Text("Step Counter Unavailable")
+                        .font(.title3.bold())
+                    Text("This device can't count steps. Ask your guardian to pick a different verification method.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 24)
+                    Button("Switch Method") {
+                        vm.cancelVerification()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            } else if let progress = vm.motionProgress {
                 // Progress ring
                 ZStack {
                     Circle()

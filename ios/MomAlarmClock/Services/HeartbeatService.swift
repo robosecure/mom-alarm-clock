@@ -31,7 +31,7 @@ actor HeartbeatService {
         self.syncService = syncService
         self.familyID = familyID
         self.childID = childID
-        print("[Heartbeat] Configured for child \(childID.uuidString.prefix(8))... in family \(familyID.prefix(8))...")
+        DebugLog.log("[Heartbeat] Configured for child \(childID.uuidString.prefix(8))... in family \(familyID.prefix(8))...")
     }
 
     // MARK: - Background Refresh
@@ -62,9 +62,9 @@ actor HeartbeatService {
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("[Heartbeat] Next refresh scheduled for ~\(Int(targetInterval / 60)) min from now.")
+            DebugLog.log("[Heartbeat] Next refresh scheduled for ~\(Int(targetInterval / 60)) min from now.")
         } catch {
-            print("[Heartbeat] Failed to schedule refresh: \(error.localizedDescription)")
+            DebugLog.log("[Heartbeat] Failed to schedule refresh: \(error.localizedDescription)")
         }
     }
 
@@ -74,19 +74,19 @@ actor HeartbeatService {
     /// Uses the sync service directly instead of fetching all profiles.
     func sendHeartbeat() async throws {
         guard await NetworkMonitor.shared.isConnected else {
-            print("[Heartbeat] Skipping — no network.")
+            DebugLog.log("[Heartbeat] Skipping — no network.")
             return
         }
 
         guard let syncService, let familyID, let childID else {
             // Normal state when this is a parent device or the child profile hasn't loaded yet.
             // AppDelegate + ChildViewModel.loadData() both call configure() when appropriate.
-            print("[Heartbeat] Skipping — not configured (likely parent device or child profile not loaded yet).")
+            DebugLog.log("[Heartbeat] Skipping — not configured (likely parent device or child profile not loaded yet).")
             return
         }
 
         try await syncService.updateHeartbeat(familyID: familyID, childID: childID)
-        print("[Heartbeat] Sent at \(Date().formatted(date: .omitted, time: .standard))")
+        DebugLog.log("[Heartbeat] Sent at \(Date().formatted(date: .omitted, time: .standard))")
     }
 
     // MARK: - Offline Detection (Parent Side)

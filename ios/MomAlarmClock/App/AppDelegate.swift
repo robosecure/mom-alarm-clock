@@ -36,9 +36,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             if FirebaseApp.app() == nil {
                 FirebaseApp.configure()
             }
-            print("[Firebase] Configured from GoogleService-Info.plist")
+            DebugLog.log("[Firebase] Configured from GoogleService-Info.plist")
         } else {
-            print("[Firebase] Not configured — using local-only mode")
+            DebugLog.log("[Firebase] Not configured — using local-only mode")
         }
 
         UNUserNotificationCenter.current().delegate = self
@@ -82,9 +82,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         let options: UNAuthorizationOptions = [.alert, .sound, .badge, .criticalAlert]
         center.requestAuthorization(options: options) { granted, error in
             if let error {
-                print("[AppDelegate] Notification auth error: \(error.localizedDescription)")
+                DebugLog.log("[AppDelegate] Notification auth error: \(error.localizedDescription)")
             }
-            print("[AppDelegate] Notification auth granted: \(granted)")
+            DebugLog.log("[AppDelegate] Notification auth granted: \(granted)")
             // Publish result so banners / setup wizard can react
             Task { @MainActor in
                 await BetaDiagnostics.shared.refreshPushState()
@@ -182,7 +182,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 
     nonisolated func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken, FirebaseApp.app() != nil else { return }
-        print("[FCM] Token: \(token.prefix(20))...")
+        DebugLog.log("[FCM] Token: \(token.prefix(20))...")
         Task { @MainActor in BetaDiagnostics.shared.recordTokenRegistration(token) }
 
         // Store the token under the user's Firestore doc for Cloud Functions to read

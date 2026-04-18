@@ -65,7 +65,7 @@ final class NetworkMonitor {
         let pending = await LocalStore.shared.pendingQueue()
         guard !pending.isEmpty else { return }
 
-        print("[NetworkMonitor] Draining \(pending.count) queued actions...")
+        DebugLog.log("[NetworkMonitor] Draining \(pending.count) queued actions...")
 
         var remaining: [QueuedAction] = []
         var succeeded = 0
@@ -100,7 +100,7 @@ final class NetworkMonitor {
                        let session = try? decoder.decode(MorningSession.self, from: action.payload) {
                         let sid = session.id.uuidString
                         rejectedIDs.append(sid)
-                        print("[NetworkMonitor] Rules-rejected session \(sid) v\(session.version): \(reason)")
+                        DebugLog.log("[NetworkMonitor] Rules-rejected session \(sid) v\(session.version): \(reason)")
                         // Trigger refresh so UI converges to server state
                         await onSessionRejected?(sid)
                     }
@@ -135,6 +135,6 @@ final class NetworkMonitor {
             lastDrainError = "Queue update failed: \(error.localizedDescription)"
         }
 
-        print("[NetworkMonitor] Drain: \(succeeded) ok, \(rulesRejected) rules-rejected, \(authExpired) auth-expired, \(transient) transient, \(remaining.count) queued.")
+        DebugLog.log("[NetworkMonitor] Drain: \(succeeded) ok, \(rulesRejected) rules-rejected, \(authExpired) auth-expired, \(transient) transient, \(remaining.count) queued.")
     }
 }

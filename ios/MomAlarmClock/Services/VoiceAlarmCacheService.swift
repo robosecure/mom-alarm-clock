@@ -70,11 +70,11 @@ actor VoiceAlarmCacheService {
             isCached = true
             cachedUpdatedAt = metadata.updatedAt
             lastDownloadResult = "Downloaded at \(Date().formatted(date: .omitted, time: .standard))"
-            print("[VoiceAlarm] Cached clip for child \(childID.uuidString)")
+            DebugLog.log("[VoiceAlarm] Cached clip for child \(childID.uuidString)")
         } catch {
             isCached = false
             lastDownloadResult = "Download failed: \(error.localizedDescription)"
-            print("[VoiceAlarm] Download failed: \(error.localizedDescription)")
+            DebugLog.log("[VoiceAlarm] Download failed: \(error.localizedDescription)")
         }
     }
 

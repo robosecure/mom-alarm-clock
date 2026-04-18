@@ -1,9 +1,7 @@
 import SwiftUI
-import AuthenticationServices
-import CryptoKit
 
 /// Parent sign-up and sign-in form.
-/// Creates a Firebase Auth account (or local dev account) and a family with join code.
+/// Creates a Firebase Auth account and a family with join code.
 struct ParentAuthView: View {
     @Environment(AuthService.self) private var auth
     @Environment(\.dismiss) private var dismiss
@@ -19,43 +17,6 @@ struct ParentAuthView: View {
 
     var body: some View {
         Form {
-            Section {
-                SignInWithAppleButton(.signIn) { request in
-                    let nonce = auth.prepareAppleSignIn()
-                    request.requestedScopes = [.fullName, .email]
-                    request.nonce = SHA256
-                        .hash(data: Data(nonce.utf8))
-                        .compactMap { String(format: "%02x", $0) }
-                        .joined()
-                } onCompletion: { result in
-                    Task {
-                        isLoading = true
-                        error = nil
-                        do {
-                            switch result {
-                            case .success(let authorization):
-                                try await auth.signInWithApple(authorization: authorization)
-                                // Auth state change triggers AuthGateView to switch to dashboard
-                            case .failure(let err):
-                                if (err as NSError).code != ASAuthorizationError.canceled.rawValue {
-                                    error = err.localizedDescription
-                                }
-                            }
-                        } catch {
-                            self.error = error.localizedDescription
-                        }
-                        isLoading = false
-                    }
-                }
-                .signInWithAppleButtonStyle(.white)
-                .frame(height: 50)
-                .cornerRadius(12)
-            } header: {
-                Text("Quick Start")
-            } footer: {
-                Text("One tap to create your guardian account. No password needed.")
-            }
-
             Section {
                 if isSignUp {
                     TextField("First Name", text: $displayName)

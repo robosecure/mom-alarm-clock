@@ -50,7 +50,7 @@ final class TamperDetectionService {
         startNetworkLossDetector()
         startTimezoneChangeDetector()
 
-        print("[TamperDetection] Monitoring started.")
+        DebugLog.log("[TamperDetection] Monitoring started.")
     }
 
     /// Stops all monitoring. Call when the alarm session ends.
@@ -67,7 +67,7 @@ final class TamperDetectionService {
             self.timezoneObserver = nil
         }
 
-        print("[TamperDetection] Monitoring stopped. Events detected: \(detectedEvents.count)")
+        DebugLog.log("[TamperDetection] Monitoring stopped. Events detected: \(detectedEvents.count)")
     }
 
     // MARK: - Volume Observer
@@ -79,7 +79,7 @@ final class TamperDetectionService {
         do {
             try session.setActive(true)
         } catch {
-            print("[TamperDetection] Failed to activate audio session: \(error)")
+            DebugLog.log("[TamperDetection] Failed to activate audio session: \(error)")
         }
         lastKnownVolume = session.outputVolume
 
@@ -200,14 +200,14 @@ final class TamperDetectionService {
             Task {
                 do {
                     try await syncService.saveTamperEvent(event, familyID: familyID)
-                    print("[TamperDetection] Event reported: \(type.displayName)")
+                    DebugLog.log("[TamperDetection] Event reported: \(type.displayName)")
                 } catch {
                     // Queue for offline retry
                     try? await LocalStore.shared.appendToQueue(QueuedAction(
                         actionType: .saveTamperEvent,
                         payload: (try? JSONEncoder().encode(event)) ?? Data()
                     ))
-                    print("[TamperDetection] Queued event for later: \(type.displayName)")
+                    DebugLog.log("[TamperDetection] Queued event for later: \(type.displayName)")
                 }
             }
         }

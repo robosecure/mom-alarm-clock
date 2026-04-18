@@ -271,7 +271,7 @@ final class FirestoreSyncService: SyncService, @unchecked Sendable {
         AsyncStream { continuation in
             let listener = query.addSnapshotListener { snapshot, error in
                 if let error {
-                    print("[FirestoreSync] Listener error: \(error.localizedDescription)")
+                    DebugLog.log("[FirestoreSync] Listener error: \(error.localizedDescription)")
                     continuation.yield([])
                     return
                 }

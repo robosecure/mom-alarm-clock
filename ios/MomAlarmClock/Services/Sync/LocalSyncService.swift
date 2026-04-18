@@ -68,7 +68,7 @@ final class LocalSyncService: SyncService, @unchecked Sendable {
         let state = AuthState(userID: userID, familyID: familyID, role: role, displayName: displayName)
         await storage.setUser(userID, state: state)
         try await store.saveAuthState(state)
-        print("[LocalSync] Dev fallback: joined family \(familyID) with code \(trimmed.prefix(4))...")
+        DebugLog.log("[LocalSync] Dev fallback: joined family \(familyID) with code \(trimmed.prefix(4))...")
         return familyID
     }
 

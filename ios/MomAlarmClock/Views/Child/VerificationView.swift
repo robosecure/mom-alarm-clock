@@ -29,17 +29,34 @@ struct VerificationView: View {
     @ViewBuilder
     private var verificationContent: some View {
         switch vm.currentVerificationMethod ?? .motion {
-        case .qr:
-            QRVerificationView()
+        case .qr, .geofence:
+            methodUnavailable
         case .photo:
             PhotoVerificationView()
         case .motion:
             MotionVerificationView()
         case .quiz:
             QuizVerificationView()
-        case .geofence:
-            GeofenceVerificationView()
         }
+    }
+
+    private var methodUnavailable: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.orange)
+            Text("This verification method isn't available yet")
+                .font(.title3.bold())
+                .multilineTextAlignment(.center)
+            Text("Ask your guardian to pick Motion, Photo, or Quiz.")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button("Switch Method") {
+                vm.cancelVerification()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
     }
 
     private var calmInterstitial: some View {

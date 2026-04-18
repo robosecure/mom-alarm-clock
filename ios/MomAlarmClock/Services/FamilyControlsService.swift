@@ -39,7 +39,7 @@ final class FamilyControlsService {
         } catch {
             isAuthorized = false
             authorizationError = error
-            print("[FamilyControls] Authorization failed: \(error.localizedDescription)")
+            DebugLog.log("[FamilyControls] Authorization failed: \(error.localizedDescription)")
         }
     }
 
@@ -58,7 +58,7 @@ final class FamilyControlsService {
         // For now we use the system defaults.
         store.shield.webDomainCategories = .specific(Set<ActivityCategoryToken>())
 
-        print("[FamilyControls] Partial shield applied — entertainment apps blocked.")
+        DebugLog.log("[FamilyControls] Partial shield applied — entertainment apps blocked.")
     }
 
     /// Blocks all apps except Phone, Messages, and emergency services.
@@ -70,7 +70,7 @@ final class FamilyControlsService {
         store.shield.applicationCategories = .all()
         store.shield.webDomainCategories = .all()
 
-        print("[FamilyControls] Full shield applied — all apps blocked.")
+        DebugLog.log("[FamilyControls] Full shield applied — all apps blocked.")
     }
 
     /// Removes all shields — called after successful verification.
@@ -78,7 +78,7 @@ final class FamilyControlsService {
         store.shield.applicationCategories = nil
         store.shield.webDomainCategories = nil
         store.clearAllSettings()
-        print("[FamilyControls] All shields removed.")
+        DebugLog.log("[FamilyControls] All shields removed.")
     }
 
     // MARK: - Device Activity Monitoring
@@ -87,7 +87,7 @@ final class FamilyControlsService {
     /// The DeviceActivityMonitor extension receives callbacks when the window starts/ends.
     func scheduleMonitoring(alarmTime: AlarmSchedule.AlarmTime, durationMinutes: Int = 60) throws {
         guard isAuthorized else {
-            print("[FamilyControls] Monitoring skipped — not authorized")
+            DebugLog.log("[FamilyControls] Monitoring skipped — not authorized")
             return
         }
         let center = DeviceActivityCenter()
@@ -108,13 +108,13 @@ final class FamilyControlsService {
             during: schedule
         )
 
-        print("[FamilyControls] Monitoring scheduled: \(alarmTime.formatted) for \(durationMinutes) min.")
+        DebugLog.log("[FamilyControls] Monitoring scheduled: \(alarmTime.formatted) for \(durationMinutes) min.")
     }
 
     /// Stops all DeviceActivity monitoring.
     func stopMonitoring() {
         let center = DeviceActivityCenter()
         center.stopMonitoring()
-        print("[FamilyControls] Monitoring stopped.")
+        DebugLog.log("[FamilyControls] Monitoring stopped.")
     }
 }

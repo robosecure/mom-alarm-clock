@@ -35,13 +35,20 @@ actor VerificationService {
     func startMotionTracking(requiredSteps: Int = 50) -> AsyncStream<MotionProgress> {
         AsyncStream { continuation in
             guard motionManager.isAccelerometerAvailable else {
-                continuation.yield(MotionProgress(currentSteps: 0, requiredSteps: requiredSteps, isComplete: false))
+                continuation.yield(MotionProgress(
+                    currentSteps: 0, requiredSteps: requiredSteps,
+                    isComplete: false, unavailable: true
+                ))
                 continuation.finish()
                 return
             }
 
             let pedometer = CMPedometer()
             guard CMPedometer.isStepCountingAvailable() else {
+                continuation.yield(MotionProgress(
+                    currentSteps: 0, requiredSteps: requiredSteps,
+                    isComplete: false, unavailable: true
+                ))
                 continuation.finish()
                 return
             }
@@ -56,7 +63,8 @@ actor VerificationService {
                 let progress = MotionProgress(
                     currentSteps: steps,
                     requiredSteps: requiredSteps,
-                    isComplete: steps >= requiredSteps
+                    isComplete: steps >= requiredSteps,
+                    unavailable: false
                 )
                 continuation.yield(progress)
                 if progress.isComplete {
@@ -75,6 +83,7 @@ actor VerificationService {
         let currentSteps: Int
         let requiredSteps: Int
         let isComplete: Bool
+        let unavailable: Bool
         var percentage: Double { Double(currentSteps) / Double(requiredSteps) }
     }
 
@@ -126,6 +135,7 @@ actor VerificationService {
     // MARK: - Geofence
 
     /// Checks if the child's current location is within the required geofence radius.
+    /// Returns `.denied` if the user hasn't granted When-In-Use authorization.
     func checkGeofence(
         targetLatitude: Double,
         targetLongitude: Double,
@@ -134,54 +144,102 @@ actor VerificationService {
         let target = CLLocation(latitude: targetLatitude, longitude: targetLongitude)
 
         return await withCheckedContinuation { continuation in
-            // CLLocationManager needs a delegate — simplified here for the scaffold.
-            // In production, use a proper CLLocationManagerDelegate wrapper.
-            let delegate = LocationDelegate { location in
-                guard let location else {
-                    continuation.resume(returning: GeofenceResult(isWithinFence: false, distanceMeters: nil))
-                    return
+            let delegate = LocationDelegate { [weak self] outcome in
+                switch outcome {
+                case .denied:
+                    continuation.resume(returning: GeofenceResult(
+                        isWithinFence: false, distanceMeters: nil, authorizationDenied: true
+                    ))
+                case .failed:
+                    continuation.resume(returning: GeofenceResult(
+                        isWithinFence: false, distanceMeters: nil, authorizationDenied: false
+                    ))
+                case .located(let location):
+                    let distance = location.distance(from: target)
+                    continuation.resume(returning: GeofenceResult(
+                        isWithinFence: distance <= radiusMeters,
+                        distanceMeters: distance,
+                        authorizationDenied: false
+                    ))
                 }
-                let distance = location.distance(from: target)
-                continuation.resume(returning: GeofenceResult(
-                    isWithinFence: distance <= radiusMeters,
-                    distanceMeters: distance
-                ))
+                // Clean up on the actor — can't mutate actor-isolated state from this nonisolated closure.
+                Task { [weak self] in
+                    await self?.clearLocationDelegate()
+                }
             }
             locationManager.delegate = delegate
-            locationManager.requestLocation()
-            // Hold a strong reference so the delegate isn't deallocated
             _locationDelegate = delegate
+
+            switch locationManager.authorizationStatus {
+            case .notDetermined:
+                locationManager.requestWhenInUseAuthorization()
+                // Delegate will receive didChangeAuthorization and call requestLocation once granted.
+            case .restricted, .denied:
+                delegate.resolve(.denied)
+            case .authorizedAlways, .authorizedWhenInUse:
+                locationManager.requestLocation()
+            @unknown default:
+                delegate.resolve(.failed)
+            }
         }
     }
 
     // Stored property to keep the delegate alive
     private var _locationDelegate: LocationDelegate?
 
+    /// Actor-hop helper so non-isolated delegate callbacks can clear the strong reference.
+    private func clearLocationDelegate() {
+        _locationDelegate = nil
+    }
+
     struct GeofenceResult: Sendable {
         let isWithinFence: Bool
         let distanceMeters: Double?
+        let authorizationDenied: Bool
     }
 }
 
 // MARK: - CLLocationManagerDelegate Helper
 
+enum LocationOutcome {
+    case located(CLLocation)
+    case denied
+    case failed
+}
+
 private final class LocationDelegate: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
-    private let completion: (CLLocation?) -> Void
+    private let completion: (LocationOutcome) -> Void
     private var hasCompleted = false
 
-    init(completion: @escaping (CLLocation?) -> Void) {
+    init(completion: @escaping (LocationOutcome) -> Void) {
         self.completion = completion
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func resolve(_ outcome: LocationOutcome) {
         guard !hasCompleted else { return }
         hasCompleted = true
-        completion(locations.last)
+        completion(outcome)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let last = locations.last else { return resolve(.failed) }
+        resolve(.located(last))
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        guard !hasCompleted else { return }
-        hasCompleted = true
-        completion(nil)
+        resolve(.failed)
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            manager.requestLocation()
+        case .denied, .restricted:
+            resolve(.denied)
+        case .notDetermined:
+            break
+        @unknown default:
+            resolve(.failed)
+        }
     }
 }

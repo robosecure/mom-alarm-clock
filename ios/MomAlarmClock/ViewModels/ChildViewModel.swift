@@ -160,7 +160,7 @@ final class ChildViewModel {
 
         // Guard: if we already have an active session for this alarm today, don't create another
         if let existing = activeSession, existing.id == sessionID, existing.isActive {
-            print("[Child] Session \(sessionID) already active — skipping duplicate alarmDidFire")
+            DebugLog.log("[Child] Session \(sessionID) already active — skipping duplicate alarmDidFire")
             return
         }
 
@@ -190,9 +190,10 @@ final class ChildViewModel {
                     payload: payload
                 ))
             } catch {
-                print("[ChildVM] ⚠️ Offline queue write failed: \(error.localizedDescription)")
+                DebugLog.log("[ChildVM] ⚠️ Offline queue write failed: \(error.localizedDescription)")
                 syncConflictMessage = "Couldn't save the alarm locally. Check storage and try again."
                 BetaDiagnostics.log(.queueWriteFailed)
+                CrashReporter.record(error, userInfo: ["site": "handleAlarmFired.queueWrite"])
             }
         }
 
@@ -223,12 +224,26 @@ final class ChildViewModel {
         activeSession = session
 
         let duration = rules.duration(forSnooze: session.snoozeCount - 1)
-        print("[Child] Snoozed for \(duration) minutes (snooze \(session.snoozeCount)/\(rules.maxCount))")
+        DebugLog.log("[Child] Snoozed for \(duration) minutes (snooze \(session.snoozeCount)/\(rules.maxCount))")
 
         try? await syncService.saveSession(session, familyID: familyID)
     }
 
     // MARK: - Verification
+
+    /// Cancels any in-flight verification and returns the session to .ringing so the child
+    /// (or parent) can pick a different method. Used when a method is unavailable on this
+    /// device (e.g. pedometer not supported).
+    func cancelVerification() {
+        guard var session = activeSession else { return }
+        session.state = .ringing
+        session.lastUpdated = Date()
+        session.version += 1
+        activeSession = session
+        motionProgress = nil
+        currentVerificationMethod = nil
+        quizQuestions = []
+    }
 
     func beginVerification() async {
         guard var session = activeSession else { return }
@@ -354,9 +369,10 @@ final class ChildViewModel {
                     payload: payload
                 ))
             } catch {
-                print("[ChildVM] ⚠️ Offline queue write failed (verification): \(error.localizedDescription)")
+                DebugLog.log("[ChildVM] ⚠️ Offline queue write failed (verification): \(error.localizedDescription)")
                 syncConflictMessage = "Verification saved locally but couldn't queue for sync."
                 BetaDiagnostics.log(.queueWriteFailed)
+                CrashReporter.record(error, userInfo: ["site": "completeVerification.queueWrite"])
             }
         }
 
@@ -482,7 +498,7 @@ final class ChildViewModel {
 
         case .increasedVolume, .parentCallTriggered:
             // Deferred: not implemented for launch. Log for diagnostics.
-            print("[Escalation] Action '\(level.action.rawValue)' is not yet implemented")
+            DebugLog.log("[Escalation] Action '\(level.action.rawValue)' is not yet implemented")
 
         default:
             break // appLockPartial when already locked

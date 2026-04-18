@@ -70,7 +70,7 @@ actor AlarmService {
         let expectedCount = enabledSchedules.reduce(0) { $0 + $1.activeDays.count * 2 } // primary + backup per day
 
         if alarmNotifs.count != expectedCount {
-            print("[Alarm] Drift detected: \(alarmNotifs.count) scheduled vs \(expectedCount) expected. Self-healing.")
+            DebugLog.log("[Alarm] Drift detected: \(alarmNotifs.count) scheduled vs \(expectedCount) expected. Self-healing.")
             // Cancel all stale alarm notifications and reschedule from scratch
             notificationCenter.removePendingNotificationRequests(
                 withIdentifiers: alarmNotifs.map(\.identifier)
@@ -80,7 +80,7 @@ actor AlarmService {
         for schedule in enabledSchedules {
             try? await scheduleAlarm(schedule)
         }
-        print("[Alarm] Rescheduled \(enabledSchedules.count) alarms (\(expectedCount) notifications) from local store.")
+        DebugLog.log("[Alarm] Rescheduled \(enabledSchedules.count) alarms (\(expectedCount) notifications) from local store.")
     }
 
     /// Cancels all notifications associated with a specific alarm schedule.

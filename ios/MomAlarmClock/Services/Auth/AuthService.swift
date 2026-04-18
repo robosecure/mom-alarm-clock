@@ -1,7 +1,6 @@
 import Foundation
 import CryptoKit
 import Security
-import AuthenticationServices
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
@@ -131,7 +130,7 @@ final class AuthService {
         currentUser = state
         lastJoinCode = joinCode
         BetaDiagnostics.log(.pairingSuccess(role: "parent"))
-        print("[Auth] Parent signed up. Family: \(familyID.prefix(8))...")
+        DebugLog.log("[Auth] Parent signed up. Family: \(familyID.prefix(8))...")
 
         // Check if email verification is required
         if isFirebaseAvailable, Auth.auth().currentUser?.isEmailVerified == false {
@@ -167,81 +166,6 @@ final class AuthService {
     private(set) var lastJoinCode: String?
 
     /// Current nonce for Sign in with Apple (must be set before starting the flow).
-    private(set) var currentNonce: String?
-
-    /// Generates a random nonce for Sign in with Apple.
-    func prepareAppleSignIn() -> String {
-        let nonce = randomNonceString()
-        currentNonce = nonce
-        return nonce
-    }
-
-    /// Completes Sign in with Apple after the user authorizes.
-    /// Creates a new family if this is a first-time user, or restores an existing session.
-    func signInWithApple(authorization: ASAuthorization) async throws {
-        guard let appleCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-              let identityToken = appleCredential.identityToken,
-              let tokenString = String(data: identityToken, encoding: .utf8),
-              let nonce = currentNonce else {
-            throw AuthError.notAuthenticated
-        }
-
-        guard isFirebaseAvailable else {
-            throw AuthError.notAuthenticated
-        }
-
-        let credential = OAuthProvider.appleCredential(
-            withIDToken: tokenString,
-            rawNonce: nonce,
-            fullName: appleCredential.fullName
-        )
-        let result = try await Auth.auth().signIn(with: credential)
-        let userID = result.user.uid
-        let isNewUser = result.additionalUserInfo?.isNewUser ?? false
-
-        // Extract display name from Apple credential (only provided on first sign-in)
-        let displayName = [appleCredential.fullName?.givenName, appleCredential.fullName?.familyName]
-            .compactMap { $0 }
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespaces)
-        let finalName = displayName.isEmpty ? "Guardian" : displayName
-
-        if isNewUser {
-            // First-time Apple sign-in — create a new family
-            let (familyID, joinCode) = try await syncService.createFamily(
-                ownerUserID: userID,
-                displayName: finalName
-            )
-            let state = AuthState(userID: userID, familyID: familyID, role: .parent, displayName: finalName)
-            try await localStore.saveAuthState(state)
-            currentUser = state
-            isAuthenticated = true
-            lastJoinCode = joinCode
-            BetaDiagnostics.log(.pairingSuccess(role: "parent"))
-            print("[Auth] Apple sign-in (new). Family: \(familyID.prefix(8))...")
-        } else {
-            // Returning user — restore session from Firestore
-            guard let validatedState = try await syncService.validateRole(userID: userID) else {
-                throw AuthError.invalidCredentials
-            }
-            try await localStore.saveAuthState(validatedState)
-            currentUser = validatedState
-            isAuthenticated = true
-            print("[Auth] Apple sign-in (returning). Family: \(validatedState.familyID.prefix(8))...")
-        }
-
-        currentNonce = nil
-    }
-
-    /// Generates a cryptographically random nonce string for Sign in with Apple.
-    private func randomNonceString(length: Int = 32) -> String {
-        var randomBytes = [UInt8](repeating: 0, count: length)
-        let status = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        precondition(status == errSecSuccess, "Failed to generate random nonce")
-        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        return String(randomBytes.map { charset[Int($0) % charset.count] })
-    }
-
     /// Signs in an existing parent.
     func signInAsParent(email: String, password: String) async throws {
         let userID: String
@@ -320,7 +244,7 @@ final class AuthService {
         isAuthenticated = true
 
         BetaDiagnostics.log(.pairingSuccess(role: "child"))
-        print("[Auth] Child paired to family: \(familyID)")
+        DebugLog.log("[Auth] Child paired to family: \(familyID)")
     }
 
     // MARK: - Sign Out

@@ -31,7 +31,7 @@ struct MomAlarmClockApp: App {
            !apiKey.hasPrefix("YOUR_") {
             if FirebaseApp.app() == nil {
                 FirebaseApp.configure()
-                print("[Firebase] Configured early in App.init()")
+                DebugLog.log("[Firebase] Configured early in App.init()")
             }
         }
 

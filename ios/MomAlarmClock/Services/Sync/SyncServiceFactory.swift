@@ -11,15 +11,15 @@ enum SyncServiceFactory {
         // so its reads get "Missing or insufficient permissions" rejected.
         // Force the local in-memory backend when a fixture is seeded.
         if ProcessInfo.processInfo.arguments.contains("-ui-fixture") {
-            print("[Sync] -ui-fixture present — forcing LocalSyncService.")
+            DebugLog.log("[Sync] -ui-fixture present — forcing LocalSyncService.")
             return LocalSyncService()
         }
         #endif
         if FirebaseApp.app() != nil {
-            print("[Sync] Firebase configured — using Firestore for cross-device sync.")
+            DebugLog.log("[Sync] Firebase configured — using Firestore for cross-device sync.")
             return FirestoreSyncService()
         }
-        print("[Sync] Firebase not configured — using local-only sync.")
+        DebugLog.log("[Sync] Firebase not configured — using local-only sync.")
         return LocalSyncService()
     }
 }

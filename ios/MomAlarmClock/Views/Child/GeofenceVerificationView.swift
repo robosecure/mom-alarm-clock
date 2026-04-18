@@ -65,7 +65,24 @@ struct GeofenceVerificationView: View {
 
     @ViewBuilder
     private func resultView(_ result: VerificationService.GeofenceResult) -> some View {
-        if result.isWithinFence {
+        if result.authorizationDenied {
+            VStack(spacing: 12) {
+                Image(systemName: "location.slash.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.red)
+                Text("Location Permission Needed")
+                    .font(.title3.bold())
+                Text("Open Settings → Mom Alarm Clock → Location, then choose While Using the App.")
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        } else if result.isWithinFence {
             VStack(spacing: 12) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 64))

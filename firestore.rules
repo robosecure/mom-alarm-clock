@@ -93,6 +93,20 @@ service cloud.firestore {
         allow read: if isAuthenticated() && isMemberOfFamily(familyID);
         allow create: if isAuthenticated() && isChildInFamily(familyID);
       }
+
+      // Push-notification delivery log — server-written (admin SDK bypasses rules),
+      // readable by guardians for delivery audits. No client writes.
+      match /pushLog/{logID} {
+        allow read: if isAuthenticated() && isParentInFamily(familyID);
+        allow write: if false;
+      }
+
+      // Ops subcollection — server-managed (retention policy, weekly rollups).
+      // Guardians can read for transparency; no client writes.
+      match /ops/{docID} {
+        allow read: if isAuthenticated() && isParentInFamily(familyID);
+        allow write: if false;
+      }
     }
 
     // Session update helpers
