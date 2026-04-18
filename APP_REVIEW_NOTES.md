@@ -37,8 +37,9 @@ By default, the alarm clears automatically once the child verifies. The guardian
 |-----------|-----|----------------------|
 | Notifications | Fires the alarm on the child's device; notifies guardian of pending reviews | Alarm scheduling still works but notifications may be silent |
 | Microphone | Guardian can record a personal voice alarm message (optional feature) | Voice alarm feature is unavailable; standard alarm sound plays |
-| Camera | QR code scanning and photo verification (optional methods) | These verification methods are unavailable; quiz and motion still work |
-| Location | Geofence verification — confirms child reached a wake-up spot (optional) | Geofence verification is unavailable; other methods work |
+| Camera | Photo verification (optional method) | Photo verification is unavailable; quiz and motion still work |
+| Photo Library | Photo verification picker (optional method) | Photo verification is unavailable; quiz and motion still work |
+| Location | Geofence verification — confirms child reached a wake-up spot (optional, v1.1) | Geofence verification is unavailable; other methods work |
 | Motion | Step counting verification — confirms child is out of bed (optional) | Motion verification is unavailable; quiz still works |
 
 ## Special Entitlements
