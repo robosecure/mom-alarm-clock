@@ -26,10 +26,22 @@ By default, the alarm clears automatically once the child verifies. The guardian
 
 **Expected result:** The alarm fires, the child completes the quiz, and the session is marked as verified. The guardian can view the result in History.
 
-[PLACEHOLDER: If you'd like to provide a pre-configured demo account, add credentials here:
-- Guardian email: demo@momclock.com
-- Guardian password: [password]
-- Child join code: [code]]
+## Demo Account (pre-seeded for App Review)
+
+A demo family is pre-seeded in Firebase. You can sign in directly — no setup needed.
+
+- **Guardian email:** `demo-guardian@momclock.app`
+- **Guardian password:** `DemoGuardian2026!`
+- **Child email:** `demo-child@momclock.app`
+- **Child password:** `DemoChild2026!`
+- **Family join code (if pairing a fresh child device):** `DEMO2026XY`
+
+The demo family includes:
+- Child profile "Alex" (age 9), 6-day streak, 175 reward points
+- One school-day alarm (Mon–Fri at 7:00 AM, Quiz verification, Trust Mode / auto-acknowledge)
+- Seven days of completed session history
+
+To test the live verification flow, edit the demo alarm's time to 2–3 minutes from your review time, wait for the child device to ring, complete the quiz, and observe the approved state.
 
 ## Permissions Used
 
