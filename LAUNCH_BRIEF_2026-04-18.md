@@ -1,6 +1,27 @@
 # Mom Alarm Clock — Launch Brief
 
-_Generated Sat Apr 18, 2026, ~10:50 PM. Covers tonight's end-to-end re-evaluation and the morning path to TestFlight._
+_Generated Sat Apr 18, 2026, ~10:50 PM. Updated ~11:00 PM with autonomously-verified state (see §0)._
+
+_Covers tonight's end-to-end re-evaluation and the morning path to TestFlight._
+
+---
+
+## 0. Autonomously Verified Tonight (Post-Audit)
+
+After the audit I ran the actual macOS checks. Everything below is confirmed true by running the real command, not inferred from docs:
+
+- **Archive is on disk, ready to re-distribute:** `/Users/wamsley/Library/Developer/Xcode/Archives/2026-04-18/MomAlarmClock 4-18-26, 3.46 PM.xcarchive`. Xcode Organizer will find it automatically.
+- **Pre-archive check passes** with 3 expected warnings: two commented-out entitlements (critical-alerts, family-controls — intentional for V1) and `CFBundleVersion = 1` (fine for the first upload; bump only if Apple has already processed a build 1, which hasn't happened).
+- **All 9 Cloud Functions deployed and live** in us-central1: `applyRewardOnVerified`, `cleanupOldSessions`, `cleanupOldTamperEvents`, `cleanupOnChildDelete`, `clearOverridesOnSessionComplete`, `notifyParentOnPendingReview`, `notifyParentOnTamperEvent`, `setReviewWindowDeadline`, `weeklySummary`. All Node 20, event triggers + one scheduler. Nothing missing.
+- **Firebase CLI logged in** to project `mom-alarm-clock` (691592029849). Deploy operations work from your shell.
+- **Stale `.git/index.lock` removed**, `APP_REVIEW_NOTES.md` + `LAUNCH_BRIEF_2026-04-18.md` committed as `26a51ce` and pushed to `origin/main`.
+
+Three things I could **not** finish autonomously (need you in the morning):
+
+1. **Demo account seeding** — `scripts/seed-demo-account.js` requires a Firebase service-account JSON (or ADC), which isn't on disk. See §3 Step 3 for the 2-minute fix.
+2. **Distribute App retry** — the SecurityAgent password prompt is system-protected and invisible to automation. You have to enter your Mac password by hand once; after that the keychain ACL fix in §3 Step 1 prevents it from asking again.
+3. **APNs .p8 generation** — requires signing in to developer.apple.com with your Apple ID and 2FA.
+
 
 ---
 
