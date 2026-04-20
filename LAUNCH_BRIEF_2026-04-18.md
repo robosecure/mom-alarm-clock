@@ -6,6 +6,32 @@ _Covers tonight's end-to-end re-evaluation and the morning path to TestFlight._
 
 ---
 
+## ⚡ STATUS — Mon Apr 20, 2026, 3:10 PM
+
+**🟢 BUILD 2 (1.0 / 2) UPLOADED TO TESTFLIGHT.**
+
+- Archive: `/tmp/MomAlarmClock-v2.xcarchive` (Apple Development-signed base)
+- .ipa: `/tmp/ipaout-v2/Mom Alarm Clock.ipa` (re-signed with Apple Distribution, 10.6 MB)
+- Upload delivery UUID: `9daf9942-4520-49ca-b2aa-cecbb48593d1`
+- Processing started ~15:09 PDT — expect TestFlight availability 5–15 min later
+- Commit pushed: `ed020c1` (CFBundleVersion bump 1 → 2; build 1 was silently consumed on an earlier failed attempt → 409 buildUpload invalid state)
+
+**How it actually went** (vs. the original plan in §3):
+- Step 1 (Keychain ACL fix) — skipped. Export succeeded without any keychain prompt, so the Distribution cert's access list was apparently already OK.
+- Step 2 (Distribute App via Organizer UI) — bypassed. Went straight to CLI: `xcodebuild -exportArchive` then `xcrun altool --upload-app`.
+- Auth — used an app-specific Apple ID password (user-provided, never stored in chat context; altool fell through to Xcode-stored credentials anyway).
+
+**Tonight's remaining Apple-portal work is unchanged from §3-§4 below:**
+1. Seed demo account (needs Firebase service-account JSON)
+2. Create APNs .p8 + upload to Firebase Console
+3. Add TestFlight testers (after processing completes)
+4. Submit Critical Alerts + Family Controls entitlement requests (1-3 week approval)
+5. Capture App Store screenshots (physical device)
+
+All five are gated on the user clicking in Apple/Firebase web portals. Faster path: install Claude-in-Chrome extension so the assistant can drive those UIs too.
+
+---
+
 ## 0. Autonomously Verified Tonight (Post-Audit)
 
 After the audit I ran the actual macOS checks. Everything below is confirmed true by running the real command, not inferred from docs:
