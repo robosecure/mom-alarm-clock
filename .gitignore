@@ -28,5 +28,10 @@ Thumbs.db
 firebase-debug.log
 firestore-debug.log
 functions/firestore-debug.log
+
+# Secrets — service-account JSONs, APNs keys, ASC API keys, anything sensitive
+.secrets/
+*.p8
+AuthKey_*.p8
 # Token monitor cache
 scripts/.token_budget.json
